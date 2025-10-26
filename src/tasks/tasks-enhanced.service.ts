@@ -9,6 +9,7 @@ import { Task } from './entities/task.entity';
 import { TaskHistory } from './entities/task-history.entity';
 import { TaskStatus } from './enums/task-status.enum';
 import { TaskRecurrence } from './enums/task-recurrence.enum';
+import { TaskType } from './enums/task-type.enum';
 import { CreateTaskDto } from './dto/create-task-enhanced.dto';
 import { UpdateTaskDto } from './dto/update-task-enhanced.dto';
 import { TaskFilterDto } from './dto/task-filter-enhanced.dto';
@@ -59,6 +60,14 @@ export class TasksService {
     // Calcul du niveau hiérarchique
     if (createTaskDto.parentId) {
       const parent = await this.findOne(createTaskDto.parentId);
+
+      // Validation: un milestone ne peut pas avoir d'enfants
+      if (parent.type === TaskType.MILESTONE) {
+        throw new BadRequestException(
+          'Cannot add children to a milestone task',
+        );
+      }
+
       task.level = parent.level + 1;
       task.parent = parent;
     } else {
@@ -118,6 +127,19 @@ export class TasksService {
       // Filtre par priorité unique (rétrocompatibilité)
       query.andWhere('task.priority = :priority', {
         priority: filters.priority,
+      });
+    }
+
+    // Filtre par type (simple ou multiple)
+    if (filters?.types && filters.types.length > 0) {
+      // Filtrage par plusieurs types (prioritaire)
+      query.andWhere('task.type IN (:...types)', {
+        types: filters.types,
+      });
+    } else if (filters?.type) {
+      // Filtre par type unique (rétrocompatibilité)
+      query.andWhere('task.type = :type', {
+        type: filters.type,
       });
     }
 
@@ -718,5 +740,55 @@ export class TasksService {
       await this.tasksRepository.save(child);
       await this.updateChildrenLevels(child.id, child.level);
     }
+  }
+
+  // ============================================================================
+  // TYPE MANAGEMENT
+  // ============================================================================
+
+  /**
+   * Convertir une tâche en projet
+   * - Vérifie que la tâche n'est pas un milestone
+   * - Change le type en 'project'
+   * - Crée une entrée d'historique
+   */
+  async convertToProject(id: string): Promise<Task> {
+    const task = await this.findOne(id);
+
+    // Validation: un milestone ne peut pas devenir un projet
+    if (task.type === TaskType.MILESTONE) {
+      throw new BadRequestException(
+        'Cannot convert a milestone to a project',
+      );
+    }
+
+    // Si déjà un projet, retourner tel quel
+    if (task.type === TaskType.PROJECT) {
+      return task;
+    }
+
+    // Changer le type
+    const oldType = task.type;
+    task.type = TaskType.PROJECT;
+
+    const savedTask = await this.tasksRepository.save(task);
+
+    // Créer une entrée d'historique
+    await this.createHistoryEntry(savedTask, 'updated', {
+      changes: {
+        type: { from: oldType, to: TaskType.PROJECT },
+      },
+      reason: 'Converted to project',
+    });
+
+    return savedTask;
+  }
+
+  /**
+   * Vérifier si une tâche peut avoir des enfants selon son type
+   */
+  canHaveChildren(type: TaskType): boolean {
+    // Les milestones ne peuvent pas avoir d'enfants
+    return type !== TaskType.MILESTONE;
   }
 }

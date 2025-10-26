@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { TaskStatus } from '../enums/task-status.enum';
 import { TaskRecurrence } from '../enums/task-recurrence.enum';
+import { TaskType } from '../enums/task-type.enum';
 import { TaskHistory } from './task-history.entity';
 
 /**
@@ -69,6 +70,17 @@ export class Task {
     default: 'medium',
   })
   priority: 'low' | 'medium' | 'high' | 'urgent';
+
+  /**
+   * Type de tâche (task, project, epic, milestone)
+   * Détermine les règles métier et l'affichage
+   */
+  @Column({
+    type: 'enum',
+    enum: TaskType,
+    default: TaskType.TASK,
+  })
+  type: TaskType;
 
   // === DATES & ÉCHÉANCES ===
 
@@ -218,6 +230,20 @@ export class Task {
    */
   isRoot(): boolean {
     return this.parentId === null && this.level === 0;
+  }
+
+  /**
+   * Vérifie si c'est un projet
+   */
+  isProject(): boolean {
+    return this.type === TaskType.PROJECT;
+  }
+
+  /**
+   * Vérifie si c'est un milestone
+   */
+  isMilestone(): boolean {
+    return this.type === TaskType.MILESTONE;
   }
 
   /**

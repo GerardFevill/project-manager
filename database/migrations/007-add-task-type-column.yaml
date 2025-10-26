@@ -1,0 +1,70 @@
+databaseChangeLog:
+  - changeSet:
+      id: 007-add-task-type-column
+      author: claude
+      changes:
+        # Add task_type enum type
+        - sql:
+            sql: |
+              CREATE TYPE task_type_enum AS ENUM ('task', 'project', 'epic', 'milestone');
+            comment: Create enum type for task types
+
+        # Add type column to tasks table
+        - addColumn:
+            tableName: tasks
+            columns:
+              - column:
+                  name: type
+                  type: task_type_enum
+                  defaultValue: task
+                  constraints:
+                    nullable: false
+                  remarks: Type of task - task, project, epic, or milestone
+
+        # Create index on type for filtering performance
+        - createIndex:
+            indexName: idx_tasks_type
+            tableName: tasks
+            columns:
+              - column:
+                  name: type
+
+        # Create composite index for common queries (type + status)
+        - createIndex:
+            indexName: idx_tasks_type_status
+            tableName: tasks
+            columns:
+              - column:
+                  name: type
+              - column:
+                  name: status
+
+        # Update existing tasks based on their level and children count
+        # Level 0 tasks with no explicit type become projects if they have many children
+        - sql:
+            sql: |
+              UPDATE tasks
+              SET type = 'project'
+              WHERE level = 0
+              AND (
+                SELECT COUNT(*)
+                FROM tasks AS children
+                WHERE children."parentId" = tasks.id
+              ) >= 3;
+            comment: Auto-classify existing root tasks with 3+ children as projects
+
+      rollback:
+        - sql:
+            sql: |
+              UPDATE tasks SET type = 'task';
+        - dropIndex:
+            indexName: idx_tasks_type_status
+            tableName: tasks
+        - dropIndex:
+            indexName: idx_tasks_type
+            tableName: tasks
+        - dropColumn:
+            tableName: tasks
+            columnName: type
+        - sql:
+            sql: DROP TYPE task_type_enum;

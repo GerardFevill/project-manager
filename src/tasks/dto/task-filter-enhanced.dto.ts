@@ -13,6 +13,7 @@ import { Transform, Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { TaskStatus } from '../enums/task-status.enum';
 import { TaskRecurrence } from '../enums/task-recurrence.enum';
+import { TaskType } from '../enums/task-type.enum';
 
 /**
  * 🔍 DTO - FILTRES AVANCÉS POUR REQUÊTES
@@ -66,6 +67,29 @@ export class TaskFilterDto {
   @IsArray()
   @IsString({ each: true })
   priorities?: ('low' | 'medium' | 'high' | 'urgent')[];
+
+  @ApiPropertyOptional({
+    description: 'Filtrer par type de tâche',
+    enum: TaskType,
+  })
+  @IsOptional()
+  @IsEnum(TaskType)
+  type?: TaskType;
+
+  @ApiPropertyOptional({
+    description: 'Filtrer par plusieurs types de tâches',
+    type: [String],
+    enum: Object.values(TaskType),
+    example: ['project', 'epic'],
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (!value) return undefined;
+    return Array.isArray(value) ? value : [value];
+  })
+  @IsArray()
+  @IsString({ each: true })
+  types?: TaskType[];
 
   @ApiPropertyOptional({
     description: 'Filtrer par type de récurrence',

@@ -17,6 +17,7 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TaskStatus } from '../enums/task-status.enum';
 import { TaskRecurrence } from '../enums/task-recurrence.enum';
+import { TaskType } from '../enums/task-type.enum';
 
 /**
  * 📝 DTO - CRÉATION DE TÂCHE COMPLÈTE
@@ -76,6 +77,16 @@ export class CreateTaskDto {
   @IsOptional()
   @IsEnum(['low', 'medium', 'high', 'urgent'])
   priority?: 'low' | 'medium' | 'high' | 'urgent';
+
+  @ApiPropertyOptional({
+    description: 'Type de tâche',
+    enum: TaskType,
+    default: TaskType.TASK,
+    example: TaskType.TASK,
+  })
+  @IsOptional()
+  @IsEnum(TaskType)
+  type?: TaskType;
 
   @ApiPropertyOptional({
     description: 'Date d\'échéance ISO 8601',

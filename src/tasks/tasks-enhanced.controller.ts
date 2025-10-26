@@ -221,6 +221,20 @@ export class TasksController {
     return this.tasksService.blockTask(id, blockDto.reason);
   }
 
+  @Post(':id/convert-to-project')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Convertir une tâche en projet',
+    description: 'Change le type de la tâche en PROJECT (impossible pour les milestones)',
+  })
+  @ApiParam({ name: 'id', description: 'UUID de la tâche' })
+  @ApiResponse({ status: 200, description: 'Tâche convertie en projet' })
+  @ApiResponse({ status: 400, description: 'Impossible de convertir (milestone)' })
+  @ApiResponse({ status: 404, description: 'Tâche non trouvée' })
+  convertToProject(@Param('id', ParseUUIDPipe) id: string) {
+    return this.tasksService.convertToProject(id);
+  }
+
   @Post(':id/unblock')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

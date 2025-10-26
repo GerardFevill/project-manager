@@ -18,3 +18,7 @@ databaseChangeLog:
   - include:
       file: database/migrations/005-create-task-indexes.yaml
       relativeToChangelogFile: false
+
+  - include:
+      file: database/migrations/007-add-task-type-column.yaml
+      relativeToChangelogFile: false
