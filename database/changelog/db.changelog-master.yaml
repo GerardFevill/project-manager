@@ -6,3 +6,15 @@ databaseChangeLog:
   - include:
       file: database/migrations/002-create-tasks-table.yaml
       relativeToChangelogFile: false
+
+  - include:
+      file: database/migrations/003-enhance-tasks-table.yaml
+      relativeToChangelogFile: false
+
+  - include:
+      file: database/migrations/004-create-task-history.yaml
+      relativeToChangelogFile: false
+
+  - include:
+      file: database/migrations/005-create-task-indexes.yaml
+      relativeToChangelogFile: false

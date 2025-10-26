@@ -1,0 +1,123 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-task-indexes
+      author: GerardFevill
+      comment: Create performance indexes for new task columns and common query patterns
+      changes:
+        # Index for status and priority combination (common filter)
+        - createIndex:
+            indexName: idx_tasks_status_priority
+            tableName: tasks
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: priority
+
+        # Index for recurrence queries
+        - createIndex:
+            indexName: idx_tasks_recurrence
+            tableName: tasks
+            columns:
+              - column:
+                  name: recurrence
+
+        # Index for next occurrence (for upcoming recurrences query)
+        - createIndex:
+            indexName: idx_tasks_nextOccurrence
+            tableName: tasks
+            columns:
+              - column:
+                  name: nextOccurrence
+            where: nextOccurrence IS NOT NULL
+
+        # Index for progress range queries
+        - createIndex:
+            indexName: idx_tasks_progress
+            tableName: tasks
+            columns:
+              - column:
+                  name: progress
+
+        # Index for soft delete queries (exclude deleted)
+        - createIndex:
+            indexName: idx_tasks_deletedAt
+            tableName: tasks
+            columns:
+              - column:
+                  name: deletedAt
+
+        # GIN index for tags array searches
+        - sql:
+            sql: >
+              CREATE INDEX idx_tasks_tags_gin ON tasks
+              USING gin (string_to_array(tags, ','));
+            rollback: DROP INDEX idx_tasks_tags_gin;
+
+        # GIN index for metadata JSONB searches
+        - sql:
+            sql: >
+              CREATE INDEX idx_tasks_metadata_gin ON tasks
+              USING gin (metadata);
+            rollback: DROP INDEX idx_tasks_metadata_gin;
+
+        # Composite index for status + dueDate (common dashboard query)
+        - createIndex:
+            indexName: idx_tasks_status_dueDate
+            tableName: tasks
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: dueDate
+
+        # Composite index for parent + status (children queries)
+        - createIndex:
+            indexName: idx_tasks_parentId_status
+            tableName: tasks
+            columns:
+              - column:
+                  name: parentId
+              - column:
+                  name: status
+
+        # Index for overdue tasks query (status active + dueDate < now)
+        - createIndex:
+            indexName: idx_tasks_active_dueDate
+            tableName: tasks
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: dueDate
+            where: status IN ('active', 'blocked') AND dueDate IS NOT NULL
+
+      rollback:
+        - dropIndex:
+            indexName: idx_tasks_status_priority
+            tableName: tasks
+        - dropIndex:
+            indexName: idx_tasks_recurrence
+            tableName: tasks
+        - dropIndex:
+            indexName: idx_tasks_nextOccurrence
+            tableName: tasks
+        - dropIndex:
+            indexName: idx_tasks_progress
+            tableName: tasks
+        - dropIndex:
+            indexName: idx_tasks_deletedAt
+            tableName: tasks
+        - dropIndex:
+            indexName: idx_tasks_status_dueDate
+            tableName: tasks
+        - dropIndex:
+            indexName: idx_tasks_parentId_status
+            tableName: tasks
+        - dropIndex:
+            indexName: idx_tasks_active_dueDate
+            tableName: tasks
+        - sql:
+            sql: DROP INDEX idx_tasks_tags_gin;
+        - sql:
+            sql: DROP INDEX idx_tasks_metadata_gin;
