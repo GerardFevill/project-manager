@@ -55,141 +55,126 @@ src/tasks/dto/task-action.dto.ts
 
 ## 🟡 EN COURS
 
-### 3. Service Backend (0% - Prochaine étape)
+### 3. Service Backend (100% - ✅ TERMINÉ)
 
-**À implémenter dans `tasks.service.ts`:**
+**Fichier créé:** `src/tasks/tasks-enhanced.service.ts` (600+ lignes)
 
-#### CRUD Amélioré
-```typescript
-- create() avec gestion récurrence automatique
-- findAll() avec filtres avancés (15+ critères)
-- findOne() avec relations complètes
-- update() avec recalcul de progression
-- remove() avec historique avant suppression
+#### CRUD Amélioré ✅
+- ✅ create() avec gestion récurrence automatique
+- ✅ findAll() avec filtres avancés (15+ critères)
+- ✅ findOne() avec relations complètes
+- ✅ update() avec recalcul de progression
+- ✅ remove() avec historique avant suppression
+
+#### Fonctionnalités Avancées ✅
+- ✅ toggleCompletion() avec mise à jour auto
+- ✅ blockTask(id, reason) avec traçabilité
+- ✅ unblockTask(id)
+- ✅ archiveTask(id) soft delete
+- ✅ unarchiveTask(id)
+- ✅ moveToNextOccurrence(id) pour récurrentes
+- ✅ calculateProgressFromChildren(id) récursif
+- ✅ findTree(id) arbre complet
+- ✅ findAncestors(id) remontée jusqu'à racine
+- ✅ getUpcomingRecurrences() tâches à venir
+
+#### Analytics & Stats ✅
+- ✅ getStatistics() métriques globales
+- ✅ getTaskProgress(id) progression détaillée
+- ✅ getTaskHistory(id) audit complet
+
+**Commits:**
+```
+b85ab10 - feat(backend): complete enhanced task system implementation
 ```
 
-#### Fonctionnalités Avancées
-```typescript
-- toggleCompletion() avec mise à jour auto
-- blockTask(id, reason) avec traçabilité
-- unblockTask(id)
-- archiveTask(id) soft delete
-- unarchiveTask(id)
-- moveToNextOccurrence(id) pour récurrentes
-- calculateHierarchicalProgress(id) récursif
-- getTaskTree(id) arbre complet
-- getTaskAncestors(id) remontée jusqu'à racine
-- getUpcomingRecurrences() tâches à venir
-```
+### 4. Controller Backend (100% - ✅ TERMINÉ)
 
-#### Analytics & Stats
-```typescript
-- getStatistics() métriques globales
-- getTaskProgress(id) progression détaillée
-- getTaskHistory(id) audit complet
-```
+**Fichier créé:** `src/tasks/tasks-enhanced.controller.ts` (300+ lignes)
 
-**Fichiers à modifier:**
+#### Endpoints de base ✅
+- ✅ POST   /tasks                    # Créer
+- ✅ GET    /tasks                    # Liste avec filtres
+- ✅ GET    /tasks/:id                # Détails
+- ✅ PATCH  /tasks/:id                # Mettre à jour
+- ✅ DELETE /tasks/:id                # Supprimer
+
+#### Endpoints hiérarchiques ✅
+- ✅ GET    /tasks/:id/children       # Enfants directs
+- ✅ GET    /tasks/:id/tree           # Arbre complet
+- ✅ GET    /tasks/:id/ancestors      # Parents jusqu'à racine
+
+#### Endpoints actions ✅
+- ✅ PATCH  /tasks/:id/toggle         # Toggle ACTIVE ↔ COMPLETED
+- ✅ POST   /tasks/:id/block          # Bloquer avec raison
+- ✅ POST   /tasks/:id/unblock        # Débloquer
+- ✅ POST   /tasks/:id/archive        # Archiver
+- ✅ POST   /tasks/:id/unarchive      # Restaurer
+- ✅ POST   /tasks/:id/next-occurrence # Calculer prochaine occurrence
+
+#### Endpoints analytics ✅
+- ✅ GET    /tasks/stats              # Statistiques globales
+- ✅ GET    /tasks/:id/progress       # Progression détaillée
+- ✅ GET    /tasks/:id/history        # Historique complet
+- ✅ GET    /tasks/recurring/upcoming # Prochaines occurrences
+
+**Documentation:** Swagger/OpenAPI complète pour tous les endpoints
+
+**Commits:**
 ```
-src/tasks/tasks.service.ts                     (À améliorer)
+b85ab10 - feat(backend): complete enhanced task system implementation
 ```
 
 ---
 
-## ⏳ À FAIRE
+## ✅ TERMINÉ (Suite)
 
-### 4. Controller Backend (0%)
+### 5. Migrations Base de Données (100%)
 
-**À implémenter dans `tasks.controller.ts`:**
+**Fichiers créés:**
+- ✅ `database/migrations/003-enhance-tasks-table.yaml` (160+ lignes)
+- ✅ `database/migrations/004-create-task-history.yaml` (95+ lignes)
+- ✅ `database/migrations/005-create-task-indexes.yaml` (95+ lignes)
+- ✅ `database/changelog/db.changelog-master.yaml` (mise à jour)
 
-#### Endpoints de base
-```http
-POST   /tasks                    # Créer
-GET    /tasks                    # Liste avec filtres
-GET    /tasks/:id                # Détails
-PATCH  /tasks/:id                # Mettre à jour
-DELETE /tasks/:id                # Supprimer
+#### Migration 1: Alter table `tasks` ✅
+- ✅ Ajout colonne status (enum avec 6 valeurs)
+- ✅ Ajout colonne progress (int 0-100 avec constraint)
+- ✅ Ajout colonne recurrence (enum avec 5 valeurs)
+- ✅ Ajout colonnes nextOccurrence, lastOccurrence (timestamp)
+- ✅ Ajout colonne startDate (timestamp)
+- ✅ Ajout colonne tags (text simple-array)
+- ✅ Ajout colonne metadata (jsonb)
+- ✅ Ajout colonnes estimatedHours, actualHours (numeric)
+- ✅ Ajout colonne deletedAt (timestamp pour soft delete)
+- ✅ Migration des données completed → status
+- ✅ Suppression ancienne colonne completed
+
+#### Migration 2: Create table `task_history` ✅
+- ✅ Création table task_history (8 colonnes)
+- ✅ Index sur taskId
+- ✅ Index sur executedAt (DESC)
+- ✅ Index sur action
+- ✅ Index composite (taskId + executedAt)
+- ✅ Foreign key avec cascade delete
+
+#### Migration 3: Create indexes ✅
+- ✅ Index composite (status + priority)
+- ✅ Index sur recurrence
+- ✅ Index sur nextOccurrence (partial)
+- ✅ Index sur progress
+- ✅ Index sur deletedAt
+- ✅ GIN index sur tags (array)
+- ✅ GIN index sur metadata (jsonb)
+- ✅ Index composite (status + dueDate)
+- ✅ Index composite (parentId + status)
+- ✅ Index partial pour overdue tasks
+
+**Rollback:** Tous les changesets incluent des instructions de rollback
+
+**Commits:**
 ```
-
-#### Endpoints hiérarchiques
-```http
-GET    /tasks/:id/children       # Enfants directs
-GET    /tasks/:id/tree           # Arbre complet
-GET    /tasks/:id/ancestors      # Parents jusqu'à racine
-```
-
-#### Endpoints actions
-```http
-PATCH  /tasks/:id/toggle         # Toggle ACTIVE ↔ COMPLETED
-POST   /tasks/:id/block          # Bloquer avec raison
-POST   /tasks/:id/unblock        # Débloquer
-POST   /tasks/:id/archive        # Archiver
-POST   /tasks/:id/unarchive      # Restaurer
-POST   /tasks/:id/next-occurrence # Calculer prochaine occurrence
-```
-
-#### Endpoints analytics
-```http
-GET    /tasks/stats              # Statistiques globales
-GET    /tasks/:id/progress       # Progression détaillée
-GET    /tasks/:id/history        # Historique complet
-GET    /tasks/recurring/upcoming # Prochaines occurrences
-```
-
-**Fichiers à modifier:**
-```
-src/tasks/tasks.controller.ts                  (À améliorer)
-```
-
-### 5. Migrations Base de Données (0%)
-
-**À créer avec Liquibase:**
-
-#### Migration 1: Alter table `tasks`
-```yaml
-# database/migrations/003-enhance-tasks-table.yaml
-changeSets:
-  - addColumn:
-      columns:
-        - status (enum)
-        - progress (int 0-100)
-        - recurrence (enum)
-        - nextOccurrence (timestamp)
-        - lastOccurrence (timestamp)
-        - startDate (timestamp)
-        - tags (text[])
-        - metadata (jsonb)
-        - estimatedHours (numeric)
-        - actualHours (numeric)
-        - deletedAt (timestamp)
-```
-
-#### Migration 2: Create table `task_history`
-```yaml
-# database/migrations/004-create-task-history.yaml
-changeSets:
-  - createTable: task_history
-  - createIndex: task_history(taskId)
-  - createIndex: task_history(executedAt)
-  - addForeignKey: task_history.taskId → tasks.id
-```
-
-#### Migration 3: Create indexes
-```yaml
-# database/migrations/005-create-task-indexes.yaml
-changeSets:
-  - createIndex: tasks(status, priority)
-  - createIndex: tasks(nextOccurrence)
-  - createIndex: tasks(tags) using GIN
-  - createIndex: tasks(metadata) using GIN
-```
-
-**Fichiers à créer:**
-```
-database/migrations/003-enhance-tasks-table.yaml
-database/migrations/004-create-task-history.yaml
-database/migrations/005-create-task-indexes.yaml
-database/changelog/db.changelog-master.yaml    (À mettre à jour)
+b85ab10 - feat(backend): complete enhanced task system implementation
 ```
 
 ### 6. Frontend Angular - Models (0%)
@@ -314,53 +299,62 @@ portal/project-manager/src/app/shared/components/create-task-dialog/
   create-task-dialog.ts     # Formulaire avec nouveaux champs
 ```
 
-### 9. Tests Backend (0%)
+### 9. Tests Backend (100% - ✅ TERMINÉ)
 
-**Tests unitaires à créer:**
+**Fichiers créés:**
+- ✅ `src/tasks/tasks-enhanced.service.spec.ts` (550+ lignes)
+- ✅ `src/tasks/tasks-enhanced.controller.spec.ts` (350+ lignes)
+- ✅ `test/tasks.e2e-spec.ts` (775 lignes, mis à jour)
 
-```typescript
-// src/tasks/tasks.service.spec.ts
-describe('TasksService', () => {
-  // CRUD
-  it('should create task with recurrence')
-  it('should calculate level from parent')
-  it('should filter by multiple criteria')
+**Tests unitaires Service ✅**
+- ✅ create() - root task, child task, recurrence, error cases (4 tests)
+- ✅ findOne() - by id, not found, with relations (3 tests)
+- ✅ findAll() - filters (status, priority, root, overdue, pagination) (6 tests)
+- ✅ update() - basic, not found, parent change (3 tests)
+- ✅ toggleCompletion() - ACTIVE→COMPLETED, COMPLETED→ACTIVE (2 tests)
+- ✅ blockTask() - with reason (1 test)
+- ✅ archiveTask() - soft delete (1 test)
+- ✅ moveToNextOccurrence() - daily, error for non-recurring (2 tests)
+- ✅ getStatistics() - complete metrics (1 test)
+- ✅ findChildren() - direct children (1 test)
+- ✅ remove() - delete with history, not found (2 tests)
 
-  // Actions
-  it('should toggle completion')
-  it('should block task with reason')
-  it('should calculate next occurrence')
-  it('should archive and unarchive')
+**Tests unitaires Controller ✅**
+- ✅ Tous les endpoints (create, findAll, findOne, update, remove)
+- ✅ Actions spécialisées (toggle, block, unblock, archive, unarchive)
+- ✅ Hiérarchie (children, tree, ancestors)
+- ✅ Analytics (stats, progress, history, upcoming)
+- ✅ Validation des paramètres et erreurs (20+ tests)
 
-  // Hierarchie
-  it('should get full task tree')
-  it('should calculate hierarchical progress')
+**Tests E2E ✅**
+- ✅ POST /tasks (création root, child, validation, erreurs) (5 tests)
+- ✅ GET /tasks (liste, filtres: status, priority, root, parent) (5 tests)
+- ✅ GET /tasks/stats (statistiques complètes) (1 test)
+- ✅ GET /tasks/recurring/upcoming (tâches récurrentes à venir) (1 test)
+- ✅ GET /tasks/:id (détails, relations, erreurs) (4 tests)
+- ✅ GET /tasks/:id/children (enfants directs) (2 tests)
+- ✅ GET /tasks/:id/tree (arbre complet) (1 test)
+- ✅ PATCH /tasks/:id (mise à jour, complétion, validation) (4 tests)
+- ✅ PATCH /tasks/:id/toggle (toggle statut) (2 tests)
+- ✅ DELETE /tasks/:id (suppression, cascade) (3 tests)
+- ✅ POST /tasks/:id/block (bloquer avec/sans raison) (2 tests)
+- ✅ POST /tasks/:id/unblock (débloquer) (1 test)
+- ✅ POST /tasks/:id/archive (archiver) (1 test)
+- ✅ POST /tasks/:id/unarchive (restaurer) (1 test)
+- ✅ Recurrence (création, upcoming, next occurrence, erreur) (4 tests)
+- ✅ GET /tasks/:id/history (historique complet) (1 test)
+- ✅ GET /tasks/:id/progress (progression détaillée) (1 test)
+- ✅ POST /tasks/:id/calculate-progress (recalcul depuis enfants) (1 test)
+- ✅ GET /tasks/:id/ancestors (tous les ancêtres) (1 test)
+- ✅ Tags and Metadata (création, filtres, JSONB) (3 tests)
+- ✅ Progress tracking (validation range 0-100) (3 tests)
+- ✅ Fractal hierarchy (3 niveaux, navigation) (1 test)
 
-  // Validation
-  it('should throw error for invalid recurrence')
-  it('should prevent cyclic references')
-})
+**Coverage:** 40+ test suites, 90+ tests individuels
+
+**Commits:**
 ```
-
-**Tests E2E à créer:**
-
-```typescript
-// test/tasks.e2e-spec.ts
-describe('Tasks API (e2e)', () => {
-  it('POST /tasks with recurrence')
-  it('GET /tasks with filters')
-  it('PATCH /tasks/:id/toggle')
-  it('POST /tasks/:id/block')
-  it('GET /tasks/:id/tree')
-  it('GET /tasks/stats')
-})
-```
-
-**Fichiers à créer:**
-```
-src/tasks/tasks.service.spec.ts
-src/tasks/tasks.controller.spec.ts
-test/tasks.e2e-spec.ts
+b85ab10 - feat(backend): complete enhanced task system implementation
 ```
 
 ### 10. Tests Frontend (0%)
@@ -402,12 +396,12 @@ portal/project-manager/src/app/core/services/
 - [x] Architecture & Entités (100%)
 - [x] Enums (100%)
 - [x] DTOs & Validation (100%)
-- [ ] Service (0%)
-- [ ] Controller (0%)
-- [ ] Migrations (0%)
-- [ ] Tests (0%)
+- [x] Service (100%)
+- [x] Controller (100%)
+- [x] Migrations (100%)
+- [x] Tests (100%)
 
-**Progression Backend:** 🟡 42% (3/7)
+**Progression Backend:** 🟢 100% (7/7)
 
 ### Frontend
 - [ ] Models (0%)
@@ -418,19 +412,20 @@ portal/project-manager/src/app/core/services/
 **Progression Frontend:** 🔴 0% (0/4)
 
 ### Global
-**Progression Totale:** 🟡 27% (3/11)
+**Progression Totale:** 🟢 64% (7/11)
 
 ---
 
 ## 🚀 PROCHAINES ÉTAPES RECOMMANDÉES
 
-### Phase 1: Terminer le Backend (Priorité HAUTE)
+### Phase 1: Terminer le Backend ✅ TERMINÉ
 1. ✅ Améliorer `tasks.service.ts` avec toutes les méthodes
 2. ✅ Améliorer `tasks.controller.ts` avec tous les endpoints
 3. ✅ Créer les migrations Liquibase
 4. ✅ Tester le backend (unit + e2e)
 
-**Temps estimé:** 4-6 heures
+**Temps réel:** ~6 heures
+**Statut:** PHASE 1 COMPLÉTÉE LE 2025-10-26
 
 ### Phase 2: Frontend (Priorité MOYENNE)
 1. ✅ Mettre à jour les models TypeScript
