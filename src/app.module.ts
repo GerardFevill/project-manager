@@ -18,7 +18,7 @@ import { TasksModule } from './tasks/tasks.module';
     ThrottlerModule.forRoot([
       {
         ttl: 60000, // Time to live: 60 seconds
-        limit: 10, // Max 10 requests per ttl
+        limit: 30, // Max 30 requests per ttl (ajusté pour usage interactif)
       },
     ]),
     TypeOrmModule.forRoot({
