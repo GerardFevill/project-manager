@@ -51,3 +51,8 @@ lerna-debug.log*
 *.swp
 *.swo
 *~
+
+# Database seed files with personal data
+database/seed-personal-tasks.sql
+**/seed-*.sql
+database/migrations/006-insert-personal-tasks.yaml
