@@ -12,6 +12,7 @@ import { TaskRecurrence } from './enums/task-recurrence.enum';
 import { CreateTaskDto } from './dto/create-task-enhanced.dto';
 import { UpdateTaskDto } from './dto/update-task-enhanced.dto';
 import { TaskFilterDto } from './dto/task-filter-enhanced.dto';
+import { PaginatedResponse } from './dto/paginated-response.dto';
 
 /**
  * 🌀 TASKS SERVICE ENHANCED - GESTION FRACTALE AVANCÉE
@@ -93,7 +94,7 @@ export class TasksService {
    * Récupérer toutes les tâches avec filtres avancés
    * Supporte 15+ critères de filtrage, pagination et tri
    */
-  async findAll(filters?: TaskFilterDto): Promise<Task[]> {
+  async findAll(filters?: TaskFilterDto): Promise<PaginatedResponse<Task>> {
     const query = this.tasksRepository.createQueryBuilder('task');
 
     // Filtre par statut
@@ -186,12 +187,33 @@ export class TasksService {
     query.orderBy(`task.${sortBy}`, sortOrder);
 
     // Pagination
-    if (filters?.page && filters?.limit) {
-      const skip = (filters.page - 1) * filters.limit;
-      query.skip(skip).take(filters.limit);
-    }
+    const page = filters?.page || 1;
+    const limit = filters?.limit || 20;
+    const skip = (page - 1) * limit;
 
-    return query.getMany();
+    // Compter le total
+    const total = await query.getCount();
+
+    // Appliquer skip et take
+    query.skip(skip).take(limit);
+
+    // Récupérer les données
+    const data = await query.getMany();
+
+    // Calculer les métadonnées
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrevious: page > 1,
+      },
+    };
   }
 
   /**
