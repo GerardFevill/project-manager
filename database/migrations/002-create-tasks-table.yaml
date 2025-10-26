@@ -1,0 +1,140 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-tasks-table
+      author: GerardFevill
+      comment: Create tasks table with fractal/hierarchical structure
+      changes:
+        - createTable:
+            tableName: tasks
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: completed
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: dueDate
+                  type: date
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: priority
+                  type: varchar(20)
+                  defaultValue: medium
+                  constraints:
+                    nullable: false
+
+              # Fractal structure fields
+              - column:
+                  name: level
+                  type: integer
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: parentId
+                  type: uuid
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_tasks_parent
+                    references: tasks(id)
+                    deleteCascade: true
+
+              # Timestamps
+              - column:
+                  name: createdAt
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updatedAt
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: completedAt
+                  type: timestamp
+                  constraints:
+                    nullable: true
+
+        # Indexes for performance
+        - createIndex:
+            indexName: idx_tasks_completed
+            tableName: tasks
+            columns:
+              - column:
+                  name: completed
+
+        - createIndex:
+            indexName: idx_tasks_dueDate
+            tableName: tasks
+            columns:
+              - column:
+                  name: dueDate
+
+        - createIndex:
+            indexName: idx_tasks_priority
+            tableName: tasks
+            columns:
+              - column:
+                  name: priority
+
+        - createIndex:
+            indexName: idx_tasks_parentId
+            tableName: tasks
+            columns:
+              - column:
+                  name: parentId
+
+        - createIndex:
+            indexName: idx_tasks_level
+            tableName: tasks
+            columns:
+              - column:
+                  name: level
+
+        - createIndex:
+            indexName: idx_tasks_createdAt
+            tableName: tasks
+            columns:
+              - column:
+                  name: createdAt
+
+        # Check constraint for priority values
+        - sql:
+            sql: >
+              ALTER TABLE tasks
+              ADD CONSTRAINT chk_tasks_priority
+              CHECK (priority IN ('low', 'medium', 'high', 'urgent'));
+
+      rollback:
+        - dropTable:
+            tableName: tasks

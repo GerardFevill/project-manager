@@ -2,3 +2,7 @@ databaseChangeLog:
   - include:
       file: database/migrations/001-create-users-table.yaml
       relativeToChangelogFile: false
+
+  - include:
+      file: database/migrations/002-create-tasks-table.yaml
+      relativeToChangelogFile: false

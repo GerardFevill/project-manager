@@ -6,6 +6,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { UsersModule } from './users/users.module';
       logging: process.env.NODE_ENV === 'development',
     }),
     UsersModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [

@@ -4,7 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a NestJS application for project management. The application runs on port 3000 by default.
+This is a NestJS application for project management with a **fractal/hierarchical task system**. The application runs on port 3000 by default.
+
+### Features
+- **User Management**: CRUD operations for users
+- **Fractal Task System**: Hierarchical to-do list with unlimited nesting
+  - Tasks can have sub-tasks (parent-child relationships)
+  - Each task can become a project with its own sub-tasks
+  - Self-referencing structure for infinite hierarchy
+- **Security**: Helmet, CORS, rate limiting, input validation
+- **Database**: PostgreSQL with TypeORM and Liquibase migrations
 
 ## Development Commands
 
@@ -150,3 +159,155 @@ wget https://jdbc.postgresql.org/download/postgresql-42.7.1.jar -O postgresql.ja
 - Use Liquibase for all schema changes
 - Never modify applied migrations
 - Always test rollback before deploying
+
+## API Endpoints
+
+### Tasks (Fractal To-Do System)
+
+**Base URL:** `/tasks`
+
+#### Create a task
+```http
+POST /tasks
+Content-Type: application/json
+
+{
+  "title": "My task",
+  "description": "Optional description",
+  "dueDate": "2025-12-31",
+  "priority": "medium",
+  "parentId": "uuid-of-parent-task" // Optional, for sub-tasks
+}
+```
+
+#### Get all tasks with filters
+```http
+GET /tasks?status=active&onlyRoot=true&priority=high
+```
+
+Query parameters:
+- `status`: `all` | `active` | `completed` (default: `all`)
+- `priority`: `low` | `medium` | `high` | `urgent`
+- `onlyOverdue`: `true` | `false`
+- `onlyRoot`: `true` | `false` (only root tasks, no sub-tasks)
+- `parentId`: UUID (filter by specific parent)
+
+#### Get task by ID
+```http
+GET /tasks/:id?includeRelations=true
+```
+
+#### Get sub-tasks (children)
+```http
+GET /tasks/:id/children
+```
+
+#### Get full task tree (recursive)
+```http
+GET /tasks/:id/tree
+```
+
+#### Get statistics
+```http
+GET /tasks/stats
+```
+
+Returns:
+```json
+{
+  "total": 42,
+  "active": 30,
+  "completed": 12,
+  "overdue": 5,
+  "completionRate": 28
+}
+```
+
+#### Update a task
+```http
+PATCH /tasks/:id
+Content-Type: application/json
+
+{
+  "title": "Updated title",
+  "completed": true,
+  "parentId": "new-parent-uuid" // Move to different parent
+}
+```
+
+#### Toggle task completion
+```http
+PATCH /tasks/:id/toggle
+```
+
+#### Delete a task (cascade delete children)
+```http
+DELETE /tasks/:id
+```
+
+### Users
+
+**Base URL:** `/users`
+
+```http
+GET    /users           # List all users
+GET    /users/:id       # Get user by ID
+POST   /users           # Create user
+PATCH  /users/:id       # Update user
+DELETE /users/:id       # Delete user
+```
+
+## Fractal Task System Architecture
+
+### Hierarchy Levels
+- **Level 0**: Root tasks (projects)
+- **Level 1**: Sub-tasks of projects
+- **Level 2**: Sub-tasks of sub-tasks
+- **Level N**: Infinite nesting
+
+### Key Concepts
+
+1. **Self-Referencing Entity**
+   - Each task can be a parent to other tasks
+   - Each task (except roots) has exactly one parent
+   - Cascade delete: deleting a parent deletes all children
+
+2. **Automatic Level Calculation**
+   - Level is calculated based on parent's level + 1
+   - Root tasks (no parent) are level 0
+   - Moving a task recalculates all descendant levels
+
+3. **Cyclic Reference Prevention**
+   - Service validates that a task cannot be its own ancestor
+   - Prevents infinite loops in the hierarchy
+
+4. **Tree Navigation**
+   - `GET /tasks/:id/children`: Direct children only
+   - `GET /tasks/:id/tree`: Full recursive tree
+   - Bi-directional: child->parent and parent->children
+
+### Example Use Cases
+
+**Simple To-Do:**
+```
+Task (level 0) ← No parent
+```
+
+**Project with Sub-tasks:**
+```
+Project (level 0)
+├── Task 1 (level 1)
+├── Task 2 (level 1)
+└── Task 3 (level 1)
+```
+
+**Complex Nested Structure:**
+```
+Project A (level 0)
+├── Phase 1 (level 1)
+│   ├── Design (level 2)
+│   │   ├── Wireframes (level 3)
+│   │   └── Mockups (level 3)
+│   └── Development (level 2)
+└── Phase 2 (level 1)
+```
