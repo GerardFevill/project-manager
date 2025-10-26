@@ -97,13 +97,25 @@ export class TasksService {
   async findAll(filters?: TaskFilterDto): Promise<PaginatedResponse<Task>> {
     const query = this.tasksRepository.createQueryBuilder('task');
 
-    // Filtre par statut
-    if (filters?.status && filters.status !== 'all') {
+    // Filtre par statut (simple ou multiple)
+    if (filters?.statuses && filters.statuses.length > 0) {
+      // Filtrage par plusieurs statuts (prioritaire)
+      query.andWhere('task.status IN (:...statuses)', {
+        statuses: filters.statuses,
+      });
+    } else if (filters?.status && filters.status !== 'all') {
+      // Filtre par statut unique (rétrocompatibilité)
       query.andWhere('task.status = :status', { status: filters.status });
     }
 
-    // Filtre par priorité
-    if (filters?.priority) {
+    // Filtre par priorité (simple ou multiple)
+    if (filters?.priorities && filters.priorities.length > 0) {
+      // Filtrage par plusieurs priorités (prioritaire)
+      query.andWhere('task.priority IN (:...priorities)', {
+        priorities: filters.priorities,
+      });
+    } else if (filters?.priority) {
+      // Filtre par priorité unique (rétrocompatibilité)
       query.andWhere('task.priority = :priority', {
         priority: filters.priority,
       });

@@ -30,12 +30,34 @@ export class TaskFilterDto {
   status?: TaskStatus | 'all';
 
   @ApiPropertyOptional({
+    description: 'Filtrer par plusieurs statuts',
+    type: [String],
+    enum: Object.values(TaskStatus),
+    example: ['active', 'blocked'],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  statuses?: TaskStatus[];
+
+  @ApiPropertyOptional({
     description: 'Filtrer par priorité',
     enum: ['low', 'medium', 'high', 'urgent'],
   })
   @IsOptional()
   @IsEnum(['low', 'medium', 'high', 'urgent'])
   priority?: 'low' | 'medium' | 'high' | 'urgent';
+
+  @ApiPropertyOptional({
+    description: 'Filtrer par plusieurs priorités',
+    type: [String],
+    enum: ['low', 'medium', 'high', 'urgent'],
+    example: ['high', 'urgent'],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  priorities?: ('low' | 'medium' | 'high' | 'urgent')[];
 
   @ApiPropertyOptional({
     description: 'Filtrer par type de récurrence',
