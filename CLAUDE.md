@@ -37,6 +37,12 @@ npm run test:watch         # Run tests in watch mode
 npm run test:cov           # Run tests with coverage
 npm run test:debug         # Run tests with debugger
 npm run test:e2e           # Run end-to-end tests
+
+# Database Migrations (Liquibase)
+npm run migration:update   # Apply pending migrations
+npm run migration:rollback # Rollback last migration
+npm run migration:status   # View migration status
+npm run migration:validate # Validate changelog files
 ```
 
 ## Architecture
@@ -115,3 +121,32 @@ DB_DATABASE=project_manager
 - TypeORM `synchronize` is enabled in development but should be disabled in production
 - Use migrations for production database schema changes
 - The `.env` file is gitignored for security
+
+### Liquibase Migrations
+
+This project uses Liquibase for database schema version control and migrations.
+
+**Migration Files Location:**
+- Master changelog: `database/changelog/db.changelog-master.yaml`
+- Individual migrations: `database/migrations/XXX-description.yaml` (YAML format)
+- Documentation: `database/README.md`
+
+**Setup Required:**
+Before running migrations, download the PostgreSQL JDBC driver:
+```bash
+mkdir -p database/drivers
+cd database/drivers
+wget https://jdbc.postgresql.org/download/postgresql-42.7.1.jar -O postgresql.jar
+```
+
+**Migration Workflow:**
+1. Create migration file in `database/migrations/` (YAML format)
+2. Add reference in `db.changelog-master.yaml`
+3. Run `npm run migration:update` to apply
+4. Always include rollback instructions in changesets
+
+**Production Usage:**
+- Set TypeORM `synchronize: false` in production
+- Use Liquibase for all schema changes
+- Never modify applied migrations
+- Always test rollback before deploying
