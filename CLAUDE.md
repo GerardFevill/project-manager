@@ -12,6 +12,11 @@ This is a NestJS application for project management. The application runs on por
 # Install dependencies
 npm install
 
+# Database
+docker-compose up -d       # Start PostgreSQL database
+docker-compose down        # Stop PostgreSQL database
+docker-compose logs -f     # View database logs
+
 # Development
 npm run start:dev          # Start with hot-reload
 npm run start:debug        # Start with debugging enabled
@@ -71,3 +76,42 @@ nest generate resource <name>     # Generate full CRUD resource
 - Output: `dist/` directory
 - Decorators and metadata reflection are enabled for NestJS functionality
 - Source maps enabled for debugging
+
+## Database
+
+### PostgreSQL with TypeORM
+
+This project uses TypeORM with PostgreSQL for data persistence.
+
+**Database Configuration:**
+- Connection settings are in `.env` file (use `.env.example` as template)
+- PostgreSQL runs via Docker Compose on port 5432
+- TypeORM auto-sync is enabled in development mode (creates/updates tables automatically)
+
+**Entity Pattern:**
+- Entities are defined with TypeORM decorators (e.g., `@Entity()`, `@Column()`)
+- Entity files use `.entity.ts` suffix
+- Entities are auto-discovered via pattern: `src/**/*.entity{.ts,.js}`
+
+**Example Module Structure:**
+```
+src/users/
+  ├── user.entity.ts       # TypeORM entity definition
+  ├── users.module.ts      # NestJS module
+  ├── users.service.ts     # Business logic (uses Repository)
+  └── users.controller.ts  # HTTP endpoints
+```
+
+**Environment Variables:**
+```bash
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_DATABASE=project_manager
+```
+
+**Important Notes:**
+- TypeORM `synchronize` is enabled in development but should be disabled in production
+- Use migrations for production database schema changes
+- The `.env` file is gitignored for security
