@@ -36,6 +36,10 @@ export class TaskFilterDto {
     example: ['active', 'blocked'],
   })
   @IsOptional()
+  @Transform(({ value }) => {
+    if (!value) return undefined;
+    return Array.isArray(value) ? value : [value];
+  })
   @IsArray()
   @IsString({ each: true })
   statuses?: TaskStatus[];
@@ -55,6 +59,10 @@ export class TaskFilterDto {
     example: ['high', 'urgent'],
   })
   @IsOptional()
+  @Transform(({ value }) => {
+    if (!value) return undefined;
+    return Array.isArray(value) ? value : [value];
+  })
   @IsArray()
   @IsString({ each: true })
   priorities?: ('low' | 'medium' | 'high' | 'urgent')[];
