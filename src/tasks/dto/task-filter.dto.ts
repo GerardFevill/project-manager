@@ -1,5 +1,5 @@
-import { IsOptional, IsEnum, IsBoolean, IsUUID } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { IsOptional, IsEnum, IsBoolean, IsUUID, IsInt, Min, Max } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 
 export class TaskFilterDto {
   @IsOptional()
@@ -27,4 +27,18 @@ export class TaskFilterDto {
   @IsOptional()
   @IsUUID('4', { message: 'Parent ID must be a valid UUID' })
   parentId?: string;
+
+  // Pagination
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt({ message: 'Page must be an integer' })
+  @Min(1, { message: 'Page must be at least 1' })
+  page?: number = 1;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt({ message: 'Limit must be an integer' })
+  @Min(1, { message: 'Limit must be at least 1' })
+  @Max(100, { message: 'Limit cannot exceed 100' })
+  limit?: number = 20;
 }

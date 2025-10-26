@@ -5,6 +5,7 @@ import { Task } from './task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskFilterDto } from './dto/task-filter.dto';
+import { PaginatedResponse } from './dto/paginated-response.dto';
 
 /**
  * 🌀 TASKS SERVICE - GESTION FRACTALE DES TÂCHES
@@ -45,9 +46,9 @@ export class TasksService {
   // === READ ===
 
   /**
-   * Récupérer toutes les tâches avec filtres
+   * Récupérer toutes les tâches avec filtres et pagination
    */
-  async findAll(filters?: TaskFilterDto): Promise<Task[]> {
+  async findAll(filters?: TaskFilterDto): Promise<PaginatedResponse<Task>> {
     const query = this.tasksRepository.createQueryBuilder('task');
 
     // Filtre par statut
@@ -81,7 +82,34 @@ export class TasksService {
     // Tri par date de création (plus récent en premier)
     query.orderBy('task.createdAt', 'DESC');
 
-    return query.getMany();
+    // Pagination
+    const page = filters?.page || 1;
+    const limit = filters?.limit || 20;
+    const skip = (page - 1) * limit;
+
+    // Compter le total
+    const total = await query.getCount();
+
+    // Appliquer skip et take
+    query.skip(skip).take(limit);
+
+    // Récupérer les données
+    const data = await query.getMany();
+
+    // Calculer les métadonnées
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrevious: page > 1,
+      },
+    };
   }
 
   /**
