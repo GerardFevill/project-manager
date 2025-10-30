@@ -8,6 +8,7 @@ import {
   MinLength,
   MaxLength,
 } from 'class-validator';
+import { IssueType } from '../enums/issue-type.enum';
 
 export class UpdateTaskDto {
   @IsOptional()
@@ -34,6 +35,16 @@ export class UpdateTaskDto {
     message: 'Priority must be one of: low, medium, high, urgent',
   })
   priority?: 'low' | 'medium' | 'high' | 'urgent';
+
+  @IsOptional()
+  @IsEnum(IssueType, {
+    message: 'Issue type must be one of: epic, story, task, bug, subtask',
+  })
+  issueType?: IssueType;
+
+  @IsOptional()
+  @IsUUID('4', { message: 'Assignee ID must be a valid UUID' })
+  assigneeId?: string;
 
   @IsOptional()
   @IsUUID('4', { message: 'Parent ID must be a valid UUID' })

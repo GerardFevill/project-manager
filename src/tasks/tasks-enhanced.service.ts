@@ -231,6 +231,9 @@ export class TasksService {
     // Appliquer skip et take
     query.skip(skip).take(limit);
 
+    // Toujours inclure la relation assignee pour afficher qui est assigné
+    query.leftJoinAndSelect('task.assignee', 'assignee');
+
     // Récupérer les données
     const data = await query.getMany();
 
@@ -262,6 +265,7 @@ export class TasksService {
       query.leftJoinAndSelect('task.parent', 'parent');
       query.leftJoinAndSelect('task.children', 'children');
       query.leftJoinAndSelect('task.history', 'history');
+      query.leftJoinAndSelect('task.assignee', 'assignee');
     }
 
     const task = await query.getOne();

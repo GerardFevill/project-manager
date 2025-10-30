@@ -8,6 +8,7 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
+import { IssueType } from './enums/issue-type.enum';
 
 /**
  * 🌀 ENTITÉ TASK - STRUCTURE FRACTALE
@@ -41,6 +42,51 @@ export class Task {
     default: 'medium',
   })
   priority: 'low' | 'medium' | 'high' | 'urgent';
+
+  @Column({
+    type: 'enum',
+    enum: IssueType,
+    default: IssueType.TASK,
+  })
+  issueType: IssueType;
+
+  // === USER ASSIGNMENT ===
+
+  /**
+   * ID of the user assigned to this task (null if unassigned)
+   */
+  @Column({ type: 'uuid', nullable: true })
+  assigneeId: string;
+
+  /**
+   * Relation to the assigned user
+   * Many-to-one: multiple tasks can be assigned to one user
+   */
+  @ManyToOne('User', 'assignedTasks', {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
+  @JoinColumn({ name: 'assigneeId' })
+  assignee: any; // Type 'any' to avoid circular dependency
+
+  // === SPRINT RELATIONSHIP ===
+
+  /**
+   * ID du sprint auquel la tâche est assignée (null si pas de sprint)
+   */
+  @Column({ type: 'int', nullable: true })
+  sprintId: number;
+
+  /**
+   * Relation vers le sprint
+   * Many-to-one: plusieurs tâches peuvent être dans un sprint
+   */
+  @ManyToOne('Sprint', 'tasks', {
+    onDelete: 'SET NULL', // Si sprint supprimé, tâche reste mais sprintId = null
+    nullable: true,
+  })
+  @JoinColumn({ name: 'sprintId' })
+  sprint: any; // Type 'any' pour éviter la dépendance circulaire
 
   // === STRUCTURE FRACTALE ===
 

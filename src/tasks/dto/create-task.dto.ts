@@ -8,6 +8,7 @@ import {
   MinLength,
   MaxLength,
 } from 'class-validator';
+import { IssueType } from '../enums/issue-type.enum';
 
 export class CreateTaskDto {
   @IsString({ message: 'Title must be a string' })
@@ -30,6 +31,19 @@ export class CreateTaskDto {
     message: 'Priority must be one of: low, medium, high, urgent',
   })
   priority?: 'low' | 'medium' | 'high' | 'urgent';
+
+  @IsOptional()
+  @IsEnum(IssueType, {
+    message: 'Issue type must be one of: epic, story, task, bug, subtask',
+  })
+  issueType?: IssueType;
+
+  /**
+   * ID de l'utilisateur assigné à cette tâche
+   */
+  @IsOptional()
+  @IsUUID('4', { message: 'Assignee ID must be a valid UUID' })
+  assigneeId?: string;
 
   /**
    * ID de la tâche parente (pour structure fractale)
