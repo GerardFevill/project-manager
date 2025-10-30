@@ -125,6 +125,13 @@ export class Task {
   @OneToMany(() => Task, (task) => task.parent)
   children: Task[];
 
+  /**
+   * Relation to comments
+   * One-to-many: one task can have many comments
+   */
+  @OneToMany('Comment', 'task')
+  comments: any[];
+
   // === MÉTADONNÉES ===
 
   @CreateDateColumn()

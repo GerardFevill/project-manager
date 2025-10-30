@@ -47,6 +47,10 @@ export class User {
   @OneToMany('Task', 'assignee')
   assignedTasks: any[];
 
+  // Relation to comments
+  @OneToMany('Comment', 'author')
+  comments: any[];
+
   @CreateDateColumn()
   createdAt: Date;
 
