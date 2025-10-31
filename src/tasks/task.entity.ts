@@ -132,6 +132,13 @@ export class Task {
   @OneToMany('Comment', 'task')
   comments: any[];
 
+  /**
+   * Relation to work logs
+   * One-to-many: one task can have many work log entries
+   */
+  @OneToMany('WorkLog', 'task')
+  workLogs: any[];
+
   // === MÉTADONNÉES ===
 
   @CreateDateColumn()

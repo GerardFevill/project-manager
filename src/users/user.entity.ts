@@ -51,6 +51,10 @@ export class User {
   @OneToMany('Comment', 'author')
   comments: any[];
 
+  // Relation to work logs
+  @OneToMany('WorkLog', 'user')
+  workLogs: any[];
+
   @CreateDateColumn()
   createdAt: Date;
 
