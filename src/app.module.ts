@@ -10,6 +10,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { SprintsModule } from './sprints/sprints.module';
 import { CommentsModule } from './comments/comments.module';
 import { WorkLogsModule } from './work-logs/work-logs.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { WorkLogsModule } from './work-logs/work-logs.module';
     SprintsModule,
     CommentsModule,
     WorkLogsModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [
