@@ -72,9 +72,9 @@ export class SprintsController {
     return this.sprintsService.completeSprint(id);
   }
 
-  @Get(':id/tasks')
-  getSprintTasks(@Param('id', ParseIntPipe) id: number) {
-    return this.sprintsService.getSprintTasks(id);
+  @Get(':id/issues')
+  getSprintIssues(@Param('id', ParseIntPipe) id: number) {
+    return this.sprintsService.getSprintIssues(id);
   }
 
   @Get(':id/details')
@@ -82,21 +82,21 @@ export class SprintsController {
     return this.sprintsService.getSprintDetails(id);
   }
 
-  @Post(':id/tasks/:taskId')
+  @Post(':id/issues/:issueId')
   @HttpCode(HttpStatus.OK)
-  assignTaskToSprint(
+  assignIssueToSprint(
     @Param('id', ParseIntPipe) sprintId: number,
-    @Param('taskId') taskId: string,
+    @Param('issueId') issueId: string,
   ) {
-    return this.sprintsService.assignTaskToSprint(sprintId, taskId);
+    return this.sprintsService.assignIssueToSprint(sprintId, issueId);
   }
 
-  @Delete(':id/tasks/:taskId')
+  @Delete(':id/issues/:issueId')
   @HttpCode(HttpStatus.OK)
-  removeTaskFromSprint(
+  removeIssueFromSprint(
     @Param('id', ParseIntPipe) sprintId: number,
-    @Param('taskId') taskId: string,
+    @Param('issueId') issueId: string,
   ) {
-    return this.sprintsService.removeTaskFromSprint(sprintId, taskId);
+    return this.sprintsService.removeIssueFromSprint(sprintId, issueId);
   }
 }

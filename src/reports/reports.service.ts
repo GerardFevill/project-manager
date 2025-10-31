@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
-import { Task } from '../tasks/task.entity';
+import { Issue } from '../issues/entities/issue.entity';
 import { User } from '../users/user.entity';
 import { WorkLog } from '../work-logs/work-log.entity';
 import { Comment } from '../comments/comment.entity';
+import { Resolution } from '../issues/enums/resolution.enum';
+import { Priority } from '../issues/enums/priority.enum';
 
 // Simple type aliases for priority and status
 type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
@@ -35,7 +37,7 @@ export interface TimeTrackingReport {
   totalHours: number;
   byTask: {
     taskId: string;
-    taskTitle: string;
+    issueTitle: string;
     hours: number;
     estimated: number;
     percentage: number;
@@ -81,8 +83,8 @@ export interface TrendReport {
 @Injectable()
 export class ReportsService {
   constructor(
-    @InjectRepository(Task)
-    private taskRepository: Repository<Task>,
+    @InjectRepository(Issue)
+    private issueRepository: Repository<Issue>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
     @InjectRepository(WorkLog)
@@ -100,7 +102,7 @@ export class ReportsService {
     const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
     // Task statistics
-    const tasks = await this.taskRepository.find();
+    const tasks = await this.issueRepository.find();
     const totalTasks = tasks.length;
 
     const byPriority: Record<TaskPriority, number> = {
@@ -117,12 +119,12 @@ export class ReportsService {
     for (const task of tasks) {
       byPriority[task.priority as TaskPriority]++;
 
-      if (task.dueDate && new Date(task.dueDate) < now && !task.completed) {
+      if (task.dueDate && new Date(task.dueDate) < now && task.resolution === Resolution.UNRESOLVED) {
         overdue++;
       }
 
-      if (task.completedAt) {
-        const completedDate = new Date(task.completedAt);
+      if (task.resolutionDate) {
+        const completedDate = new Date(task.resolutionDate);
         if (completedDate >= weekAgo) completedThisWeek++;
         if (completedDate >= monthAgo) completedThisMonth++;
       }
@@ -154,9 +156,9 @@ export class ReportsService {
     }, {} as Record<string, { userId: string; userName: string; hours: number }>);
 
     // Activity statistics
-    const tasksCreatedThisWeek = tasks.filter((t) => new Date(t.createdAt) >= weekAgo).length;
+    const tasksCreatedThisWeek = tasks.filter((t) => new Date(t.created) >= weekAgo).length;
     const tasksCompletedThisWeek = tasks.filter(
-      (t) => t.completedAt && new Date(t.completedAt) >= weekAgo,
+      (t) => t.resolutionDate && new Date(t.resolutionDate) >= weekAgo,
     ).length;
 
     const commentsAddedThisWeek = await this.commentRepository
@@ -197,7 +199,7 @@ export class ReportsService {
    */
   async getTimeTrackingReport(startDate?: string, endDate?: string): Promise<TimeTrackingReport> {
     let workLogsQuery = this.workLogRepository.createQueryBuilder('workLog')
-      .leftJoinAndSelect('workLog.task', 'task')
+      .leftJoinAndSelect('workLog.issue', 'issue')
       .leftJoinAndSelect('workLog.user', 'user');
 
     if (startDate && endDate) {
@@ -211,19 +213,21 @@ export class ReportsService {
     const totalHours = workLogs.reduce((sum, log) => sum + parseFloat(log.timeSpent.toString()), 0);
 
     // Group by task
-    const taskMap = new Map<string, { taskId: string; taskTitle: string; hours: number; estimated: number }>();
+    const taskMap = new Map<string, { taskId: string; issueTitle: string; hours: number; estimated: number }>();
     for (const log of workLogs) {
-      if (!log.task) continue;
+      if (!log.issue) continue;
 
-      if (!taskMap.has(log.taskId)) {
-        taskMap.set(log.taskId, {
-          taskId: log.taskId,
-          taskTitle: log.task.title,
+      if (!taskMap.has(log.issueId)) {
+        // Convert originalEstimate from seconds to hours
+        const estimatedHours = log.issue.originalEstimate ? log.issue.originalEstimate / 3600 : 0;
+        taskMap.set(log.issueId, {
+          taskId: log.issueId,
+          issueTitle: log.issue.summary,
           hours: 0,
-          estimated: log.task.estimatedHours || 0,
+          estimated: estimatedHours,
         });
       }
-      taskMap.get(log.taskId)!.hours += parseFloat(log.timeSpent.toString());
+      taskMap.get(log.issueId)!.hours += parseFloat(log.timeSpent.toString());
     }
 
     const byTask = Array.from(taskMap.values()).map((item) => ({
@@ -247,7 +251,7 @@ export class ReportsService {
       }
       const userEntry = userMap.get(log.userId)!;
       userEntry.hours += parseFloat(log.timeSpent.toString());
-      userEntry.taskCount.add(log.taskId);
+      userEntry.taskCount.add(log.issueId);
     }
 
     const byUser = Array.from(userMap.values()).map((item) => ({
@@ -299,20 +303,20 @@ export class ReportsService {
     for (const user of users) {
       if (!user) continue;
 
-      const tasks = await this.taskRepository.find({ where: { assigneeId: user.id } });
+      const tasks = await this.issueRepository.find({ where: { assigneeId: user.id } });
       const tasksAssigned = tasks.length;
-      const tasksCompleted = tasks.filter((t) => t.completed).length;
+      const tasksCompleted = tasks.filter((t) => t.resolution !== Resolution.UNRESOLVED).length;
       const completionRate = tasksAssigned > 0 ? Math.round((tasksCompleted / tasksAssigned) * 100) : 0;
 
       const workLogs = await this.workLogRepository.find({ where: { userId: user.id } });
       const hoursLogged = workLogs.reduce((sum, log) => sum + parseFloat(log.timeSpent.toString()), 0);
 
-      const completedTasks = tasks.filter((t) => t.completedAt);
+      const completedTasks = tasks.filter((t) => t.resolutionDate);
       let averageTaskDuration = 0;
       if (completedTasks.length > 0) {
         const totalDuration = completedTasks.reduce((sum, t) => {
-          const created = new Date(t.createdAt).getTime();
-          const completed = new Date(t.completedAt!).getTime();
+          const created = new Date(t.created).getTime();
+          const completed = new Date(t.resolutionDate!).getTime();
           return sum + (completed - created);
         }, 0);
         averageTaskDuration = Math.round(totalDuration / completedTasks.length / (1000 * 60 * 60 * 24)); // days
@@ -339,7 +343,7 @@ export class ReportsService {
    * Get task distribution report
    */
   async getTaskDistributionReport(): Promise<TaskDistributionReport> {
-    const tasks = await this.taskRepository.find({ relations: ['assignee'] });
+    const tasks = await this.issueRepository.find({ relations: ['assignee'] });
     const total = tasks.length;
 
     // By priority
@@ -415,20 +419,20 @@ export class ReportsService {
     }
 
     // Tasks created
-    const tasks = await this.taskRepository.find();
-    const tasksInPeriod = tasks.filter((t) => new Date(t.createdAt) >= startDate);
+    const tasks = await this.issueRepository.find();
+    const tasksInPeriod = tasks.filter((t) => new Date(t.created) >= startDate);
 
     const createdByDate = new Map<string, number>();
     for (const task of tasksInPeriod) {
-      const dateStr = task.createdAt.toString().split('T')[0];
+      const dateStr = task.created.toString().split('T')[0];
       createdByDate.set(dateStr, (createdByDate.get(dateStr) || 0) + 1);
     }
 
     // Tasks completed
     const completedByDate = new Map<string, number>();
     for (const task of tasks) {
-      if (task.completedAt && new Date(task.completedAt) >= startDate) {
-        const dateStr = task.completedAt.toString().split('T')[0];
+      if (task.resolutionDate && new Date(task.resolutionDate) >= startDate) {
+        const dateStr = task.resolutionDate.toString().split('T')[0];
         completedByDate.set(dateStr, (completedByDate.get(dateStr) || 0) + 1);
       }
     }

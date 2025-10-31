@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 
 /**
- * Comment Entity - Jira-style comments for tasks
+ * Comment Entity - Jira-style comments for issues
  */
 @Entity('comments')
 export class Comment {
@@ -19,15 +19,15 @@ export class Comment {
   @Column({ type: 'text' })
   content: string;
 
-  // Task relationship
+  // Issue relationship
   @Column({ type: 'uuid' })
-  taskId: string;
+  issueId: string;
 
-  @ManyToOne('Task', 'comments', {
+  @ManyToOne('Issue', 'comments', {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'taskId' })
-  task: any;
+  @JoinColumn({ name: 'issueId' })
+  issue: any;
 
   // Author relationship
   @Column({ type: 'uuid' })

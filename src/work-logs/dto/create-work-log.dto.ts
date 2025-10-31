@@ -18,9 +18,9 @@ export class CreateWorkLogDto {
   @IsDateString({}, { message: 'Work date must be a valid date' })
   workDate: string;
 
-  @IsNotEmpty({ message: 'Task ID is required' })
-  @IsUUID('4', { message: 'Task ID must be a valid UUID' })
-  taskId: string;
+  @IsNotEmpty({ message: 'Issue ID is required' })
+  @IsUUID('4', { message: 'Issue ID must be a valid UUID' })
+  issueId: string;
 
   @IsNotEmpty({ message: 'User ID is required' })
   @IsUUID('4', { message: 'User ID must be a valid UUID' })

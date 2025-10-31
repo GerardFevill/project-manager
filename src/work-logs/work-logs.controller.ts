@@ -31,12 +31,12 @@ export class WorkLogsController {
 
   /**
    * Get all work logs for a task
-   * GET /work-logs?taskId=xxx
+   * GET /work-logs?issueId=xxx
    */
   @Get()
-  async findByTask(@Query('taskId') taskId?: string, @Query('userId') userId?: string): Promise<WorkLog[]> {
-    if (taskId) {
-      return this.workLogsService.findByTask(taskId);
+  async findByIssue(@Query('issueId') issueId?: string, @Query('userId') userId?: string): Promise<WorkLog[]> {
+    if (issueId) {
+      return this.workLogsService.findByIssue(issueId);
     }
     if (userId) {
       return this.workLogsService.findByUser(userId);
@@ -78,20 +78,20 @@ export class WorkLogsController {
 
   /**
    * Get total time logged for a task
-   * GET /work-logs/task/:taskId/total
+   * GET /work-logs/task/:issueId/total
    */
-  @Get('task/:taskId/total')
-  async getTotalTime(@Param('taskId') taskId: string): Promise<{ total: number }> {
-    const total = await this.workLogsService.getTotalTimeByTask(taskId);
+  @Get('task/:issueId/total')
+  async getTotalTime(@Param('issueId') issueId: string): Promise<{ total: number }> {
+    const total = await this.workLogsService.getTotalTimeByTask(issueId);
     return { total };
   }
 
   /**
    * Get time tracking summary for a task
-   * GET /work-logs/task/:taskId/summary
+   * GET /work-logs/task/:issueId/summary
    */
-  @Get('task/:taskId/summary')
-  async getTaskSummary(@Param('taskId') taskId: string) {
-    return this.workLogsService.getTaskSummary(taskId);
+  @Get('task/:issueId/summary')
+  async getTaskSummary(@Param('issueId') issueId: string) {
+    return this.workLogsService.getTaskSummary(issueId);
   }
 }

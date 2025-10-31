@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Sprint } from './entities/sprint.entity';
-import { Task } from '../tasks/task.entity';
+import { Issue } from '../issues/entities/issue.entity';
 import { CreateSprintDto } from './dto/create-sprint.dto';
 import { UpdateSprintDto } from './dto/update-sprint.dto';
 import { SprintStatus } from './enums/sprint-status.enum';
@@ -16,8 +16,8 @@ export class SprintsService {
   constructor(
     @InjectRepository(Sprint)
     private readonly sprintRepository: Repository<Sprint>,
-    @InjectRepository(Task)
-    private readonly taskRepository: Repository<Task>,
+    @InjectRepository(Issue)
+    private readonly issueRepository: Repository<Issue>,
   ) {}
 
   async create(createSprintDto: CreateSprintDto): Promise<Sprint> {
@@ -36,7 +36,7 @@ export class SprintsService {
 
     const queryBuilder = this.sprintRepository
       .createQueryBuilder('sprint')
-      .orderBy('sprint.createdAt', 'DESC');
+      .orderBy('sprint.created', 'DESC');
 
     if (params?.status) {
       queryBuilder.andWhere('sprint.status = :status', {
@@ -111,68 +111,68 @@ export class SprintsService {
     return await this.update(id, { status: SprintStatus.COMPLETED });
   }
 
-  async getSprintTasks(id: number): Promise<Task[]> {
+  async getSprintIssues(id: number): Promise<Issue[]> {
     // Verify sprint exists
     await this.findOne(id);
 
-    return await this.taskRepository.find({
+    return await this.issueRepository.find({
       where: { sprintId: id },
-      order: { createdAt: 'ASC' },
+      order: { created: 'ASC' },
     });
   }
 
-  async getSprintDetails(id: number): Promise<Sprint & { tasks: Task[] }> {
+  async getSprintDetails(id: number): Promise<Sprint & { issues: Issue[] }> {
     const sprint = await this.findOne(id);
-    const tasks = await this.getSprintTasks(id);
+    const issues = await this.getSprintIssues(id);
 
     return {
       ...sprint,
-      tasks,
+      issues,
     };
   }
 
-  async assignTaskToSprint(
+  async assignIssueToSprint(
     sprintId: number,
-    taskId: string,
-  ): Promise<{ message: string; task: Task }> {
+    issueId: string,
+  ): Promise<{ message: string; issue: Issue }> {
     // Verify sprint exists
     await this.findOne(sprintId);
 
-    const task = await this.taskRepository.findOne({ where: { id: taskId } });
-    if (!task) {
-      throw new NotFoundException(`Task with ID ${taskId} not found`);
+    const issue = await this.issueRepository.findOne({ where: { id: issueId } });
+    if (!issue) {
+      throw new NotFoundException(`Issue with ID ${issueId} not found`);
     }
 
-    task.sprintId = sprintId;
-    const updatedTask = await this.taskRepository.save(task);
+    issue.sprintId = sprintId;
+    const updatedIssue = await this.issueRepository.save(issue);
 
     return {
-      message: 'Task assigned to sprint successfully',
-      task: updatedTask,
+      message: 'Issue assigned to sprint successfully',
+      issue: updatedIssue,
     };
   }
 
-  async removeTaskFromSprint(
+  async removeIssueFromSprint(
     sprintId: number,
-    taskId: string,
-  ): Promise<{ message: string; task: Task }> {
-    const task = await this.taskRepository.findOne({ where: { id: taskId } });
-    if (!task) {
-      throw new NotFoundException(`Task with ID ${taskId} not found`);
+    issueId: string,
+  ): Promise<{ message: string; issue: Issue }> {
+    const issue = await this.issueRepository.findOne({ where: { id: issueId } });
+    if (!issue) {
+      throw new NotFoundException(`Issue with ID ${issueId} not found`);
     }
 
-    if (task.sprintId !== sprintId) {
+    if (issue.sprintId !== sprintId) {
       throw new ConflictException(
-        `Task ${taskId} is not in sprint ${sprintId}`,
+        `Issue ${issueId} is not in sprint ${sprintId}`,
       );
     }
 
-    task.sprintId = null;
-    const updatedTask = await this.taskRepository.save(task);
+    issue.sprintId = null;
+    const updatedIssue = await this.issueRepository.save(issue);
 
     return {
-      message: 'Task removed from sprint successfully',
-      task: updatedTask,
+      message: 'Issue removed from sprint successfully',
+      issue: updatedIssue,
     };
   }
 }

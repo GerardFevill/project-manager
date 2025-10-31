@@ -24,11 +24,11 @@ export class CommentsService {
   }
 
   /**
-   * Find all comments for a task
+   * Find all comments for an issue
    */
-  async findByTask(taskId: string): Promise<Comment[]> {
+  async findByIssue(issueId: string): Promise<Comment[]> {
     return this.commentRepository.find({
-      where: { taskId },
+      where: { issueId },
       relations: ['author'],
       order: { createdAt: 'DESC' },
     });
@@ -40,7 +40,7 @@ export class CommentsService {
   async findOne(id: string): Promise<Comment> {
     const comment = await this.commentRepository.findOne({
       where: { id },
-      relations: ['author', 'task'],
+      relations: ['author', 'issue'],
     });
 
     if (!comment) {
@@ -89,11 +89,11 @@ export class CommentsService {
   }
 
   /**
-   * Count comments for a task
+   * Count comments for an issue
    */
-  async countByTask(taskId: string): Promise<number> {
+  async countByIssue(issueId: string): Promise<number> {
     return this.commentRepository.count({
-      where: { taskId },
+      where: { issueId },
     });
   }
 }

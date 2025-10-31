@@ -29,15 +29,15 @@ export class WorkLog {
   @Column({ type: 'date' })
   workDate: Date;
 
-  // Task relationship
+  // Issue relationship
   @Column({ type: 'uuid' })
-  taskId: string;
+  issueId: string;
 
-  @ManyToOne('Task', 'workLogs', {
+  @ManyToOne('Issue', 'workLogs', {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'taskId' })
-  task: any;
+  @JoinColumn({ name: 'issueId' })
+  issue: any;
 
   // User who logged the time
   @Column({ type: 'uuid' })

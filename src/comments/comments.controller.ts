@@ -30,12 +30,12 @@ export class CommentsController {
   }
 
   /**
-   * Get all comments for a task
-   * GET /comments?taskId=xxx
+   * Get all comments for an issue
+   * GET /comments?issueId=xxx
    */
   @Get()
-  async findByTask(@Query('taskId') taskId: string): Promise<Comment[]> {
-    return this.commentsService.findByTask(taskId);
+  async findByIssue(@Query('issueId') issueId: string): Promise<Comment[]> {
+    return this.commentsService.findByIssue(issueId);
   }
 
   /**
@@ -74,12 +74,12 @@ export class CommentsController {
   }
 
   /**
-   * Get comment count for a task
-   * GET /comments/count?taskId=xxx
+   * Get comment count for an issue
+   * GET /comments/count?issueId=xxx
    */
-  @Get('count/task')
-  async countByTask(@Query('taskId') taskId: string): Promise<{ count: number }> {
-    const count = await this.commentsService.countByTask(taskId);
+  @Get('count/issue')
+  async countByIssue(@Query('issueId') issueId: string): Promise<{ count: number }> {
+    const count = await this.commentsService.countByIssue(issueId);
     return { count };
   }
 }

@@ -9,9 +9,9 @@ export class CreateCommentDto {
   @MaxLength(10000, { message: 'Content must not exceed 10000 characters' })
   content: string;
 
-  @IsNotEmpty({ message: 'Task ID is required' })
-  @IsUUID('4', { message: 'Task ID must be a valid UUID' })
-  taskId: string;
+  @IsNotEmpty({ message: 'Issue ID is required' })
+  @IsUUID('4', { message: 'Issue ID must be a valid UUID' })
+  issueId: string;
 
   @IsNotEmpty({ message: 'Author ID is required' })
   @IsUUID('4', { message: 'Author ID must be a valid UUID' })

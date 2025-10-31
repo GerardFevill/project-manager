@@ -24,9 +24,9 @@ export class WorkLogsService {
   /**
    * Find all work logs for a task
    */
-  async findByTask(taskId: string): Promise<WorkLog[]> {
+  async findByIssue(issueId: string): Promise<WorkLog[]> {
     return this.workLogRepository.find({
-      where: { taskId },
+      where: { issueId },
       relations: ['user'],
       order: { workDate: 'DESC', createdAt: 'DESC' },
     });
@@ -38,7 +38,7 @@ export class WorkLogsService {
   async findByUser(userId: string): Promise<WorkLog[]> {
     return this.workLogRepository.find({
       where: { userId },
-      relations: ['task', 'user'],
+      relations: ['issue', 'user'],
       order: { workDate: 'DESC', createdAt: 'DESC' },
     });
   }
@@ -49,7 +49,7 @@ export class WorkLogsService {
   async findOne(id: string): Promise<WorkLog> {
     const workLog = await this.workLogRepository.findOne({
       where: { id },
-      relations: ['user', 'task'],
+      relations: ['user', 'issue'],
     });
 
     if (!workLog) {
@@ -106,11 +106,11 @@ export class WorkLogsService {
   /**
    * Get total time logged for a task
    */
-  async getTotalTimeByTask(taskId: string): Promise<number> {
+  async getTotalTimeByTask(issueId: string): Promise<number> {
     const result = await this.workLogRepository
       .createQueryBuilder('workLog')
       .select('SUM(workLog.timeSpent)', 'total')
-      .where('workLog.taskId = :taskId', { taskId })
+      .where('workLog.issueId = :issueId', { issueId })
       .getRawOne();
 
     return parseFloat(result.total) || 0;
@@ -119,12 +119,12 @@ export class WorkLogsService {
   /**
    * Get time tracking summary for a task
    */
-  async getTaskSummary(taskId: string): Promise<{
+  async getTaskSummary(issueId: string): Promise<{
     totalLogged: number;
     logCount: number;
     lastLogDate: Date | null;
   }> {
-    const logs = await this.findByTask(taskId);
+    const logs = await this.findByIssue(issueId);
     const totalLogged = logs.reduce((sum, log) => sum + parseFloat(log.timeSpent.toString()), 0);
     const lastLogDate = logs.length > 0 ? logs[0].workDate : null;
 

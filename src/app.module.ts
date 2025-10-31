@@ -6,7 +6,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { TasksModule } from './tasks/tasks.module';
+import { ProjectsModule } from './projects/projects.module';
+import { IssuesModule } from './issues/issues.module';
 import { SprintsModule } from './sprints/sprints.module';
 import { CommentsModule } from './comments/comments.module';
 import { WorkLogsModule } from './work-logs/work-logs.module';
@@ -37,7 +38,8 @@ import { ReportsModule } from './reports/reports.module';
       logging: process.env.NODE_ENV === 'development',
     }),
     UsersModule,
-    TasksModule,
+    ProjectsModule,
+    IssuesModule,
     SprintsModule,
     CommentsModule,
     WorkLogsModule,

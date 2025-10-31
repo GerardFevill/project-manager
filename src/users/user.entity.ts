@@ -43,15 +43,29 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
-  // Relation to assigned tasks
-  @OneToMany('Task', 'assignee')
-  assignedTasks: any[];
+  // === JIRA RELATIONS ===
 
-  // Relation to comments
+  // Issues assigned to this user
+  @OneToMany('Issue', 'assignee')
+  assignedIssues: any[];
+
+  // Issues reported by this user
+  @OneToMany('Issue', 'reporter')
+  reportedIssues: any[];
+
+  // Projects where user is lead
+  @OneToMany('Project', 'lead')
+  leadProjects: any[];
+
+  // Components where user is lead
+  @OneToMany('Component', 'lead')
+  componentLeads: any[];
+
+  // Comments authored by this user
   @OneToMany('Comment', 'author')
   comments: any[];
 
-  // Relation to work logs
+  // Work logs by this user
   @OneToMany('WorkLog', 'user')
   workLogs: any[];
 
