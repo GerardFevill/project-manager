@@ -9,6 +9,11 @@ import { IssuesModule } from './modules/issues/issues.module';
 import { WorkflowsModule } from './modules/workflows/workflows.module';
 import { BoardsModule } from './modules/boards/boards.module';
 import { SprintsModule } from './modules/sprints/sprints.module';
+import { CommentsModule } from './modules/comments/comments.module';
+import { AttachmentsModule } from './modules/attachments/attachments.module';
+import { WatchersModule } from './modules/watchers/watchers.module';
+import { LabelsModule } from './modules/labels/labels.module';
+import { ActivityModule } from './modules/activity/activity.module';
 
 @Module({
   imports: [
@@ -24,14 +29,23 @@ import { SprintsModule } from './modules/sprints/sprints.module';
       useClass: DatabaseConfig,
     }),
 
-    // Feature Modules
+    // Core Modules
     AuthModule,
     UsersModule,
+
+    // Project Management
     ProjectsModule,
     IssuesModule,
     WorkflowsModule,
     BoardsModule,
     SprintsModule,
+
+    // Issue Features
+    CommentsModule,
+    AttachmentsModule,
+    WatchersModule,
+    LabelsModule,
+    ActivityModule,
   ],
 })
 export class AppModule {}

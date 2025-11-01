@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, ManyToMany, JoinColumn, JoinTable } from 'typeorm';
 import { Project } from '../../projects/entities/project.entity';
 import { User } from '../../users/entities/user.entity';
+import { Label } from '../../labels/entities/label.entity';
 
 @Entity('jira_issue')
 export class Issue {
@@ -72,4 +73,13 @@ export class Issue {
 
   @Column({ name: 'resolved_at', type: 'timestamp', nullable: true })
   resolvedAt: Date;
+
+  // Relations with new modules
+  @ManyToMany(() => Label, (label) => label.issues)
+  @JoinTable({
+    name: 'issue_label',
+    joinColumn: { name: 'issue_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'label_id', referencedColumnName: 'id' },
+  })
+  labels: Label[];
 }
