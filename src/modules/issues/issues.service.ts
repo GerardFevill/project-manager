@@ -120,3 +120,189 @@ export class IssuesService {
     });
   }
 }
+
+  // ========== BULK OPERATIONS ==========
+
+  async createBulk(issues: CreateIssueDto[]): Promise<Issue[]> {
+    const createdIssues: Issue[] = [];
+    for (const issueDto of issues) {
+      const issue = await this.create(issueDto);
+      createdIssues.push(issue);
+    }
+    return createdIssues;
+  }
+
+  async updateBulk(issueIds: string[], updates: UpdateIssueDto): Promise<Issue[]> {
+    const updatedIssues: Issue[] = [];
+    for (const id of issueIds) {
+      const issue = await this.update(id, updates);
+      updatedIssues.push(issue);
+    }
+    return updatedIssues;
+  }
+
+  // ========== ISSUE ACTIONS ==========
+
+  async assignIssue(id: string, assigneeId: string): Promise<Issue> {
+    return this.update(id, { assigneeId });
+  }
+
+  async notifyIssue(id: string, userIds: string[], message?: string): Promise<{ notified: boolean; userCount: number }> {
+    await this.findOne(id); // Verify issue exists
+    // TODO: Implement actual notification sending
+    return { notified: true, userCount: userIds.length };
+  }
+
+  async moveIssue(id: string, targetProjectId: string): Promise<Issue> {
+    const issue = await this.findOne(id);
+    const targetProject = await this.projectRepository.findOne({ where: { id: targetProjectId } });
+
+    if (!targetProject) {
+      throw new NotFoundException(`Target project ${targetProjectId} not found`);
+    }
+
+    // Generate new issue key for target project
+    const count = await this.issueRepository.count({ where: { projectId: targetProjectId } });
+    const newIssueKey = `${targetProject.projectKey}-${count + 1}`;
+
+    issue.projectId = targetProjectId;
+    issue.issueKey = newIssueKey;
+    issue.updatedAt = new Date();
+
+    return this.issueRepository.save(issue);
+  }
+
+  async cloneIssue(id: string, summary?: string, projectId?: string): Promise<Issue> {
+    const originalIssue = await this.findOne(id);
+
+    const cloneData: CreateIssueDto = {
+      projectId: projectId || originalIssue.projectId,
+      summary: summary || `Clone of ${originalIssue.summary}`,
+      description: originalIssue.description,
+      issueType: originalIssue.issueType,
+      priority: originalIssue.priority,
+      reporterId: originalIssue.reporterId,
+      assigneeId: originalIssue.assigneeId,
+    };
+
+    return this.create(cloneData);
+  }
+
+  async archiveIssue(id: string): Promise<Issue> {
+    const issue = await this.findOne(id);
+    issue.status = 'Archived';
+    issue.updatedAt = new Date();
+    return this.issueRepository.save(issue);
+  }
+
+  async restoreIssue(id: string): Promise<Issue> {
+    const issue = await this.findOne(id);
+    issue.status = 'Open';
+    issue.updatedAt = new Date();
+    return this.issueRepository.save(issue);
+  }
+
+  // ========== SUBTASKS ==========
+
+  async getSubtasks(id: string): Promise<Issue[]> {
+    await this.findOne(id); // Verify parent exists
+    return this.issueRepository.find({
+      where: { parentId: id },
+      relations: ['project', 'reporter', 'assignee'],
+      order: { createdAt: 'ASC' },
+    });
+  }
+
+  async createSubtask(parentId: string, dto: CreateIssueDto): Promise<Issue> {
+    const parent = await this.findOne(parentId);
+
+    const subtaskData: CreateIssueDto = {
+      ...dto,
+      projectId: parent.projectId,
+      issueType: 'Sub-task',
+    };
+
+    const subtask = await this.create(subtaskData);
+    subtask.parentId = parentId;
+    return this.issueRepository.save(subtask);
+  }
+
+  // ========== REMOTE LINKS ==========
+
+  async getRemoteLinks(id: string): Promise<any[]> {
+    await this.findOne(id); // Verify issue exists
+    // Remote links would be stored in a separate table
+    return [];
+  }
+
+  async addRemoteLink(id: string, url: string, title: string): Promise<any> {
+    await this.findOne(id); // Verify issue exists
+    // TODO: Store in remote_links table
+    return { id: 'link-' + Date.now(), issueId: id, url, title };
+  }
+
+  async removeRemoteLink(id: string, linkId: string): Promise<void> {
+    await this.findOne(id); // Verify issue exists
+    // TODO: Delete from remote_links table
+  }
+
+  // ========== METADATA ==========
+
+  async getEditMeta(id: string): Promise<any> {
+    const issue = await this.findOne(id);
+    return {
+      fields: {
+        summary: { required: true, type: 'string', maxLength: 255 },
+        description: { required: false, type: 'text' },
+        issueType: { required: true, type: 'select', options: ['Task', 'Bug', 'Story', 'Epic'] },
+        priority: { required: false, type: 'select', options: ['Low', 'Medium', 'High', 'Critical'] },
+        assignee: { required: false, type: 'user' },
+        status: { required: true, type: 'select', options: ['Open', 'In Progress', 'Resolved', 'Closed'] },
+      },
+    };
+  }
+
+  async getCreateMeta(projectId?: string): Promise<any> {
+    if (projectId) {
+      const project = await this.projectRepository.findOne({ where: { id: projectId } });
+      if (!project) {
+        throw new NotFoundException(`Project ${projectId} not found`);
+      }
+    }
+
+    return {
+      projects: projectId ? [{ id: projectId }] : [],
+      fields: {
+        summary: { required: true, type: 'string', maxLength: 255 },
+        description: { required: false, type: 'text' },
+        issueType: { required: true, type: 'select', options: ['Task', 'Bug', 'Story', 'Epic', 'Sub-task'] },
+        priority: { required: false, type: 'select', options: ['Low', 'Medium', 'High', 'Critical'] },
+        assignee: { required: false, type: 'user' },
+        reporter: { required: true, type: 'user' },
+      },
+    };
+  }
+
+  async getPickerSuggestions(query: string, currentIssueKey?: string): Promise<any> {
+    const issues = await this.issueRepository
+      .createQueryBuilder('issue')
+      .where('issue.summary LIKE :query OR issue.issueKey LIKE :query', { query: `%${query}%` })
+      .andWhere('issue.issueKey != :currentIssueKey', { currentIssueKey: currentIssueKey || '' })
+      .take(10)
+      .getMany();
+
+    return {
+      sections: [
+        {
+          label: 'Recent Issues',
+          issues: issues.map(issue => ({
+            id: issue.id,
+            key: issue.issueKey,
+            summary: issue.summary,
+            img: null,
+          })),
+        },
+      ],
+    };
+  }
+}

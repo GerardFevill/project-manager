@@ -106,3 +106,110 @@ export class UsersService {
     await this.userRepository.remove(user);
   }
 }
+
+  // ========== USER SEARCH & QUERIES ==========
+
+  async searchWithQuery(query: string): Promise<any> {
+    const users = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.username LIKE :query OR user.email LIKE :query', { query: `%${query}%` })
+      .take(20)
+      .getMany();
+    return { query, results: users };
+  }
+
+  async searchAssignableMultiProject(projectIds: string): Promise<any> {
+    // TODO: Filter users who can be assigned in these projects
+    const users = await this.findAll();
+    return { projectIds, users };
+  }
+
+  async userPicker(query: string): Promise<any> {
+    const users = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.username LIKE :query OR user.email LIKE :query', { query: `%${query}%` })
+      .take(10)
+      .getMany();
+
+    return {
+      query,
+      suggestions: users.map(u => ({
+        id: u.id,
+        name: u.username,
+        displayName: u.username,
+        avatarUrl: null,
+      }))
+    };
+  }
+
+  // ========== USER RELATIONSHIPS ==========
+
+  async getUserGroups(id: string): Promise<any> {
+    await this.findOne(id);
+    // TODO: Get from user_groups table
+    return { userId: id, groups: [] };
+  }
+
+  async getUserPermissions(id: string): Promise<any> {
+    await this.findOne(id);
+    // TODO: Calculate user permissions
+    return { userId: id, permissions: [] };
+  }
+
+  // ========== USER PROPERTIES ==========
+
+  async getUserProperties(id: string): Promise<any> {
+    await this.findOne(id);
+    // TODO: Get from user_properties table
+    return { userId: id, properties: {} };
+  }
+
+  async setUserProperty(id: string, key: string, value: any): Promise<any> {
+    await this.findOne(id);
+    // TODO: Store in user_properties table
+    return { userId: id, key, value };
+  }
+
+  async deleteUserProperty(id: string, key: string): Promise<void> {
+    await this.findOne(id);
+    // TODO: Delete from user_properties table
+  }
+
+  // ========== USER AVATAR ==========
+
+  async getUserAvatar(id: string): Promise<any> {
+    await this.findOne(id);
+    return { userId: id, avatarUrl: null };
+  }
+
+  async uploadUserAvatar(id: string, avatarData: any): Promise<any> {
+    const user = await this.findOne(id);
+    // TODO: Store avatar URL
+    return { userId: id, avatarUrl: avatarData.url };
+  }
+
+  // ========== BULK OPERATIONS ==========
+
+  async getBulkUsers(userIds: string): Promise<any> {
+    const ids = userIds.split(',');
+    const users = await this.userRepository
+      .createQueryBuilder('user')
+      .whereInIds(ids)
+      .getMany();
+    return { users };
+  }
+
+  async getUserMigrationData(userIds: string): Promise<any> {
+    const ids = userIds.split(',');
+    const users = await this.userRepository
+      .createQueryBuilder('user')
+      .whereInIds(ids)
+      .getMany();
+    return { migrationData: users };
+  }
+
+  async getUserByEmail(email: string): Promise<any> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    return { email, user };
+  }
+}

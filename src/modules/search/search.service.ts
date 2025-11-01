@@ -199,3 +199,21 @@ export class SearchService {
     return (matchedWords / words.length) * 50;
   }
 }
+
+  // ========== ADVANCED SEARCH ==========
+
+  async searchWithJQL(jql: string): Promise<any> {
+    // TODO: Implement JQL parser and executor
+    return { jql, results: [] };
+  }
+
+  async searchUsers(query: string): Promise<any> {
+    // TODO: Search in users table
+    return { query, users: [] };
+  }
+
+  async searchProjects(query: string): Promise<any> {
+    // TODO: Search in projects table
+    return { query, projects: [] };
+  }
+}

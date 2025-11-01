@@ -92,3 +92,107 @@ export class ProjectsService {
     return this.projectRepository.save(project);
   }
 }
+
+  // ========== PROJECT USERS & ROLES ==========
+
+  async getProjectUsers(id: string): Promise<any> {
+    const project = await this.findOne(id);
+    // TODO: Get users from project_users table
+    return { projectId: id, users: [] };
+  }
+
+  async getRoleActors(projectId: string, roleId: string): Promise<any> {
+    await this.findOne(projectId);
+    // TODO: Get actors from project_role_actors table
+    return { projectId, roleId, actors: [] };
+  }
+
+  async addRoleActor(projectId: string, roleId: string, actorData: any): Promise<any> {
+    await this.findOne(projectId);
+    // TODO: Add to project_role_actors table
+    return { projectId, roleId, actor: actorData };
+  }
+
+  async removeRoleActor(projectId: string, roleId: string, actorId: string): Promise<void> {
+    await this.findOne(projectId);
+    // TODO: Remove from project_role_actors table
+  }
+
+  // ========== PROJECT CONFIGURATION ==========
+
+  async getIssueSecurityLevelScheme(id: string): Promise<any> {
+    await this.findOne(id);
+    return { projectId: id, scheme: null };
+  }
+
+  async getNotificationScheme(id: string): Promise<any> {
+    await this.findOne(id);
+    return { projectId: id, scheme: null };
+  }
+
+  async getPermissionScheme(id: string): Promise<any> {
+    await this.findOne(id);
+    return { projectId: id, scheme: null };
+  }
+
+  async getProjectFeatures(id: string): Promise<any> {
+    await this.findOne(id);
+    return { projectId: id, features: ['boards', 'sprints', 'reports'] };
+  }
+
+  async updateProjectFeatures(id: string, features: any): Promise<any> {
+    const project = await this.findOne(id);
+    // TODO: Store features in project_features table
+    return { projectId: id, features };
+  }
+
+  // ========== PROJECT SEARCH & METADATA ==========
+
+  async searchProjects(query: string): Promise<Project[]> {
+    return this.projectRepository
+      .createQueryBuilder('project')
+      .where('project.name LIKE :query OR project.projectKey LIKE :query', { query: `%${query}%` })
+      .take(20)
+      .getMany();
+  }
+
+  async getProjectAvatar(id: string): Promise<any> {
+    await this.findOne(id);
+    return { projectId: id, avatarUrl: null };
+  }
+
+  async uploadProjectAvatar(id: string, avatarData: any): Promise<any> {
+    const project = await this.findOne(id);
+    // TODO: Store avatar URL in project
+    return { projectId: id, avatarUrl: avatarData.url };
+  }
+
+  async getProjectHierarchy(id: string): Promise<any> {
+    await this.findOne(id);
+    return { projectId: id, hierarchy: [] };
+  }
+
+  async getProjectInsights(id: string): Promise<any> {
+    await this.findOne(id);
+    // TODO: Calculate project insights
+    return {
+      projectId: id,
+      insights: {
+        totalIssues: 0,
+        openIssues: 0,
+        closedIssues: 0,
+        averageResolutionTime: 0,
+      }
+    };
+  }
+
+  async validateProject(id: string): Promise<any> {
+    const project = await this.findOne(id);
+    const errors = [];
+
+    if (!project.name) errors.push('Project name is required');
+    if (!project.projectKey) errors.push('Project key is required');
+
+    return { projectId: id, valid: errors.length === 0, errors };
+  }
+}

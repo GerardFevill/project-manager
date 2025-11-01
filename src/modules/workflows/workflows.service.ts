@@ -52,3 +52,60 @@ export class WorkflowsService {
     await this.workflowRepository.remove(workflow);
   }
 }
+
+  // ========== WORKFLOW TRANSITIONS ==========
+
+  async getWorkflowTransitions(id: string): Promise<any> {
+    await this.findOne(id);
+    // TODO: Get from workflow_transitions table
+    return { workflowId: id, transitions: [] };
+  }
+
+  async updateWorkflowTransition(workflowId: string, transitionId: string, data: any): Promise<any> {
+    await this.findOne(workflowId);
+    // TODO: Update in workflow_transitions table
+    return { workflowId, transitionId, updated: true };
+  }
+
+  // ========== WORKFLOW PUBLISHING ==========
+
+  async publishWorkflow(id: string): Promise<any> {
+    const workflow = await this.findOne(id);
+    // TODO: Mark as published
+    return { workflowId: id, published: true };
+  }
+
+  async getDraftWorkflow(id: string): Promise<any> {
+    await this.findOne(id);
+    // TODO: Get draft version
+    return { workflowId: id, draft: null };
+  }
+
+  async createDraftWorkflow(id: string): Promise<any> {
+    await this.findOne(id);
+    // TODO: Create draft copy
+    return { workflowId: id, draft: {} };
+  }
+
+  // ========== WORKFLOW PROPERTIES ==========
+
+  async updateWorkflowProperties(id: string, properties: any): Promise<any> {
+    const workflow = await this.findOne(id);
+    // TODO: Store properties
+    return { workflowId: id, properties };
+  }
+
+  // ========== WORKFLOW SCHEMES ==========
+
+  async getWorkflowSchemesForProjects(projectIds: string): Promise<any> {
+    // TODO: Get workflow schemes for projects
+    return { projects: [] };
+  }
+
+  // ========== TRANSITION RULES ==========
+
+  async addTransitionRules(rules: any): Promise<any> {
+    // TODO: Add transition rules
+    return { rules };
+  }
+}
