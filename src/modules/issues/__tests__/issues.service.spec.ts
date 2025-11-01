@@ -23,7 +23,7 @@ describe('IssuesService', () => {
   const mockProject: Partial<Project> = {
     id: '1',
     projectKey: 'TEST',
-    name: 'Test Project',
+    projectName: 'Test Project',
   };
 
   const mockIssue: Partial<Issue> = {
@@ -355,7 +355,7 @@ describe('IssuesService', () => {
     const targetProject: Partial<Project> = {
       id: '2',
       projectKey: 'MOVED',
-      name: 'Target Project',
+      projectName: 'Target Project',
     };
 
     it('should move issue to another project', async () => {
@@ -604,12 +604,13 @@ describe('IssuesService', () => {
 
   describe('getPickerSuggestions', () => {
     it('should return issue suggestions based on query', async () => {
+      const testIssue = { ...mockIssue, id: '1', issueKey: 'TEST-1' };
       const mockQueryBuilder = {
         leftJoinAndSelect: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
         andWhere: jest.fn().mockReturnThis(),
         take: jest.fn().mockReturnThis(),
-        getMany: jest.fn().mockResolvedValue([mockIssue]),
+        getMany: jest.fn().mockResolvedValue([testIssue]),
       };
 
       jest.spyOn(issueRepository, 'createQueryBuilder').mockReturnValue(mockQueryBuilder as any);

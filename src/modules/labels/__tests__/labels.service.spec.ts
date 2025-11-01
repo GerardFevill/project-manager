@@ -34,7 +34,7 @@ describe('LabelsService', () => {
     it('should create a label', async () => {
       mockRepo.create.mockReturnValue(mockLabel);
       mockRepo.save.mockResolvedValue(mockLabel);
-      const result = await service.create({ name: 'bug', color: '#ff0000', projectId: 'proj1' });
+      const result = await service.create({ name: 'bug', color: '#ff0000' });
       expect(result).toEqual(mockLabel);
     });
   });

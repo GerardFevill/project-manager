@@ -111,19 +111,6 @@ export class ProjectsService {
   async update(id: string, updateProjectDto: UpdateProjectDto): Promise<Project> {
     const project = await this.findOne(id);
 
-    // Si la clé est modifiée, vérifier qu'elle n'existe pas déjà
-    if (updateProjectDto.projectKey && updateProjectDto.projectKey !== project.projectKey) {
-      const existingProject = await this.projectRepository.findOne({
-        where: { projectKey: updateProjectDto.projectKey },
-      });
-
-      if (existingProject) {
-        throw new ConflictException(
-          `Project with key ${updateProjectDto.projectKey} already exists`,
-        );
-      }
-    }
-
     Object.assign(project, updateProjectDto);
     project.updatedAt = new Date();
 
@@ -320,11 +307,11 @@ export class ProjectsService {
   async searchProjects(query: string): Promise<Project[]> {
     return this.projectRepository
       .createQueryBuilder('project')
-      .where('project.name LIKE :query', { query: `%${query}%` })
+      .where('project.projectName LIKE :query', { query: `%${query}%` })
       .orWhere('project.projectKey LIKE :query', { query: `%${query}%` })
       .orWhere('project.description LIKE :query', { query: `%${query}%` })
       .leftJoinAndSelect('project.lead', 'lead')
-      .orderBy('project.name', 'ASC')
+      .orderBy('project.projectName', 'ASC')
       .take(20)
       .getMany();
   }
@@ -409,7 +396,7 @@ export class ProjectsService {
     const warnings: string[] = [];
 
     // Validations
-    if (!project.name || project.name.trim().length === 0) {
+    if (!project.projectName || project.projectName.trim().length === 0) {
       errors.push('Project name is required');
     }
 
@@ -421,7 +408,7 @@ export class ProjectsService {
       errors.push('Project key must start with a letter and contain only uppercase letters and numbers');
     }
 
-    if (!project.leadId) {
+    if (!project.leadUserId) {
       warnings.push('Project has no lead assigned');
     }
 

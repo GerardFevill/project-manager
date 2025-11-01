@@ -117,7 +117,6 @@ export class IssuesService {
       ...issueData,
       projectId,
       issueKey,
-      status: issueData.status || 'Open',
       priority: issueData.priority || 'Medium',
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -285,8 +284,7 @@ export class IssuesService {
       priority: originalIssue.priority,
       reporterId: originalIssue.reporterId,
       assigneeId: originalIssue.assigneeId,
-      dueDate: originalIssue.dueDate,
-      environment: originalIssue.environment,
+      dueDate: originalIssue.dueDate ? originalIssue.dueDate.toISOString().split('T')[0] : undefined,
       originalEstimate: originalIssue.originalEstimate,
     };
 

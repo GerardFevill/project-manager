@@ -7,7 +7,7 @@ import { NotFoundException } from '@nestjs/common';
 describe('VersionsService', () => {
   let service: VersionsService;
   const mockRepo = { findOne: jest.fn(), find: jest.fn(), create: jest.fn(), save: jest.fn(), remove: jest.fn(), createQueryBuilder: jest.fn(() => ({ where: jest.fn().mockReturnThis(), orderBy: jest.fn().mockReturnThis(), getMany: jest.fn().mockResolvedValue([]) })) };
-  const mockVersion = { id: '1', name: 'v1.0.0', projectId: 'proj1', released: false };
+  const mockVersion = { id: '1', name: 'v1.0.0', projectId: 'proj1', releasedAt: null };
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -33,9 +33,9 @@ describe('VersionsService', () => {
   describe('release', () => {
     it('should mark version as released', async () => {
       mockRepo.findOne.mockResolvedValue(mockVersion);
-      mockRepo.save.mockResolvedValue({ ...mockVersion, released: true });
+      mockRepo.save.mockResolvedValue({ ...mockVersion, releasedAt: new Date() });
       const result = await service.release('1');
-      expect(result.released).toBe(true);
+      expect(result.releasedAt).toBeDefined();
     });
   });
 });

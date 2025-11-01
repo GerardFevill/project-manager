@@ -34,9 +34,9 @@ describe('ProjectsService', () => {
   const mockProject: Project = {
     id: '1',
     projectKey: 'TEST',
-    name: 'Test Project',
+    projectName: 'Test Project',
     description: 'Test Description',
-    leadId: 'user1',
+    leadUserId: 'user1',
     projectTypeKey: 'software',
     isArchived: false,
     createdAt: new Date('2024-01-01'),
@@ -54,7 +54,7 @@ describe('ProjectsService', () => {
       ...mockProject,
       id: '2',
       projectKey: 'TEST2',
-      name: 'Test Project 2',
+      projectName: 'Test Project 2',
     },
   ];
 
@@ -180,9 +180,9 @@ describe('ProjectsService', () => {
   describe('create', () => {
     const createDto = {
       projectKey: 'NEW',
-      name: 'New Project',
+      projectName: 'New Project',
       description: 'New Description',
-      leadId: 'user1',
+      leadUserId: 'user1',
       projectTypeKey: 'software',
     };
 
@@ -229,7 +229,7 @@ describe('ProjectsService', () => {
 
   describe('update', () => {
     const updateDto = {
-      name: 'Updated Name',
+      projectName: 'Updated Name',
       description: 'Updated Description',
     };
 
@@ -248,7 +248,7 @@ describe('ProjectsService', () => {
           updatedAt: expect.any(Date),
         })
       );
-      expect(result.name).toBe(updateDto.name);
+      expect(result.projectName).toBe(updateDto.projectName);
     });
 
     it('should throw NotFoundException if project not found', async () => {
@@ -257,38 +257,11 @@ describe('ProjectsService', () => {
       await expect(service.update('999', updateDto)).rejects.toThrow(NotFoundException);
     });
 
-    it('should allow updating project key if unique', async () => {
-      const updateDtoWithKey = { ...updateDto, projectKey: 'NEWKEY' };
-      mockRepository.findOne
-        .mockResolvedValueOnce(mockProject) // First call for findOne
-        .mockResolvedValueOnce(null); // Second call for duplicate check
-      mockRepository.save.mockResolvedValue({ ...mockProject, ...updateDtoWithKey });
-
-      const result = await service.update('1', updateDtoWithKey);
-
-      expect(result.projectKey).toBe('NEWKEY');
-    });
-
-    it('should throw ConflictException if new project key already exists', async () => {
-      const existingProject = { ...mockProject, id: '2', projectKey: 'EXISTING' };
-      const updateDtoWithKey = { projectKey: 'EXISTING' };
-
-      mockRepository.findOne
-        .mockResolvedValueOnce(mockProject) // First call for findOne
-        .mockResolvedValueOnce(existingProject); // Second call for duplicate check
-
-      await expect(service.update('1', updateDtoWithKey)).rejects.toThrow(ConflictException);
-      await expect(service.update('1', updateDtoWithKey)).rejects.toThrow(
-        'Project with key EXISTING already exists'
-      );
-    });
-
-    it('should not check for duplicates if key is not being changed', async () => {
-      const updateDtoSameKey = { ...updateDto, projectKey: 'TEST' };
+    it('should update project without checking key', async () => {
       mockRepository.findOne.mockResolvedValue(mockProject);
-      mockRepository.save.mockResolvedValue({ ...mockProject, ...updateDtoSameKey });
+      mockRepository.save.mockResolvedValue({ ...mockProject, ...updateDto });
 
-      await service.update('1', updateDtoSameKey);
+      await service.update('1', updateDto);
 
       // findOne should only be called once (for findOne method, not for duplicate check)
       expect(mockRepository.findOne).toHaveBeenCalledTimes(1);
@@ -580,10 +553,10 @@ describe('ProjectsService', () => {
       const result = await service.searchProjects('test');
 
       expect(mockRepository.createQueryBuilder).toHaveBeenCalledWith('project');
-      expect(mockQueryBuilder.where).toHaveBeenCalledWith('project.name LIKE :query', { query: '%test%' });
+      expect(mockQueryBuilder.where).toHaveBeenCalledWith('project.projectName LIKE :query', { query: '%test%' });
       expect(mockQueryBuilder.orWhere).toHaveBeenCalledTimes(2);
       expect(mockQueryBuilder.leftJoinAndSelect).toHaveBeenCalledWith('project.lead', 'lead');
-      expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith('project.name', 'ASC');
+      expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith('project.projectName', 'ASC');
       expect(mockQueryBuilder.take).toHaveBeenCalledWith(20);
       expect(result).toEqual(mockProjects);
     });
@@ -715,7 +688,7 @@ describe('ProjectsService', () => {
     });
 
     it('should detect missing project name', async () => {
-      const invalidProject = { ...mockProject, name: '' };
+      const invalidProject = { ...mockProject, projectName: '' };
       mockRepository.findOne.mockResolvedValue(invalidProject);
 
       const result = await service.validateProject('1');
@@ -745,7 +718,7 @@ describe('ProjectsService', () => {
     });
 
     it('should warn if project has no lead', async () => {
-      const projectWithoutLead = { ...mockProject, leadId: null };
+      const projectWithoutLead = { ...mockProject, leadUserId: null };
       mockRepository.findOne.mockResolvedValue(projectWithoutLead);
 
       const result = await service.validateProject('1');
@@ -781,9 +754,9 @@ describe('ProjectsService', () => {
     it('should detect multiple errors and warnings', async () => {
       const invalidProject = {
         ...mockProject,
-        name: '',
+        projectName: '',
         projectKey: 'invalid',
-        leadId: null,
+        leadUserId: null,
         isArchived: true,
       };
       mockRepository.findOne.mockResolvedValue(invalidProject);

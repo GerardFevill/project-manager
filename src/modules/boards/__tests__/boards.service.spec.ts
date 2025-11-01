@@ -37,12 +37,12 @@ describe('BoardsService', () => {
       mockProjectRepo.findOne.mockResolvedValue({ id: 'proj1' });
       mockBoardRepo.create.mockReturnValue(mockBoard);
       mockBoardRepo.save.mockResolvedValue(mockBoard);
-      const result = await service.create({ name: 'Board 1', projectId: 'proj1', type: 'scrum' });
+      const result = await service.create({ boardName: 'Board 1', projectId: 'proj1', boardType: 'scrum' });
       expect(result).toEqual(mockBoard);
     });
     it('should throw BadRequestException if project not found', async () => {
       mockProjectRepo.findOne.mockResolvedValue(null);
-      await expect(service.create({ name: 'Board', projectId: 'invalid', type: 'scrum' })).rejects.toThrow(BadRequestException);
+      await expect(service.create({ boardName: 'Board', projectId: 'invalid', boardType: 'scrum' })).rejects.toThrow(BadRequestException);
     });
   });
 });

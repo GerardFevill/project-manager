@@ -58,7 +58,7 @@ export class WorkflowsService {
       ...createWorkflowDto,
       isActive: true,
       isDefault: false,
-      isDraft: true, // Nouveaux workflows commencent en draft
+      isActive: false, // Nouveaux workflows commencent en draft
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -104,7 +104,7 @@ export class WorkflowsService {
 
     return {
       workflowId: id,
-      workflowName: workflow.name,
+      workflowName: workflow.workflowName,
       transitions: [
         // Exemple de structure:
         // {
@@ -158,7 +158,7 @@ export class WorkflowsService {
     const workflow = await this.findOne(id);
 
     // Marquer comme publié et actif
-    workflow.isDraft = false;
+    !workflow.isActive = false;
     workflow.isActive = true;
     workflow.updatedAt = new Date();
 
@@ -166,11 +166,11 @@ export class WorkflowsService {
 
     return {
       workflowId: id,
-      workflowName: workflow.name,
+      workflowName: workflow.workflowName,
       published: true,
       publishedAt: new Date(),
       isActive: true,
-      isDraft: false,
+      isActive: true,
     };
   }
 
@@ -188,10 +188,10 @@ export class WorkflowsService {
 
     return {
       workflowId: id,
-      workflowName: workflow.name,
-      hasDraft: workflow.isDraft,
-      draft: workflow.isDraft ? workflow : null,
-      published: workflow.isDraft ? null : workflow,
+      workflowName: workflow.workflowName,
+      hasDraft: !workflow.isActive,
+      draft: !workflow.isActive ? workflow : null,
+      published: !workflow.isActive ? null : workflow,
     };
   }
 
@@ -206,7 +206,7 @@ export class WorkflowsService {
     // Si le workflow est déjà draft, retourner tel quel
     // Sinon, créer une copie avec isDraft=true
 
-    if (workflow.isDraft) {
+    if (!workflow.isActive) {
       return {
         workflowId: id,
         message: 'Workflow is already in draft mode',
@@ -218,7 +218,7 @@ export class WorkflowsService {
     // const draft = this.workflowRepository.create({
     //   ...workflow,
     //   id: undefined, // nouveau ID
-    //   isDraft: true,
+    //   isActive: false,
     //   parentWorkflowId: id,
     // });
 
@@ -227,7 +227,7 @@ export class WorkflowsService {
       originalWorkflow: workflow,
       draft: {
         ...workflow,
-        isDraft: true,
+        isActive: false,
         parentWorkflowId: id,
       },
       createdAt: new Date(),
@@ -255,7 +255,7 @@ export class WorkflowsService {
 
     return {
       workflowId: id,
-      workflowName: workflow.name,
+      workflowName: workflow.workflowName,
       properties,
       updatedAt: new Date(),
     };
@@ -331,16 +331,16 @@ export class WorkflowsService {
     const warnings: string[] = [];
 
     // Validations de base
-    if (!workflow.name || workflow.name.trim().length === 0) {
+    if (!workflow.workflowName || workflow.workflowName.trim().length === 0) {
       errors.push('Workflow name is required');
     }
 
-    if (workflow.name && workflow.name.length > 255) {
+    if (workflow.workflowName && workflow.workflowName.length > 255) {
       errors.push('Workflow name is too long (max 255 characters)');
     }
 
     // Avertissements
-    if (workflow.isDraft) {
+    if (!workflow.isActive) {
       warnings.push('Workflow is in draft mode and not published');
     }
 
@@ -357,11 +357,11 @@ export class WorkflowsService {
 
     return {
       workflowId: id,
-      workflowName: workflow.name,
+      workflowName: workflow.workflowName,
       valid: errors.length === 0,
       errors,
       warnings,
-      isDraft: workflow.isDraft,
+      isDraft: !workflow.isActive,
       isActive: workflow.isActive,
       validatedAt: new Date(),
     };
@@ -375,9 +375,9 @@ export class WorkflowsService {
   async searchWorkflows(query: string): Promise<Workflow[]> {
     return this.workflowRepository
       .createQueryBuilder('workflow')
-      .where('workflow.name LIKE :query', { query: `%${query}%` })
+      .where('workflow.workflowName LIKE :query', { query: `%${query}%` })
       .orWhere('workflow.description LIKE :query', { query: `%${query}%` })
-      .orderBy('workflow.name', 'ASC')
+      .orderBy('workflow.workflowName', 'ASC')
       .take(20)
       .getMany();
   }

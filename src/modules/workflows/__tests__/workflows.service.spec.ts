@@ -35,11 +35,10 @@ describe('WorkflowsService', () => {
   // Données de test
   const mockWorkflow: Workflow = {
     id: '1',
-    name: 'Test Workflow',
+    workflowName: 'Test Workflow',
     description: 'Test Description',
     isActive: true,
     isDefault: false,
-    isDraft: false,
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
   };
@@ -47,8 +46,8 @@ describe('WorkflowsService', () => {
   const mockDraftWorkflow: Workflow = {
     ...mockWorkflow,
     id: '2',
-    name: 'Draft Workflow',
-    isDraft: true,
+    workflowName: 'Draft Workflow',
+    isActive: false,
   };
 
   const mockWorkflows = [mockWorkflow, mockDraftWorkflow];
@@ -129,7 +128,7 @@ describe('WorkflowsService', () => {
 
   describe('create', () => {
     const createDto = {
-      name: 'New Workflow',
+      workflowName: 'New Workflow',
       description: 'New Description',
     };
 
@@ -143,11 +142,10 @@ describe('WorkflowsService', () => {
         ...createDto,
         isActive: true,
         isDefault: false,
-        isDraft: true,
-        createdAt: expect.any(Date),
+                createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
       });
-      expect(result.name).toBe(createDto.name);
+      expect(result.workflowName).toBe(createDto.workflowName);
     });
 
     it('should set isDraft to true by default for new workflows', async () => {
@@ -156,7 +154,7 @@ describe('WorkflowsService', () => {
 
       const result = await service.create(createDto);
 
-      expect(result.isDraft).toBe(true);
+      expect(result.isActive).toBe(true);
     });
 
     it('should set isActive to true by default', async () => {
@@ -171,7 +169,7 @@ describe('WorkflowsService', () => {
 
   describe('update', () => {
     const updateDto = {
-      name: 'Updated Workflow',
+      workflowName: 'Updated Workflow',
       description: 'Updated Description',
     };
 
@@ -189,7 +187,7 @@ describe('WorkflowsService', () => {
           updatedAt: expect.any(Date),
         })
       );
-      expect(result.name).toBe(updateDto.name);
+      expect(result.workflowName).toBe(updateDto.workflowName);
     });
 
     it('should throw NotFoundException if workflow not found', async () => {
@@ -228,7 +226,7 @@ describe('WorkflowsService', () => {
 
       expect(result).toEqual({
         workflowId: '1',
-        workflowName: mockWorkflow.name,
+        workflowName: mockWorkflow.workflowName,
         transitions: [],
       });
     });
@@ -281,13 +279,12 @@ describe('WorkflowsService', () => {
 
       expect(mockRepository.save).toHaveBeenCalledWith(
         expect.objectContaining({
-          isDraft: false,
-          isActive: true,
+                    isActive: true,
           updatedAt: expect.any(Date),
         })
       );
       expect(result.published).toBe(true);
-      expect(result.isDraft).toBe(false);
+      expect(result.isActive).toBe(false);
       expect(result.isActive).toBe(true);
       expect(result.publishedAt).toBeInstanceOf(Date);
     });
@@ -317,7 +314,7 @@ describe('WorkflowsService', () => {
 
       expect(result).toEqual({
         workflowId: '2',
-        workflowName: mockDraftWorkflow.name,
+        workflowName: mockDraftWorkflow.workflowName,
         hasDraft: true,
         draft: mockDraftWorkflow,
         published: null,
@@ -331,7 +328,7 @@ describe('WorkflowsService', () => {
 
       expect(result).toEqual({
         workflowId: '1',
-        workflowName: mockWorkflow.name,
+        workflowName: mockWorkflow.workflowName,
         hasDraft: false,
         draft: null,
         published: mockWorkflow,
@@ -391,7 +388,7 @@ describe('WorkflowsService', () => {
 
       expect(result).toEqual({
         workflowId: '1',
-        workflowName: mockWorkflow.name,
+        workflowName: mockWorkflow.workflowName,
         properties,
         updatedAt: expect.any(Date),
       });
@@ -531,7 +528,7 @@ describe('WorkflowsService', () => {
 
       expect(result.valid).toBe(true); // warnings don't affect validity
       expect(result.warnings).toContain('Workflow is in draft mode and not published');
-      expect(result.isDraft).toBe(true);
+      expect(result.isActive).toBe(true);
     });
 
     it('should warn if workflow is inactive', async () => {
@@ -549,8 +546,7 @@ describe('WorkflowsService', () => {
       const invalidWorkflow = {
         ...mockWorkflow,
         name: '',
-        isDraft: true,
-        isActive: false,
+                isActive: false,
       };
       mockRepository.findOne.mockResolvedValue(invalidWorkflow);
 
@@ -593,9 +589,9 @@ describe('WorkflowsService', () => {
       const result = await service.searchWorkflows('test');
 
       expect(mockRepository.createQueryBuilder).toHaveBeenCalledWith('workflow');
-      expect(mockQueryBuilder.where).toHaveBeenCalledWith('workflow.name LIKE :query', { query: '%test%' });
+      expect(mockQueryBuilder.where).toHaveBeenCalledWith('workflow.workflowName LIKE :query', { query: '%test%' });
       expect(mockQueryBuilder.orWhere).toHaveBeenCalledWith('workflow.description LIKE :query', { query: '%test%' });
-      expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith('workflow.name', 'ASC');
+      expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith('workflow.workflowName', 'ASC');
       expect(mockQueryBuilder.take).toHaveBeenCalledWith(20);
       expect(result).toEqual(mockWorkflows);
     });
