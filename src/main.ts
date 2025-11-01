@@ -1,36 +1,80 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import * as compression from 'compression';
 import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
 
-  // Security: Helmet - Set security HTTP headers
+  // Security
   app.use(helmet());
+  app.use(compression());
 
-  // Security: CORS - Configure Cross-Origin Resource Sharing
+  // CORS
   app.enableCors({
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:3001'],
+    origin: configService.get('CORS_ORIGIN') || '*',
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  // Security: Global validation pipe
+  // Global prefix
+  const apiPrefix = configService.get('API_PREFIX') || 'api/v1';
+  app.setGlobalPrefix(apiPrefix);
+
+  // API Versioning
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
+
+  // Global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // Strip properties that don't have decorators
-      forbidNonWhitelisted: true, // Throw error if non-whitelisted properties are present
-      transform: true, // Automatically transform payloads to DTO instances
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
       transformOptions: {
         enableImplicitConversion: true,
       },
     }),
   );
 
-  const port = process.env.PORT || 3000;
+  // Swagger Documentation
+  const config = new DocumentBuilder()
+    .setTitle('Jira Enterprise API')
+    .setDescription('Complete Jira Enterprise REST API with 700 tables')
+    .setVersion('1.0')
+    .addTag('auth', 'Authentication endpoints')
+    .addTag('users', 'User management')
+    .addTag('projects', 'Project management')
+    .addTag('issues', 'Issue tracking')
+    .addTag('workflows', 'Workflow management')
+    .addTag('boards', 'Agile boards')
+    .addTag('sprints', 'Sprint management')
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
+  // Start server
+  const port = configService.get('PORT') || 3000;
   await app.listen(port);
-  console.log(`Application is running on: http://localhost:${port}`);
+
+  console.log(`
+    ╔═══════════════════════════════════════════════════════╗
+    ║                                                       ║
+    ║     🚀 Jira Enterprise API is running!               ║
+    ║                                                       ║
+    ║     📝 API: http://localhost:${port}/${apiPrefix}           ║
+    ║     📚 Docs: http://localhost:${port}/api/docs            ║
+    ║     🗄️  Database: ${configService.get('DB_DATABASE')}     ║
+    ║     📊 Tables: 700                                    ║
+    ║                                                       ║
+    ╚═══════════════════════════════════════════════════════╝
+  `);
 }
+
 bootstrap();
