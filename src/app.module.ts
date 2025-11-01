@@ -3,46 +3,46 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 // Core Modules
-import { AuthModule } from './modules/auth/Auth.module';
-import { UsersModule } from './modules/users/Users.module';
-import { TeamsModule } from './modules/teams/Teams.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { TeamsModule } from './modules/teams/teams.module';
 
 // Project Management
-import { ProjectsModule } from './modules/projects/Projects.module';
-import { IssuesModule } from './modules/issues/Issues.module';
-import { BoardsModule } from './modules/boards/Boards.module';
-import { SprintsModule } from './modules/sprints/Sprints.module';
-import { RolesModule } from './modules/roles/Roles.module';
-import { WorkflowsModule } from './modules/workflows/Workflows.module';
+import { ProjectsModule } from './modules/projects/projects.module';
+import { IssuesModule } from './modules/issues/issues.module';
+import { BoardsModule } from './modules/boards/boards.module';
+import { SprintsModule } from './modules/sprints/sprints.module';
+import { RolesModule } from './modules/roles/roles.module';
+import { WorkflowsModule } from './modules/workflows/workflows.module';
 
 // Issue Features
-import { CommentsModule } from './modules/comments/Comments.module';
-import { AttachmentsModule } from './modules/attachments/Attachments.module';
-import { WatchersModule } from './modules/watchers/Watchers.module';
-import { LabelsModule } from './modules/labels/Labels.module';
-import { ActivityModule } from './modules/activity/Activity.module';
-import { IssueLinksModule } from './modules/issue-links/IssueLinks.module';
-import { CustomFieldsModule } from './modules/custom-fields/CustomFields.module';
-import { ComponentsModule } from './modules/components/Components.module';
-import { VersionsModule } from './modules/versions/Versions.module';
+import { CommentsModule } from './modules/comments/comments.module';
+import { AttachmentsModule } from './modules/attachments/attachments.module';
+import { WatchersModule } from './modules/watchers/watchers.module';
+import { LabelsModule } from './modules/labels/labels.module';
+import { ActivityModule } from './modules/activity/activity.module';
+import { IssueLinksModule } from './modules/issue-links/issue-links.module';
+import { CustomFieldsModule } from './modules/custom-fields/custom-fields.module';
+import { ComponentsModule } from './modules/components/components.module';
+import { VersionsModule } from './modules/versions/versions.module';
 
 // Phase 2 Modules
-import { NotificationsModule } from './modules/notifications/Notifications.module';
-import { FiltersModule } from './modules/filters/Filters.module';
-import { DashboardsModule } from './modules/dashboards/Dashboards.module';
-import { SearchModule } from './modules/search/Search.module';
-import { IssueHistoryModule } from './modules/issue-history/IssueHistory.module';
-import { WebhooksModule } from './modules/webhooks/Webhooks.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { FiltersModule } from './modules/filters/filters.module';
+import { DashboardsModule } from './modules/dashboards/dashboards.module';
+import { SearchModule } from './modules/search/search.module';
+import { IssueHistoryModule } from './modules/issue-history/issue-history.module';
+import { WebhooksModule } from './modules/webhooks/webhooks.module';
 
 // Phase 3 Modules
-import { TimeReportsModule } from './modules/time-reports/TimeReports.module';
-import { SlaModule } from './modules/sla/Sla.module';
-import { AutomationModule } from './modules/automation/Automation.module';
-import { AuditLogsModule } from './modules/audit-logs/AuditLogs.module';
+import { TimeReportsModule } from './modules/time-reports/time-reports.module';
+import { SlaModule } from './modules/sla/sla.module';
+import { AutomationModule } from './modules/automation/automation.module';
+import { AuditLogsModule } from './modules/audit-logs/audit-logs.module';
 
 // Phase 4 - Portfolio & Strategic
-import { PortfoliosModule } from './modules/portfolios/Portfolios.module';
-import { ProgramsModule } from './modules/programs/Programs.module';
+import { PortfoliosModule } from './modules/portfolios/portfolios.module';
+import { ProgramsModule } from './modules/programs/programs.module';
 import { RoadmapsModule } from './modules/roadmaps/Roadmaps.module';
 import { InitiativesModule } from './modules/initiatives/Initiatives.module';
 import { EpicsModule } from './modules/epics/Epics.module';
