@@ -74,6 +74,17 @@ export class Issue {
   @Column({ name: 'resolved_at', type: 'timestamp', nullable: true })
   resolvedAt: Date;
 
+  // Parent/Child relationship for subtasks
+  @Column({ name: 'parent_id', type: 'bigint', nullable: true })
+  parentId: string;
+
+  @ManyToOne(() => Issue, (issue) => issue.subtasks, { nullable: true })
+  @JoinColumn({ name: 'parent_id' })
+  parent: Issue;
+
+  @OneToMany(() => Issue, (issue) => issue.parent)
+  subtasks: Issue[];
+
   // Relations with new modules
   @ManyToMany(() => Label, (label) => label.issues)
   @JoinTable({
