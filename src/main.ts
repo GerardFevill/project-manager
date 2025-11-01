@@ -15,8 +15,9 @@ async function bootstrap() {
   app.use(compression());
 
   // CORS
+  const corsOrigins = configService.get('CORS_ORIGIN')?.split(',') || '*';
   app.enableCors({
-    origin: configService.get('CORS_ORIGIN') || '*',
+    origin: corsOrigins,
     credentials: true,
   });
 
@@ -41,26 +42,30 @@ async function bootstrap() {
     }),
   );
 
-  // Swagger Documentation
-  const config = new DocumentBuilder()
-    .setTitle('Jira Enterprise API')
-    .setDescription('Complete Jira Enterprise REST API with 700 tables')
-    .setVersion('1.0')
-    .addTag('auth', 'Authentication endpoints')
-    .addTag('users', 'User management')
-    .addTag('projects', 'Project management')
-    .addTag('issues', 'Issue tracking')
-    .addTag('workflows', 'Workflow management')
-    .addTag('boards', 'Agile boards')
-    .addTag('sprints', 'Sprint management')
-    .addBearerAuth()
-    .build();
+  // Swagger Documentation - Only in dev/test
+  const swaggerEnabled = configService.get<boolean>('SWAGGER_ENABLED');
+  if (swaggerEnabled) {
+    const config = new DocumentBuilder()
+      .setTitle('Jira Enterprise API')
+      .setDescription('Complete Jira Enterprise REST API with 700 tables')
+      .setVersion('1.0')
+      .addTag('auth', 'Authentication endpoints')
+      .addTag('users', 'User management')
+      .addTag('projects', 'Project management')
+      .addTag('issues', 'Issue tracking')
+      .addTag('workflows', 'Workflow management')
+      .addTag('boards', 'Agile boards')
+      .addTag('sprints', 'Sprint management')
+      .addBearerAuth()
+      .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api/docs', app, document);
+  }
 
   // Start server
   const port = configService.get('PORT') || 3000;
+  const env = configService.get('NODE_ENV') || 'development';
   await app.listen(port);
 
   console.log(`
@@ -68,9 +73,10 @@ async function bootstrap() {
     ║                                                       ║
     ║     🚀 Jira Enterprise API is running!               ║
     ║                                                       ║
+    ║     🌍 Environment: ${env.padEnd(31)}║
     ║     📝 API: http://localhost:${port}/${apiPrefix}           ║
-    ║     📚 Docs: http://localhost:${port}/api/docs            ║
-    ║     🗄️  Database: ${configService.get('DB_DATABASE')}     ║
+    ${swaggerEnabled ? `║     📚 Docs: http://localhost:${port}/api/docs            ║` : ''}
+    ║     🗄️  Database: ${configService.get('DB_DATABASE')?.padEnd(29) || 'N/A'.padEnd(29)}║
     ║     📊 Tables: 700                                    ║
     ║                                                       ║
     ╚═══════════════════════════════════════════════════════╝

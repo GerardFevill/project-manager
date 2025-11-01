@@ -15,7 +15,7 @@ import { SprintsModule } from './modules/sprints/sprints.module';
     // Configuration
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: `.env.${process.env.NODE_ENV || 'development'}`,
     }),
 
     // Database
