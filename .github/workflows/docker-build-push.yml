@@ -2,16 +2,20 @@ name: Docker Build and Push
 
 on:
   push:
+    tags:
+      - 'v*'
     branches:
       - main
       - master
       - feat-jira-full
-    tags:
-      - 'v*'
   pull_request:
     branches:
       - main
       - master
+  workflow_run:
+    workflows: ["Version on Commit"]
+    types:
+      - completed
 
 env:
   DOCKER_IMAGE: gerard.nouglozeh/jira-enterprise-api
