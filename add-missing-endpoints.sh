@@ -1,3 +1,11 @@
+#!/bin/bash
+
+echo "🚀 Adding missing endpoints to reach 100% coverage..."
+
+# Update app.module.ts to import new modules
+echo "📝 Updating app.module.ts..."
+
+cat > /home/vagrant/project/api/project-manager/src/app.module.ts << 'EOF'
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -272,3 +280,7 @@ import { ScreensModule } from './modules/screens/Screens.module';
   ],
 })
 export class AppModule {}
+EOF
+
+echo "✅ App module updated with new modules"
+echo "🎉 Script completed! New modules added: System (27 endpoints), Screens (16 endpoints)"

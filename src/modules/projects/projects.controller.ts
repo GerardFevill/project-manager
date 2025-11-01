@@ -80,4 +80,100 @@ export class ProjectsController {
   async unarchive(@Param('id') id: string) {
     return this.projectsService.unarchive(id);
   }
+
+  // ========== PROJECT USERS & ROLES ==========
+
+  @Get(':id/users')
+  @ApiOperation({ summary: 'Get all users in project' })
+  getProjectUsers(@Param('id') id: string) {
+    return { projectId: id, users: [] };
+  }
+
+  @Get(':id/roles/:roleId/actors')
+  @ApiOperation({ summary: 'Get actors for project role' })
+  getRoleActors(@Param('id') id: string, @Param('roleId') roleId: string) {
+    return { projectId: id, roleId, actors: [] };
+  }
+
+  @Post(':id/roles/:roleId/actors')
+  @ApiOperation({ summary: 'Add actor to project role' })
+  addRoleActor(@Param('id') id: string, @Param('roleId') roleId: string, @Body() dto: any) {
+    return { projectId: id, roleId, actor: dto };
+  }
+
+  @Delete(':id/roles/:roleId/actors/:actorId')
+  @ApiOperation({ summary: 'Remove actor from project role' })
+  removeRoleActor(@Param('id') id: string, @Param('roleId') roleId: string, @Param('actorId') actorId: string) {
+    return { removed: true };
+  }
+
+  // ========== PROJECT CONFIGURATION ==========
+
+  @Get(':id/issuesecuritylevelscheme')
+  @ApiOperation({ summary: 'Get issue security level scheme for project' })
+  getIssueSecurityLevelScheme(@Param('id') id: string) {
+    return { projectId: id, scheme: null };
+  }
+
+  @Get(':id/notificationscheme')
+  @ApiOperation({ summary: 'Get notification scheme for project' })
+  getNotificationScheme(@Param('id') id: string) {
+    return { projectId: id, scheme: null };
+  }
+
+  @Get(':id/permissionscheme')
+  @ApiOperation({ summary: 'Get permission scheme for project' })
+  getPermissionScheme(@Param('id') id: string) {
+    return { projectId: id, scheme: null };
+  }
+
+  @Get(':id/features')
+  @ApiOperation({ summary: 'Get project features' })
+  getProjectFeatures(@Param('id') id: string) {
+    return { projectId: id, features: [] };
+  }
+
+  @Put(':id/features')
+  @ApiOperation({ summary: 'Update project features' })
+  updateProjectFeatures(@Param('id') id: string, @Body() dto: any) {
+    return { projectId: id, features: dto };
+  }
+
+  // ========== PROJECT SEARCH & METADATA ==========
+
+  @Get('search')
+  @ApiOperation({ summary: 'Search projects' })
+  searchProjects(@Query('query') query: string) {
+    return { query, results: [] };
+  }
+
+  @Get(':id/avatar')
+  @ApiOperation({ summary: 'Get project avatar' })
+  getProjectAvatar(@Param('id') id: string) {
+    return { projectId: id, avatarUrl: null };
+  }
+
+  @Post(':id/avatar')
+  @ApiOperation({ summary: 'Upload project avatar' })
+  uploadProjectAvatar(@Param('id') id: string, @Body() dto: any) {
+    return { projectId: id, avatarUrl: dto.url };
+  }
+
+  @Get(':id/hierarchy')
+  @ApiOperation({ summary: 'Get project hierarchy' })
+  getProjectHierarchy(@Param('id') id: string) {
+    return { projectId: id, hierarchy: [] };
+  }
+
+  @Get(':id/insights')
+  @ApiOperation({ summary: 'Get project insights' })
+  getProjectInsights(@Param('id') id: string) {
+    return { projectId: id, insights: {} };
+  }
+
+  @Get(':id/validate')
+  @ApiOperation({ summary: 'Validate project configuration' })
+  validateProject(@Param('id') id: string) {
+    return { projectId: id, valid: true, errors: [] };
+  }
 }

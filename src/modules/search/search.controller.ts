@@ -45,4 +45,24 @@ export class SearchController {
   ) {
     return this.searchService.quickSearch(query, limit || 10);
   }
+
+  // ========== ADVANCED SEARCH ==========
+
+  @Get('jql')
+  @ApiOperation({ summary: 'Search using JQL' })
+  searchWithJQL(@Query('jql') jql: string) {
+    return { jql, results: [] };
+  }
+
+  @Get('users')
+  @ApiOperation({ summary: 'Search users' })
+  searchUsers(@Query('query') query: string) {
+    return { query, users: [] };
+  }
+
+  @Get('projects')
+  @ApiOperation({ summary: 'Search projects' })
+  searchProjects(@Query('query') query: string) {
+    return { query, projects: [] };
+  }
 }

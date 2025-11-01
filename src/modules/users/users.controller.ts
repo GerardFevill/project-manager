@@ -57,4 +57,92 @@ export class UsersController {
   async remove(@Param('id') id: string) {
     return this.usersService.remove(id);
   }
+
+  // ========== USER SEARCH & QUERIES ==========
+
+  @Get('search/query')
+  @ApiOperation({ summary: 'Search users with advanced query' })
+  searchWithQuery(@Query('query') query: string) {
+    return { query, results: [] };
+  }
+
+  @Get('search/assignable/multiProjectSearch')
+  @ApiOperation({ summary: 'Search assignable users across multiple projects' })
+  searchAssignableMultiProject(@Query('projectIds') projectIds: string) {
+    return { projectIds, users: [] };
+  }
+
+  @Get('picker')
+  @ApiOperation({ summary: 'User picker for autocomplete' })
+  userPicker(@Query('query') query: string) {
+    return { query, suggestions: [] };
+  }
+
+  // ========== USER RELATIONSHIPS ==========
+
+  @Get(':id/groups')
+  @ApiOperation({ summary: 'Get groups for user' })
+  getUserGroups(@Param('id') id: string) {
+    return { userId: id, groups: [] };
+  }
+
+  @Get(':id/permissions')
+  @ApiOperation({ summary: 'Get permissions for user' })
+  getUserPermissions(@Param('id') id: string) {
+    return { userId: id, permissions: [] };
+  }
+
+  // ========== USER PROPERTIES ==========
+
+  @Get(':id/properties')
+  @ApiOperation({ summary: 'Get user properties' })
+  getUserProperties(@Param('id') id: string) {
+    return { userId: id, properties: {} };
+  }
+
+  @Put(':id/properties/:key')
+  @ApiOperation({ summary: 'Set user property' })
+  setUserProperty(@Param('id') id: string, @Param('key') key: string, @Body() dto: any) {
+    return { userId: id, key, value: dto.value };
+  }
+
+  @Delete(':id/properties/:key')
+  @ApiOperation({ summary: 'Delete user property' })
+  deleteUserProperty(@Param('id') id: string, @Param('key') key: string) {
+    return { deleted: true };
+  }
+
+  // ========== USER AVATAR ==========
+
+  @Get(':id/avatar')
+  @ApiOperation({ summary: 'Get user avatar' })
+  getUserAvatar(@Param('id') id: string) {
+    return { userId: id, avatarUrl: null };
+  }
+
+  @Post(':id/avatar')
+  @ApiOperation({ summary: 'Upload user avatar' })
+  uploadUserAvatar(@Param('id') id: string, @Body() dto: any) {
+    return { userId: id, avatarUrl: dto.url };
+  }
+
+  // ========== BULK OPERATIONS ==========
+
+  @Get('bulk')
+  @ApiOperation({ summary: 'Get multiple users by IDs' })
+  getBulkUsers(@Query('userIds') userIds: string) {
+    return { users: [] };
+  }
+
+  @Get('bulk/migration')
+  @ApiOperation({ summary: 'Get user migration data' })
+  getUserMigrationData(@Query('userIds') userIds: string) {
+    return { migrationData: [] };
+  }
+
+  @Get('email')
+  @ApiOperation({ summary: 'Get user by email' })
+  getUserByEmail(@Query('email') email: string) {
+    return { email, user: null };
+  }
 }

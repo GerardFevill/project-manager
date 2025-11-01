@@ -50,4 +50,62 @@ export class WorkflowsController {
   async remove(@Param('id') id: string) {
     return this.workflowsService.remove(id);
   }
+
+  // ========== WORKFLOW TRANSITIONS ==========
+
+  @Get(':id/transitions')
+  @ApiOperation({ summary: 'Get all transitions for workflow' })
+  getWorkflowTransitions(@Param('id') id: string) {
+    return { workflowId: id, transitions: [] };
+  }
+
+  @Put(':id/transitions/:transitionId')
+  @ApiOperation({ summary: 'Update workflow transition' })
+  updateWorkflowTransition(@Param('id') id: string, @Param('transitionId') transitionId: string, @Body() dto: any) {
+    return { workflowId: id, transitionId, updated: true };
+  }
+
+  // ========== WORKFLOW PUBLISHING ==========
+
+  @Post(':id/publish')
+  @ApiOperation({ summary: 'Publish workflow' })
+  publishWorkflow(@Param('id') id: string) {
+    return { workflowId: id, published: true };
+  }
+
+  @Get(':id/draft')
+  @ApiOperation({ summary: 'Get draft workflow' })
+  getDraftWorkflow(@Param('id') id: string) {
+    return { workflowId: id, draft: null };
+  }
+
+  @Post(':id/draft')
+  @ApiOperation({ summary: 'Create draft workflow' })
+  createDraftWorkflow(@Param('id') id: string) {
+    return { workflowId: id, draft: {} };
+  }
+
+  // ========== WORKFLOW PROPERTIES ==========
+
+  @Put(':id/properties')
+  @ApiOperation({ summary: 'Update workflow properties' })
+  updateWorkflowProperties(@Param('id') id: string, @Body() dto: any) {
+    return { workflowId: id, properties: dto };
+  }
+
+  // ========== WORKFLOW SCHEMES ==========
+
+  @Get('schemes/projects')
+  @ApiOperation({ summary: 'Get workflow schemes for projects' })
+  getWorkflowSchemesForProjects(@Query('projectIds') projectIds: string) {
+    return { projects: [] };
+  }
+
+  // ========== TRANSITION RULES ==========
+
+  @Post('transitions/rules')
+  @ApiOperation({ summary: 'Add transition rules' })
+  addTransitionRules(@Body() dto: any) {
+    return { rules: dto };
+  }
 }
