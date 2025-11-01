@@ -1,0 +1,814 @@
+databaseChangeLog:
+  - changeSet:
+      id: 023-create-bigpicture-structure-tables
+      author: system
+      changes:
+        # Big Picture / Structure - Portfolio Planning & Visualization
+
+        # Hierarchy Definitions
+        - createTable:
+            tableName: ao_e8b6cc_hierarchy
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: hierarchy_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: project_id
+                  type: BIGINT
+              - column:
+                  name: root_issue_id
+                  type: BIGINT
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: created_by
+                  type: VARCHAR(255)
+
+        # Hierarchy Levels
+        - createTable:
+            tableName: ao_e8b6cc_hierarchy_level
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: level_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: level_number
+                  type: INTEGER
+              - column:
+                  name: issue_type_id
+                  type: BIGINT
+              - column:
+                  name: color
+                  type: VARCHAR(20)
+
+        # Structure Nodes
+        - createTable:
+            tableName: ao_e8b6cc_structure_node
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: parent_node_id
+                  type: BIGINT
+              - column:
+                  name: level_id
+                  type: BIGINT
+              - column:
+                  name: position
+                  type: INTEGER
+              - column:
+                  name: expanded
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+
+        # Gantt Configurations
+        - createTable:
+            tableName: ao_e8b6cc_gantt_config
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: config_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+              - column:
+                  name: zoom_level
+                  type: VARCHAR(50)
+              - column:
+                  name: show_baselines
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: show_dependencies
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+              - column:
+                  name: color_scheme
+                  type: VARCHAR(100)
+
+        # Baselines
+        - createTable:
+            tableName: ao_e8b6cc_baseline
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: baseline_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: baseline_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: created_by
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+
+        # Baseline Snapshots
+        - createTable:
+            tableName: ao_e8b6cc_baseline_snapshot
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: baseline_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_date
+                  type: TIMESTAMP
+              - column:
+                  name: end_date
+                  type: TIMESTAMP
+              - column:
+                  name: progress
+                  type: INTEGER
+              - column:
+                  name: snapshot_data
+                  type: TEXT
+
+        # Dependencies
+        - createTable:
+            tableName: ao_e8b6cc_dependency
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: source_issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: target_issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dependency_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: lag_days
+                  type: INTEGER
+                  defaultValue: '0'
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+
+        # Resources
+        - createTable:
+            tableName: ao_e8b6cc_resource
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: resource_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: resource_type
+                  type: VARCHAR(100)
+              - column:
+                  name: capacity_hours
+                  type: DECIMAL(10,2)
+              - column:
+                  name: cost_per_hour
+                  type: DECIMAL(10,2)
+
+        # Resource Allocation
+        - createTable:
+            tableName: ao_e8b6cc_resource_allocation
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: resource_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: allocated_hours
+                  type: DECIMAL(10,2)
+              - column:
+                  name: allocation_percent
+                  type: INTEGER
+              - column:
+                  name: start_date
+                  type: DATE
+              - column:
+                  name: end_date
+                  type: DATE
+
+        # Milestones
+        - createTable:
+            tableName: ao_e8b6cc_milestone
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: milestone_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+              - column:
+                  name: milestone_date
+                  type: DATE
+              - column:
+                  name: color
+                  type: VARCHAR(20)
+              - column:
+                  name: icon
+                  type: VARCHAR(50)
+
+        # Views
+        - createTable:
+            tableName: ao_e8b6cc_view
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: view_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: view_type
+                  type: VARCHAR(100)
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+              - column:
+                  name: owner
+                  type: VARCHAR(255)
+              - column:
+                  name: is_public
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: config_json
+                  type: TEXT
+
+        # View Filters
+        - createTable:
+            tableName: ao_e8b6cc_view_filter
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: view_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: filter_type
+                  type: VARCHAR(100)
+              - column:
+                  name: filter_value
+                  type: TEXT
+              - column:
+                  name: operator
+                  type: VARCHAR(50)
+
+        # Custom Columns
+        - createTable:
+            tableName: ao_e8b6cc_custom_column
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: column_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: view_id
+                  type: BIGINT
+              - column:
+                  name: field_id
+                  type: VARCHAR(255)
+              - column:
+                  name: width
+                  type: INTEGER
+              - column:
+                  name: position
+                  type: INTEGER
+              - column:
+                  name: visible
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+
+        # Formulas
+        - createTable:
+            tableName: ao_e8b6cc_formula
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: formula_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: formula_expression
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: return_type
+                  type: VARCHAR(100)
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+              - column:
+                  name: description
+                  type: TEXT
+
+        # Rollup Configurations
+        - createTable:
+            tableName: ao_e8b6cc_rollup_config
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: config_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+              - column:
+                  name: source_field
+                  type: VARCHAR(255)
+              - column:
+                  name: target_field
+                  type: VARCHAR(255)
+              - column:
+                  name: aggregation_type
+                  type: VARCHAR(50)
+
+        # Workload Scheme
+        - createTable:
+            tableName: ao_e8b6cc_workload_scheme
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: scheme_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+              - column:
+                  name: hours_per_day
+                  type: DECIMAL(5,2)
+              - column:
+                  name: days_per_week
+                  type: INTEGER
+              - column:
+                  name: start_time
+                  type: TIME
+              - column:
+                  name: end_time
+                  type: TIME
+
+        # Sharing Permissions
+        - createTable:
+            tableName: ao_e8b6cc_share_permission
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+              - column:
+                  name: permission_type
+                  type: VARCHAR(100)
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: group_name
+                  type: VARCHAR(255)
+              - column:
+                  name: access_level
+                  type: VARCHAR(50)
+
+        # Export Templates
+        - createTable:
+            tableName: ao_e8b6cc_export_template
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: template_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: export_format
+                  type: VARCHAR(50)
+              - column:
+                  name: template_config
+                  type: TEXT
+              - column:
+                  name: owner
+                  type: VARCHAR(255)
+
+        # Automation Rules
+        - createTable:
+            tableName: ao_e8b6cc_automation_rule
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: rule_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+              - column:
+                  name: trigger_event
+                  type: VARCHAR(100)
+              - column:
+                  name: condition_jql
+                  type: TEXT
+              - column:
+                  name: action_type
+                  type: VARCHAR(100)
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+
+        # Timeline Markers
+        - createTable:
+            tableName: ao_e8b6cc_timeline_marker
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: marker_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+              - column:
+                  name: marker_date
+                  type: DATE
+              - column:
+                  name: marker_type
+                  type: VARCHAR(100)
+              - column:
+                  name: color
+                  type: VARCHAR(20)
+              - column:
+                  name: description
+                  type: TEXT
+
+        # Portfolio Snapshots
+        - createTable:
+            tableName: ao_e8b6cc_portfolio_snapshot
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: snapshot_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: snapshot_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: created_by
+                  type: VARCHAR(255)
+              - column:
+                  name: snapshot_data
+                  type: TEXT
+
+        # Risk Register
+        - createTable:
+            tableName: ao_e8b6cc_risk
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: risk_title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+              - column:
+                  name: issue_id
+                  type: BIGINT
+              - column:
+                  name: probability
+                  type: INTEGER
+              - column:
+                  name: impact
+                  type: INTEGER
+              - column:
+                  name: mitigation_plan
+                  type: TEXT
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+
+        # Custom Fields Mapping
+        - createTable:
+            tableName: ao_e8b6cc_field_mapping
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+              - column:
+                  name: source_field
+                  type: VARCHAR(255)
+              - column:
+                  name: target_field
+                  type: VARCHAR(255)
+              - column:
+                  name: mapping_type
+                  type: VARCHAR(100)
+              - column:
+                  name: transformation_rule
+                  type: TEXT
+
+        # Calendar Configuration
+        - createTable:
+            tableName: ao_e8b6cc_calendar
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: calendar_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+              - column:
+                  name: working_days
+                  type: VARCHAR(50)
+              - column:
+                  name: timezone
+                  type: VARCHAR(100)
+
+        # Holidays
+        - createTable:
+            tableName: ao_e8b6cc_holiday
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: calendar_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: holiday_name
+                  type: VARCHAR(255)
+              - column:
+                  name: holiday_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: recurring
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+
+        # User Preferences
+        - createTable:
+            tableName: ao_e8b6cc_user_preference
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: preference_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: preference_value
+                  type: TEXT
+
+        # Activity Log
+        - createTable:
+            tableName: ao_e8b6cc_activity_log
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: activity_type
+                  type: VARCHAR(100)
+              - column:
+                  name: activity_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: details
+                  type: TEXT
+
+        # Sync Configuration
+        - createTable:
+            tableName: ao_e8b6cc_sync_config
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: config_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hierarchy_id
+                  type: BIGINT
+              - column:
+                  name: sync_enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+              - column:
+                  name: sync_interval_minutes
+                  type: INTEGER
+              - column:
+                  name: last_sync
+                  type: TIMESTAMP

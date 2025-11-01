@@ -1,24 +1,72 @@
 databaseChangeLog:
+  # CORE TABLES - Base Jira structure (81 tables)
   - include:
-      file: database/migrations/001-create-users-table.yaml
-      relativeToChangelogFile: false
+      file: ../migrations/001-create-users-security.yaml
+  - include:
+      file: ../migrations/002-create-projects.yaml
+  - include:
+      file: ../migrations/003-create-issues-core.yaml
+  - include:
+      file: ../migrations/004-create-workflows.yaml
+  - include:
+      file: ../migrations/005-create-sprints-agile.yaml
+  - include:
+      file: ../migrations/006-create-comments-worklogs.yaml
+  - include:
+      file: ../migrations/007-create-custom-fields.yaml
+  - include:
+      file: ../migrations/008-create-attachments-links.yaml
+  - include:
+      file: ../migrations/009-create-permissions-roles.yaml
+  - include:
+      file: ../migrations/010-create-notifications.yaml
+  - include:
+      file: ../migrations/011-create-reports-analytics.yaml
+  - include:
+      file: ../migrations/012-create-indexes.yaml
 
+  # ENTERPRISE MODULES (335 tables)
   - include:
-      file: database/migrations/002-create-tasks-table.yaml
-      relativeToChangelogFile: false
+      file: ../migrations/013-create-service-management.yaml
+  - include:
+      file: ../migrations/014-create-tempo-timesheets.yaml
+  - include:
+      file: ../migrations/015-create-insight-assets.yaml
+  - include:
+      file: ../migrations/016-create-automation.yaml
+  - include:
+      file: ../migrations/017-create-portfolio-roadmaps.yaml
+  - include:
+      file: ../migrations/018-create-webhooks-notifications.yaml
 
+  # AUTHENTICATION & USER MANAGEMENT (24 tables)
   - include:
-      file: database/migrations/003-enhance-tasks-table.yaml
-      relativeToChangelogFile: false
+      file: ../migrations/019-create-crowd-complete.yaml
 
+  # SYSTEM TABLES (100+ tables)
   - include:
-      file: database/migrations/004-create-task-history.yaml
-      relativeToChangelogFile: false
+      file: ../migrations/020-create-system-tables.yaml
 
+  # ADDITIONAL FEATURES (60+ tables)
   - include:
-      file: database/migrations/005-create-task-indexes.yaml
-      relativeToChangelogFile: false
+      file: ../migrations/021-create-additional-jira-tables.yaml
 
+  # POPULAR PLUGINS (~204 tables)
   - include:
-      file: database/migrations/007-add-task-type-column.yaml
-      relativeToChangelogFile: false
+      file: ../migrations/022-create-scriptrunner.yaml
+  - include:
+      file: ../migrations/023-create-bigpicture-structure.yaml
+  - include:
+      file: ../migrations/024-create-zephyr-test.yaml
+  - include:
+      file: ../migrations/025-create-xray-test.yaml
+  - include:
+      file: ../migrations/026-create-proforma-forms.yaml
+  - include:
+      file: ../migrations/027-create-additional-plugins.yaml
+  - include:
+      file: ../migrations/028-create-extended-system.yaml
+
+  # ADVANCED FEATURES (17 tables - AI/ML, Analytics, GDPR)
+  - include:
+      file: ../migrations/029-create-final-tables.yaml

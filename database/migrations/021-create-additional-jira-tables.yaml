@@ -1,0 +1,1356 @@
+databaseChangeLog:
+  # Additional Jira Tables - Advanced Features, Integrations, Analytics
+
+  # Issue Type Scheme
+  - changeSet:
+      id: 021-create-issue-type-scheme
+      author: system
+      changes:
+        - createTable:
+            tableName: issuetypescheme
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+
+  - changeSet:
+      id: 021-create-issue-type-scheme-entity
+      author: system
+      changes:
+        - createTable:
+            tableName: issuetypeschemeentity
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_type_id
+                  type: BIGINT
+              - column:
+                  name: scheme_id
+                  type: BIGINT
+
+  # Priority Scheme
+  - changeSet:
+      id: 021-create-priority-scheme
+      author: system
+      changes:
+        - createTable:
+            tableName: priorityscheme
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: default_option_id
+                  type: BIGINT
+
+  # Analytics Tables
+  - changeSet:
+      id: 021-create-analytics-event
+      author: system
+      changes:
+        - createTable:
+            tableName: analytics_event
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: event_type
+                  type: VARCHAR(100)
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: event_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: event_data
+                  type: TEXT
+
+  - changeSet:
+      id: 021-create-analytics-metric
+      author: system
+      changes:
+        - createTable:
+            tableName: analytics_metric
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: metric_name
+                  type: VARCHAR(255)
+              - column:
+                  name: metric_value
+                  type: DECIMAL(18,2)
+              - column:
+                  name: snapshot_date
+                  type: DATE
+
+  - changeSet:
+      id: 021-create-usage-statistics
+      author: system
+      changes:
+        - createTable:
+            tableName: usage_statistics
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: stat_type
+                  type: VARCHAR(100)
+              - column:
+                  name: stat_value
+                  type: BIGINT
+              - column:
+                  name: recorded_date
+                  type: DATE
+
+  # DevOps Integration
+  - changeSet:
+      id: 021-create-devops-deployment
+      author: system
+      changes:
+        - createTable:
+            tableName: devops_deployment
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: deployment_id
+                  type: VARCHAR(255)
+              - column:
+                  name: environment
+                  type: VARCHAR(100)
+              - column:
+                  name: state
+                  type: VARCHAR(50)
+              - column:
+                  name: deployed_date
+                  type: TIMESTAMP
+
+  - changeSet:
+      id: 021-create-devops-build
+      author: system
+      changes:
+        - createTable:
+            tableName: devops_build
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: build_number
+                  type: VARCHAR(255)
+              - column:
+                  name: build_state
+                  type: VARCHAR(50)
+              - column:
+                  name: build_date
+                  type: TIMESTAMP
+
+  - changeSet:
+      id: 021-create-repository-mapping
+      author: system
+      changes:
+        - createTable:
+            tableName: repository_mapping
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_rm_project
+                    references: project(id)
+              - column:
+                  name: repository_url
+                  type: TEXT
+
+  # Integration Tables
+  - changeSet:
+      id: 021-create-app-link
+      author: system
+      changes:
+        - createTable:
+            tableName: app_link
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: application_type
+                  type: VARCHAR(100)
+              - column:
+                  name: rpc_url
+                  type: TEXT
+              - column:
+                  name: display_url
+                  type: TEXT
+
+  - changeSet:
+      id: 021-create-app-link-auth
+      author: system
+      changes:
+        - createTable:
+            tableName: app_link_auth
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: app_link_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: auth_type
+                  type: VARCHAR(100)
+              - column:
+                  name: credentials
+                  type: TEXT
+
+  - changeSet:
+      id: 021-create-external-link
+      author: system
+      changes:
+        - createTable:
+            tableName: external_link
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: link_type
+                  type: VARCHAR(100)
+              - column:
+                  name: url
+                  type: TEXT
+              - column:
+                  name: title
+                  type: VARCHAR(500)
+
+  # Advanced Search
+  - changeSet:
+      id: 021-create-search-index
+      author: system
+      changes:
+        - createTable:
+            tableName: search_index
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: entity_type
+                  type: VARCHAR(100)
+              - column:
+                  name: entity_id
+                  type: BIGINT
+              - column:
+                  name: index_content
+                  type: TEXT
+              - column:
+                  name: last_indexed
+                  type: TIMESTAMP
+
+  - changeSet:
+      id: 021-create-search-context
+      author: system
+      changes:
+        - createTable:
+            tableName: search_context
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: context_name
+                  type: VARCHAR(255)
+              - column:
+                  name: context_jql
+                  type: TEXT
+
+  # Email Templates
+  - changeSet:
+      id: 021-create-email-template
+      author: system
+      changes:
+        - createTable:
+            tableName: email_template
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: template_name
+                  type: VARCHAR(255)
+              - column:
+                  name: subject
+                  type: VARCHAR(500)
+              - column:
+                  name: body_html
+                  type: TEXT
+              - column:
+                  name: body_text
+                  type: TEXT
+
+  - changeSet:
+      id: 021-create-email-queue
+      author: system
+      changes:
+        - createTable:
+            tableName: email_queue
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: to_address
+                  type: VARCHAR(255)
+              - column:
+                  name: subject
+                  type: VARCHAR(500)
+              - column:
+                  name: body
+                  type: TEXT
+              - column:
+                  name: queued_date
+                  type: TIMESTAMP
+              - column:
+                  name: sent
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+
+  # Performance Monitoring
+  - changeSet:
+      id: 021-create-performance-metric
+      author: system
+      changes:
+        - createTable:
+            tableName: performance_metric
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: metric_type
+                  type: VARCHAR(100)
+              - column:
+                  name: metric_value
+                  type: DECIMAL(18,2)
+              - column:
+                  name: recorded_at
+                  type: TIMESTAMP
+
+  # Backup Configuration
+  - changeSet:
+      id: 021-create-backup-config
+      author: system
+      changes:
+        - createTable:
+            tableName: backup_config
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: config_name
+                  type: VARCHAR(255)
+              - column:
+                  name: backup_path
+                  type: TEXT
+              - column:
+                  name: schedule_cron
+                  type: VARCHAR(100)
+
+  - changeSet:
+      id: 021-create-backup-history
+      author: system
+      changes:
+        - createTable:
+            tableName: backup_history
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: backup_date
+                  type: TIMESTAMP
+              - column:
+                  name: backup_size
+                  type: BIGINT
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+
+  # Import/Export
+  - changeSet:
+      id: 021-create-import-job
+      author: system
+      changes:
+        - createTable:
+            tableName: import_job
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: import_type
+                  type: VARCHAR(100)
+              - column:
+                  name: started_date
+                  type: TIMESTAMP
+              - column:
+                  name: completed_date
+                  type: TIMESTAMP
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+              - column:
+                  name: records_imported
+                  type: INTEGER
+
+  - changeSet:
+      id: 021-create-export-job
+      author: system
+      changes:
+        - createTable:
+            tableName: export_job
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: export_type
+                  type: VARCHAR(100)
+              - column:
+                  name: started_date
+                  type: TIMESTAMP
+              - column:
+                  name: completed_date
+                  type: TIMESTAMP
+              - column:
+                  name: file_path
+                  type: TEXT
+
+  # Rate Limiting
+  - changeSet:
+      id: 021-create-rate-limit
+      author: system
+      changes:
+        - createTable:
+            tableName: rate_limit
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: api_endpoint
+                  type: VARCHAR(255)
+              - column:
+                  name: request_count
+                  type: INTEGER
+              - column:
+                  name: window_start
+                  type: TIMESTAMP
+
+  # Feature Flags
+  - changeSet:
+      id: 021-create-feature-flag
+      author: system
+      changes:
+        - createTable:
+            tableName: feature_flag
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: flag_key
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: description
+                  type: TEXT
+
+  # A/B Testing
+  - changeSet:
+      id: 021-create-ab-test
+      author: system
+      changes:
+        - createTable:
+            tableName: ab_test
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: test_name
+                  type: VARCHAR(255)
+              - column:
+                  name: variant
+                  type: VARCHAR(100)
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+
+  # Feedback
+  - changeSet:
+      id: 021-create-user-feedback
+      author: system
+      changes:
+        - createTable:
+            tableName: user_feedback
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: feedback_type
+                  type: VARCHAR(100)
+              - column:
+                  name: feedback_text
+                  type: TEXT
+              - column:
+                  name: submitted_date
+                  type: TIMESTAMP
+
+  # Announcements
+  - changeSet:
+      id: 021-create-announcement
+      author: system
+      changes:
+        - createTable:
+            tableName: announcement
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: title
+                  type: VARCHAR(500)
+              - column:
+                  name: message
+                  type: TEXT
+              - column:
+                  name: start_date
+                  type: TIMESTAMP
+              - column:
+                  name: end_date
+                  type: TIMESTAMP
+              - column:
+                  name: active
+                  type: BOOLEAN
+
+  # System Health
+  - changeSet:
+      id: 021-create-health-check
+      author: system
+      changes:
+        - createTable:
+            tableName: health_check
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: check_name
+                  type: VARCHAR(255)
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+              - column:
+                  name: last_checked
+                  type: TIMESTAMP
+              - column:
+                  name: details
+                  type: TEXT
+
+  # Tags System
+  - changeSet:
+      id: 021-create-tag
+      author: system
+      changes:
+        - createTable:
+            tableName: tag
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: tag_name
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+              - column:
+                  name: color
+                  type: VARCHAR(20)
+
+  - changeSet:
+      id: 021-create-tag-association
+      author: system
+      changes:
+        - createTable:
+            tableName: tag_association
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: tag_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: entity_type
+                  type: VARCHAR(100)
+              - column:
+                  name: entity_id
+                  type: BIGINT
+
+  # Watchers Extended
+  - changeSet:
+      id: 021-create-watcher-group
+      author: system
+      changes:
+        - createTable:
+            tableName: watcher_group
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_wg_issue
+                    references: jira_issue(id)
+              - column:
+                  name: group_name
+                  type: VARCHAR(255)
+
+  # Mentions
+  - changeSet:
+      id: 021-create-mention
+      author: system
+      changes:
+        - createTable:
+            tableName: mention
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: mentioned_user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: mentioner_user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: entity_type
+                  type: VARCHAR(100)
+              - column:
+                  name: entity_id
+                  type: BIGINT
+              - column:
+                  name: mention_date
+                  type: TIMESTAMP
+
+  # Keyboard Shortcuts
+  - changeSet:
+      id: 021-create-keyboard-shortcut
+      author: system
+      changes:
+        - createTable:
+            tableName: keyboard_shortcut
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: shortcut_key
+                  type: VARCHAR(50)
+              - column:
+                  name: action
+                  type: VARCHAR(255)
+
+  # Quick Filters Extended
+  - changeSet:
+      id: 021-create-saved-quick-filter
+      author: system
+      changes:
+        - createTable:
+            tableName: saved_quick_filter
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: filter_name
+                  type: VARCHAR(255)
+              - column:
+                  name: jql
+                  type: TEXT
+
+  # Bulk Operations
+  - changeSet:
+      id: 021-create-bulk-operation
+      author: system
+      changes:
+        - createTable:
+            tableName: bulk_operation
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: operation_type
+                  type: VARCHAR(100)
+              - column:
+                  name: started_by
+                  type: VARCHAR(255)
+              - column:
+                  name: started_date
+                  type: TIMESTAMP
+              - column:
+                  name: completed_date
+                  type: TIMESTAMP
+              - column:
+                  name: total_items
+                  type: INTEGER
+              - column:
+                  name: processed_items
+                  type: INTEGER
+
+  # Issue Templates
+  - changeSet:
+      id: 021-create-issue-template
+      author: system
+      changes:
+        - createTable:
+            tableName: issue_template
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: template_name
+                  type: VARCHAR(255)
+              - column:
+                  name: issue_type_id
+                  type: BIGINT
+              - column:
+                  name: template_data
+                  type: TEXT
+
+  # Recent Items
+  - changeSet:
+      id: 021-create-recent-item
+      author: system
+      changes:
+        - createTable:
+            tableName: recent_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: item_type
+                  type: VARCHAR(100)
+              - column:
+                  name: item_id
+                  type: BIGINT
+              - column:
+                  name: accessed_date
+                  type: TIMESTAMP
+
+  # Starred Items
+  - changeSet:
+      id: 021-create-starred-item
+      author: system
+      changes:
+        - createTable:
+            tableName: starred_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: item_type
+                  type: VARCHAR(100)
+              - column:
+                  name: item_id
+                  type: BIGINT
+              - column:
+                  name: starred_date
+                  type: TIMESTAMP
+
+  # API Usage Stats
+  - changeSet:
+      id: 021-create-api-usage
+      author: system
+      changes:
+        - createTable:
+            tableName: api_usage
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: endpoint
+                  type: VARCHAR(500)
+              - column:
+                  name: method
+                  type: VARCHAR(10)
+              - column:
+                  name: request_date
+                  type: TIMESTAMP
+              - column:
+                  name: response_time_ms
+                  type: INTEGER
+              - column:
+                  name: status_code
+                  type: INTEGER
+
+  # Mobile Push Notifications
+  - changeSet:
+      id: 021-create-push-notification
+      author: system
+      changes:
+        - createTable:
+            tableName: push_notification
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: device_token
+                  type: VARCHAR(500)
+              - column:
+                  name: platform
+                  type: VARCHAR(50)
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+
+  # Two-Factor Authentication
+  - changeSet:
+      id: 021-create-two-factor-auth
+      author: system
+      changes:
+        - createTable:
+            tableName: two_factor_auth
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_2fa_user
+                    references: app_user(id)
+              - column:
+                  name: secret_key
+                  type: VARCHAR(500)
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+              - column:
+                  name: backup_codes
+                  type: TEXT
+
+  # Session Management Extended
+  - changeSet:
+      id: 021-create-user-session
+      author: system
+      changes:
+        - createTable:
+            tableName: user_session
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: session_token
+                  type: VARCHAR(500)
+                  constraints:
+                    unique: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_us_user
+                    references: app_user(id)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+              - column:
+                  name: expires_at
+                  type: TIMESTAMP
+              - column:
+                  name: ip_address
+                  type: VARCHAR(60)
+
+  # Archived Projects
+  - changeSet:
+      id: 021-create-archived-project
+      author: system
+      changes:
+        - createTable:
+            tableName: archived_project
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: project_id
+                  type: BIGINT
+              - column:
+                  name: archived_date
+                  type: TIMESTAMP
+              - column:
+                  name: archived_by
+                  type: VARCHAR(255)
+
+  # Deleted Issues (soft delete)
+  - changeSet:
+      id: 021-create-deleted-issue
+      author: system
+      changes:
+        - createTable:
+            tableName: deleted_issue
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+              - column:
+                  name: issue_key
+                  type: VARCHAR(255)
+              - column:
+                  name: deleted_date
+                  type: TIMESTAMP
+              - column:
+                  name: deleted_by
+                  type: VARCHAR(255)
+              - column:
+                  name: issue_data
+                  type: TEXT
+
+  # System Maintenance
+  - changeSet:
+      id: 021-create-maintenance-window
+      author: system
+      changes:
+        - createTable:
+            tableName: maintenance_window
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: start_time
+                  type: TIMESTAMP
+              - column:
+                  name: end_time
+                  type: TIMESTAMP
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: active
+                  type: BOOLEAN
+
+  # Locale Preferences
+  - changeSet:
+      id: 021-create-locale-preference
+      author: system
+      changes:
+        - createTable:
+            tableName: locale_preference
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_lp_user
+                    references: app_user(id)
+              - column:
+                  name: locale_code
+                  type: VARCHAR(10)
+              - column:
+                  name: timezone
+                  type: VARCHAR(100)
+
+  # Timezone Configuration
+  - changeSet:
+      id: 021-create-timezone-config
+      author: system
+      changes:
+        - createTable:
+            tableName: timezone_config
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: timezone_id
+                  type: VARCHAR(100)
+                  constraints:
+                    unique: true
+              - column:
+                  name: display_name
+                  type: VARCHAR(255)
+              - column:
+                  name: offset_minutes
+                  type: INTEGER
+
+  # Theme Preferences
+  - changeSet:
+      id: 021-create-theme-preference
+      author: system
+      changes:
+        - createTable:
+            tableName: theme_preference
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_tp_user
+                    references: app_user(id)
+              - column:
+                  name: theme_name
+                  type: VARCHAR(100)
+              - column:
+                  name: custom_css
+                  type: TEXT
+
+  # Error Log
+  - changeSet:
+      id: 021-create-error-log
+      author: system
+      changes:
+        - createTable:
+            tableName: error_log
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: error_message
+                  type: TEXT
+              - column:
+                  name: stack_trace
+                  type: TEXT
+              - column:
+                  name: error_date
+                  type: TIMESTAMP
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: request_url
+                  type: TEXT
+
+  # Debug Mode
+  - changeSet:
+      id: 021-create-debug-session
+      author: system
+      changes:
+        - createTable:
+            tableName: debug_session
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: session_id
+                  type: VARCHAR(255)
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: started_at
+                  type: TIMESTAMP
+              - column:
+                  name: debug_data
+                  type: TEXT
+
+  # Scheduled Tasks
+  - changeSet:
+      id: 021-create-scheduled-task
+      author: system
+      changes:
+        - createTable:
+            tableName: scheduled_task
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: task_name
+                  type: VARCHAR(255)
+              - column:
+                  name: cron_expression
+                  type: VARCHAR(100)
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+              - column:
+                  name: last_run
+                  type: TIMESTAMP
+              - column:
+                  name: next_run
+                  type: TIMESTAMP
+
+  # Data Retention Policy
+  - changeSet:
+      id: 021-create-retention-policy
+      author: system
+      changes:
+        - createTable:
+            tableName: retention_policy
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: entity_type
+                  type: VARCHAR(100)
+              - column:
+                  name: retention_days
+                  type: INTEGER
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+
+  # Compliance Audit
+  - changeSet:
+      id: 021-create-compliance-audit
+      author: system
+      changes:
+        - createTable:
+            tableName: compliance_audit
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: audit_type
+                  type: VARCHAR(100)
+              - column:
+                  name: entity_type
+                  type: VARCHAR(100)
+              - column:
+                  name: entity_id
+                  type: BIGINT
+              - column:
+                  name: audit_date
+                  type: TIMESTAMP
+              - column:
+                  name: audit_user
+                  type: VARCHAR(255)
+              - column:
+                  name: changes
+                  type: TEXT
+
+  # GDPR Data Export
+  - changeSet:
+      id: 021-create-data-export-request
+      author: system
+      changes:
+        - createTable:
+            tableName: data_export_request
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_der_user
+                    references: app_user(id)
+              - column:
+                  name: request_date
+                  type: TIMESTAMP
+              - column:
+                  name: completed_date
+                  type: TIMESTAMP
+              - column:
+                  name: export_file_path
+                  type: TEXT
+              - column:
+                  name: status
+                  type: VARCHAR(50)

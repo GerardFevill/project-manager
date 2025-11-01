@@ -1,0 +1,174 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-create-file-attachment
+      author: system
+      changes:
+        - createTable:
+            tableName: file_attachment
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_fa_issue
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: file_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_size
+                  type: BIGINT
+              - column:
+                  name: mime_type
+                  type: VARCHAR(255)
+              - column:
+                  name: author_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_fa_author
+                    references: app_user(id)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: file_path
+                  type: TEXT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 008-create-issue-link-type
+      author: system
+      changes:
+        - createTable:
+            tableName: issue_link_type
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: link_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: inward
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: outward
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: style
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 008-create-issue-link
+      author: system
+      changes:
+        - createTable:
+            tableName: issue_link
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: link_type_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_il_linktype
+                    references: issue_link_type(id)
+              - column:
+                  name: source_issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_il_source
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: destination_issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_il_destination
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: sequence
+                  type: BIGINT
+
+  - changeSet:
+      id: 008-create-remote-link
+      author: system
+      changes:
+        - createTable:
+            tableName: remote_link
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_rl_issue
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: global_id
+                  type: VARCHAR(255)
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+              - column:
+                  name: url
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: summary
+                  type: TEXT
+              - column:
+                  name: icon_url
+                  type: TEXT
+              - column:
+                  name: icon_title
+                  type: VARCHAR(255)
+              - column:
+                  name: relationship
+                  type: VARCHAR(255)
+              - column:
+                  name: resolved
+                  type: BOOLEAN
+              - column:
+                  name: status_name
+                  type: VARCHAR(255)
+              - column:
+                  name: status_icon_url
+                  type: TEXT

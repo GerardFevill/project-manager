@@ -1,0 +1,205 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009-create-permission-scheme
+      author: system
+      changes:
+        - createTable:
+            tableName: permission_scheme
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+
+  - changeSet:
+      id: 009-create-scheme-permission
+      author: system
+      changes:
+        - createTable:
+            tableName: scheme_permission
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: scheme_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_sp_scheme
+                    references: permission_scheme(id)
+                    deleteCascade: true
+              - column:
+                  name: permission_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                  remarks: "BROWSE_PROJECTS, CREATE_ISSUES, EDIT_ISSUES, etc."
+              - column:
+                  name: permission_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                  remarks: "user, group, projectrole, reporter, assignee, etc."
+              - column:
+                  name: permission_parameter
+                  type: VARCHAR(255)
+                  remarks: "user_id, group_name, role_id, etc."
+
+  - changeSet:
+      id: 009-create-project-permission-scheme
+      author: system
+      changes:
+        - createTable:
+            tableName: project_permission_scheme
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+                    foreignKeyName: fk_pps_project
+                    references: project(id)
+                    deleteCascade: true
+              - column:
+                  name: permission_scheme_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_pps_scheme
+                    references: permission_scheme(id)
+
+  - changeSet:
+      id: 009-create-global-permission
+      author: system
+      changes:
+        - createTable:
+            tableName: global_permission
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: permission_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                  remarks: "ADMINISTER, SYSTEM_ADMIN, etc."
+              - column:
+                  name: group_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_gp_group
+                    references: user_group(id)
+                    deleteCascade: true
+
+  - changeSet:
+      id: 009-create-notification-scheme
+      author: system
+      changes:
+        - createTable:
+            tableName: notification_scheme
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+
+  - changeSet:
+      id: 009-create-notification
+      author: system
+      changes:
+        - createTable:
+            tableName: notification
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: scheme_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_notification_scheme
+                    references: notification_scheme(id)
+                    deleteCascade: true
+              - column:
+                  name: event_type
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                  remarks: "issue_created, issue_updated, issue_assigned, etc."
+              - column:
+                  name: notification_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                  remarks: "user, group, projectrole, reporter, assignee, etc."
+              - column:
+                  name: notification_parameter
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 009-create-project-notification-scheme
+      author: system
+      changes:
+        - createTable:
+            tableName: project_notification_scheme
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+                    foreignKeyName: fk_pns_project
+                    references: project(id)
+                    deleteCascade: true
+              - column:
+                  name: notification_scheme_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_pns_scheme
+                    references: notification_scheme(id)

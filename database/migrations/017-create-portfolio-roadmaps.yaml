@@ -1,0 +1,655 @@
+databaseChangeLog:
+  # Advanced Roadmaps / Portfolio - AO_45FCA2_
+
+  - changeSet:
+      id: 017-create-plan
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: owner_key
+                  type: VARCHAR(255)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 017-create-plan-team
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_team
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: team_name
+                  type: VARCHAR(255)
+              - column:
+                  name: velocity
+                  type: DECIMAL(10,2)
+
+  - changeSet:
+      id: 017-create-plan-item
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_port_pi_issue
+                    references: jira_issue(id)
+              - column:
+                  name: start_date
+                  type: DATE
+              - column:
+                  name: end_date
+                  type: DATE
+
+  - changeSet:
+      id: 017-create-plan-item-link
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_item_link
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: source_item_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: target_item_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: link_type
+                  type: VARCHAR(100)
+
+  - changeSet:
+      id: 017-create-plan-view
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_view
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: view_name
+                  type: VARCHAR(255)
+              - column:
+                  name: view_config
+                  type: TEXT
+
+  - changeSet:
+      id: 017-create-plan-sprint
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_sprint
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sprint_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_port_ps_sprint
+                    references: sprint(id)
+
+  - changeSet:
+      id: 017-create-plan-release
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_release
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: release_name
+                  type: VARCHAR(255)
+              - column:
+                  name: release_date
+                  type: DATE
+
+  - changeSet:
+      id: 017-create-plan-release-view
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_release_view
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: release_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: view_config
+                  type: TEXT
+
+  - changeSet:
+      id: 017-create-plan-scope
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_scope
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: jql_query
+                  type: TEXT
+
+  - changeSet:
+      id: 017-create-plan-scope-item
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_scope_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: scope_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_port_psi_issue
+                    references: jira_issue(id)
+
+  - changeSet:
+      id: 017-create-plan-scope-view
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_scope_view
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: scope_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: view_type
+                  type: VARCHAR(100)
+
+  - changeSet:
+      id: 017-create-plan-filter
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_filter
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: filter_name
+                  type: VARCHAR(255)
+              - column:
+                  name: filter_config
+                  type: TEXT
+
+  - changeSet:
+      id: 017-create-plan-filter-item
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_filter_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: filter_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: filter_criteria
+                  type: TEXT
+
+  - changeSet:
+      id: 017-create-plan-rule
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_rule
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rule_type
+                  type: VARCHAR(100)
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+
+  - changeSet:
+      id: 017-create-plan-rule-item
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_rule_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: rule_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rule_config
+                  type: TEXT
+
+  - changeSet:
+      id: 017-create-plan-setting
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_setting
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: setting_key
+                  type: VARCHAR(255)
+              - column:
+                  name: setting_value
+                  type: TEXT
+
+  - changeSet:
+      id: 017-create-plan-calendar
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_calendar
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: calendar_type
+                  type: VARCHAR(100)
+
+  - changeSet:
+      id: 017-create-plan-team-view
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_team_view
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: team_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: view_config
+                  type: TEXT
+
+  - changeSet:
+      id: 017-create-plan-view-setting
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_view_setting
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: view_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: setting_key
+                  type: VARCHAR(255)
+              - column:
+                  name: setting_value
+                  type: TEXT
+
+  - changeSet:
+      id: 017-create-plan-workflow
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_workflow
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: workflow_name
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 017-create-plan-workflow-step
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_workflow_step
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: workflow_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: step_name
+                  type: VARCHAR(255)
+              - column:
+                  name: position
+                  type: INTEGER
+
+  - changeSet:
+      id: 017-create-plan-workflow-rule
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_workflow_rule
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: workflow_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rule_config
+                  type: TEXT
+
+  - changeSet:
+      id: 017-create-plan-role
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_role
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_name
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 017-create-plan-permission
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_permission
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: BIGINT
+              - column:
+                  name: permission_type
+                  type: VARCHAR(100)
+
+  - changeSet:
+      id: 017-create-plan-audit
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_audit
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: action
+                  type: VARCHAR(100)
+              - column:
+                  name: actor_key
+                  type: VARCHAR(255)
+              - column:
+                  name: action_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 017-create-plan-report
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_report
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: report_name
+                  type: VARCHAR(255)
+              - column:
+                  name: report_type
+                  type: VARCHAR(100)
+
+  - changeSet:
+      id: 017-create-plan-report-item
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_report_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: report_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: item_data
+                  type: TEXT
+
+  - changeSet:
+      id: 017-create-plan-report-filter
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_45fca2_plan_report_filter
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: report_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: filter_config
+                  type: TEXT

@@ -1,0 +1,270 @@
+databaseChangeLog:
+  - changeSet:
+      id: 007-create-custom-field
+      author: system
+      changes:
+        - createTable:
+            tableName: custom_field
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: field_type
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                  remarks: "text, number, date, select, multiselect, user, etc."
+              - column:
+                  name: field_searcher
+                  type: VARCHAR(255)
+              - column:
+                  name: custom_field_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 007-create-custom-field-option
+      author: system
+      changes:
+        - createTable:
+            tableName: custom_field_option
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: custom_field_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cfo_customfield
+                    references: custom_field(id)
+                    deleteCascade: true
+              - column:
+                  name: parent_option_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_cfo_parent
+                    references: custom_field_option(id)
+              - column:
+                  name: value
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: disabled
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: sequence
+                  type: BIGINT
+
+  - changeSet:
+      id: 007-create-custom-field-value
+      author: system
+      changes:
+        - createTable:
+            tableName: custom_field_value
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cfv_issue
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: custom_field_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cfv_customfield
+                    references: custom_field(id)
+                    deleteCascade: true
+              - column:
+                  name: string_value
+                  type: TEXT
+              - column:
+                  name: number_value
+                  type: DECIMAL(18,6)
+              - column:
+                  name: date_value
+                  type: TIMESTAMP
+              - column:
+                  name: text_value
+                  type: TEXT
+
+  - changeSet:
+      id: 007-create-field-configuration
+      author: system
+      changes:
+        - createTable:
+            tableName: field_configuration
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: field_config_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 007-create-field-configuration-item
+      author: system
+      changes:
+        - createTable:
+            tableName: field_configuration_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: field_configuration_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_fci_config
+                    references: field_configuration(id)
+                    deleteCascade: true
+              - column:
+                  name: field_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_hidden
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: is_required
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: description
+                  type: TEXT
+
+  - changeSet:
+      id: 007-create-field-screen
+      author: system
+      changes:
+        - createTable:
+            tableName: field_screen
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+
+  - changeSet:
+      id: 007-create-field-screen-tab
+      author: system
+      changes:
+        - createTable:
+            tableName: field_screen_tab
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: screen_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_fst_screen
+                    references: field_screen(id)
+                    deleteCascade: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sequence
+                  type: INTEGER
+
+  - changeSet:
+      id: 007-create-field-screen-layout-item
+      author: system
+      changes:
+        - createTable:
+            tableName: field_screen_layout_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: tab_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_fsli_tab
+                    references: field_screen_tab(id)
+                    deleteCascade: true
+              - column:
+                  name: field_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sequence
+                  type: INTEGER

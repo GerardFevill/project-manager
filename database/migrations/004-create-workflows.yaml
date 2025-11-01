@@ -1,0 +1,303 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-workflow
+      author: system
+      changes:
+        - createTable:
+            tableName: workflow
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: workflow_descriptor
+                  type: TEXT
+                  remarks: "XML or JSON descriptor"
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 004-create-workflow-scheme
+      author: system
+      changes:
+        - createTable:
+            tableName: workflow_scheme
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+
+  - changeSet:
+      id: 004-create-workflow-scheme-entity
+      author: system
+      changes:
+        - createTable:
+            tableName: workflow_scheme_entity
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: scheme_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_wse_scheme
+                    references: workflow_scheme(id)
+                    deleteCascade: true
+              - column:
+                  name: workflow_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_wse_workflow
+                    references: workflow(id)
+              - column:
+                  name: issue_type_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_wse_issuetype
+                    references: issue_type(id)
+
+  - changeSet:
+      id: 004-create-project-workflow-scheme
+      author: system
+      changes:
+        - createTable:
+            tableName: project_workflow_scheme
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_pws_project
+                    references: project(id)
+                    deleteCascade: true
+              - column:
+                  name: workflow_scheme_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_pws_scheme
+                    references: workflow_scheme(id)
+
+  - changeSet:
+      id: 004-create-workflow-step
+      author: system
+      changes:
+        - createTable:
+            tableName: workflow_step
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: workflow_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_ws_workflow
+                    references: workflow(id)
+                    deleteCascade: true
+              - column:
+                  name: step_id
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: step_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_ws_status
+                    references: issue_status(id)
+
+  - changeSet:
+      id: 004-create-workflow-transition
+      author: system
+      changes:
+        - createTable:
+            tableName: workflow_transition
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: workflow_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_wt_workflow
+                    references: workflow(id)
+                    deleteCascade: true
+              - column:
+                  name: transition_id
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: transition_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: from_step_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_wt_from_step
+                    references: workflow_step(id)
+              - column:
+                  name: to_step_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_wt_to_step
+                    references: workflow_step(id)
+              - column:
+                  name: screen_id
+                  type: BIGINT
+
+  - changeSet:
+      id: 004-create-workflow-condition
+      author: system
+      changes:
+        - createTable:
+            tableName: workflow_condition
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: transition_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_wc_transition
+                    references: workflow_transition(id)
+                    deleteCascade: true
+              - column:
+                  name: condition_type
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: condition_config
+                  type: TEXT
+
+  - changeSet:
+      id: 004-create-workflow-validator
+      author: system
+      changes:
+        - createTable:
+            tableName: workflow_validator
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: transition_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_wv_transition
+                    references: workflow_transition(id)
+                    deleteCascade: true
+              - column:
+                  name: validator_type
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: validator_config
+                  type: TEXT
+
+  - changeSet:
+      id: 004-create-workflow-post-function
+      author: system
+      changes:
+        - createTable:
+            tableName: workflow_post_function
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: transition_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_wpf_transition
+                    references: workflow_transition(id)
+                    deleteCascade: true
+              - column:
+                  name: function_type
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: function_config
+                  type: TEXT
+              - column:
+                  name: sequence
+                  type: INTEGER

@@ -1,0 +1,1240 @@
+databaseChangeLog:
+  # Insight / Assets - CMDB (Configuration Management Database)
+
+  - changeSet:
+      id: 015-create-object-schema
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_objectschema
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: object_schema_key
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 015-create-object-type
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_obj_type
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schema_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: icon_id
+                  type: BIGINT
+              - column:
+                  name: parent_object_type_id
+                  type: BIGINT
+              - column:
+                  name: abstract_object_type
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+
+  - changeSet:
+      id: 015-create-object
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_obj
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: object_type_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: label
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 015-create-object-type-attribute
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_obj_type_attribute
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: object_type_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: default_value
+                  type: TEXT
+              - column:
+                  name: editable
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+              - column:
+                  name: mandatory
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: position
+                  type: INTEGER
+
+  - changeSet:
+      id: 015-create-object-attribute-value
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_obj_attribute_value
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: object_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: object_type_attribute_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: object_attribute_value
+                  type: TEXT
+
+  - changeSet:
+      id: 015-create-reference
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_reference
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: source_object_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: target_object_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reference_type_id
+                  type: BIGINT
+
+  - changeSet:
+      id: 015-create-schema-role
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_role
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schema_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+
+  - changeSet:
+      id: 015-create-schema-permission
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_permission
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schema_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: BIGINT
+              - column:
+                  name: permission_type
+                  type: VARCHAR(100)
+
+  - changeSet:
+      id: 015-create-audit
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_audit
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: object_id
+                  type: BIGINT
+              - column:
+                  name: action
+                  type: VARCHAR(100)
+              - column:
+                  name: actor_key
+                  type: VARCHAR(255)
+              - column:
+                  name: action_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 015-create-audit-entry
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_audit_entry
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: audit_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: field_name
+                  type: VARCHAR(255)
+              - column:
+                  name: old_value
+                  type: TEXT
+              - column:
+                  name: new_value
+                  type: TEXT
+
+  - changeSet:
+      id: 015-create-audit-log
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_audit_log
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schema_id
+                  type: BIGINT
+              - column:
+                  name: log_entry
+                  type: TEXT
+              - column:
+                  name: log_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 015-create-status
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_status
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: object_type_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 015-create-import
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_import
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schema_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: import_name
+                  type: VARCHAR(255)
+              - column:
+                  name: import_type
+                  type: VARCHAR(100)
+              - column:
+                  name: configuration
+                  type: TEXT
+
+  - changeSet:
+      id: 015-create-import-source
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_import_source
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: import_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: source_type
+                  type: VARCHAR(100)
+              - column:
+                  name: source_config
+                  type: TEXT
+
+  - changeSet:
+      id: 015-create-import-log
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_import_log
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: import_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: import_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+              - column:
+                  name: log_message
+                  type: TEXT
+
+  - changeSet:
+      id: 015-create-export
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_export
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schema_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: export_name
+                  type: VARCHAR(255)
+              - column:
+                  name: export_format
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 015-create-export-log
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_export_log
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: export_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: export_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: file_path
+                  type: TEXT
+
+  - changeSet:
+      id: 015-create-job
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_job
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schema_id
+                  type: BIGINT
+              - column:
+                  name: job_type
+                  type: VARCHAR(100)
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+              - column:
+                  name: started_date
+                  type: TIMESTAMP
+              - column:
+                  name: completed_date
+                  type: TIMESTAMP
+
+  - changeSet:
+      id: 015-create-job-history
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_job_history
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: job_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: message
+                  type: TEXT
+              - column:
+                  name: log_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 015-create-attribute
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_attribute
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: attribute_type_id
+                  type: BIGINT
+
+  - changeSet:
+      id: 015-create-attribute-type
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_attribute_type
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type_class
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 015-create-objectschema-audit
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_objectschema_audit
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schema_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: action
+                  type: VARCHAR(100)
+              - column:
+                  name: action_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 015-create-objectschema-role
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_objectschema_role
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schema_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_name
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 015-create-objectschema-permission
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_objectschema_permission
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schema_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: BIGINT
+              - column:
+                  name: permission_key
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 015-create-attachment
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_attachment
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: object_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_name
+                  type: VARCHAR(255)
+              - column:
+                  name: file_size
+                  type: BIGINT
+              - column:
+                  name: mime_type
+                  type: VARCHAR(255)
+              - column:
+                  name: uploaded_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 015-create-attachment-link
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_attachment_link
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: attachment_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: object_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 015-create-attachment-permission
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_attachment_permission
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: attachment_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: permission_type
+                  type: VARCHAR(100)
+
+  - changeSet:
+      id: 015-create-report
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_report
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schema_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: report_name
+                  type: VARCHAR(255)
+              - column:
+                  name: report_type
+                  type: VARCHAR(100)
+
+  - changeSet:
+      id: 015-create-report-filter
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_report_filter
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: report_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: filter_config
+                  type: TEXT
+
+  - changeSet:
+      id: 015-create-report-result
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_report_result
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: report_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: result_data
+                  type: TEXT
+              - column:
+                  name: generated_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 015-create-script
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_script
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schema_id
+                  type: BIGINT
+              - column:
+                  name: script_name
+                  type: VARCHAR(255)
+              - column:
+                  name: script_content
+                  type: TEXT
+
+  - changeSet:
+      id: 015-create-script-log
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_script_log
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: script_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: execution_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: result
+                  type: TEXT
+
+  - changeSet:
+      id: 015-create-status-category
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_statuscategory
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: color
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 015-create-config
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_config
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schema_id
+                  type: BIGINT
+              - column:
+                  name: config_key
+                  type: VARCHAR(255)
+              - column:
+                  name: config_value
+                  type: TEXT
+
+  - changeSet:
+      id: 015-create-config-item
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_config_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: config_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: item_key
+                  type: VARCHAR(255)
+              - column:
+                  name: item_value
+                  type: TEXT
+
+  - changeSet:
+      id: 015-create-index
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_index
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schema_id
+                  type: BIGINT
+              - column:
+                  name: index_name
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 015-create-index-field
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_index_field
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: index_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: field_name
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 015-create-index-entry
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_index_entry
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: index_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: object_id
+                  type: BIGINT
+              - column:
+                  name: indexed_value
+                  type: TEXT
+
+  - changeSet:
+      id: 015-create-index-log
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_index_log
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: index_id
+                  type: BIGINT
+              - column:
+                  name: log_message
+                  type: TEXT
+              - column:
+                  name: log_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 015-create-schedule
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_schedule
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schema_id
+                  type: BIGINT
+              - column:
+                  name: schedule_name
+                  type: VARCHAR(255)
+              - column:
+                  name: cron_expression
+                  type: VARCHAR(100)
+
+  - changeSet:
+      id: 015-create-schedule-job
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_schedule_job
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schedule_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: job_type
+                  type: VARCHAR(100)
+
+  - changeSet:
+      id: 015-create-schedule-history
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_schedule_history
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schedule_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: execution_date
+                  type: TIMESTAMP
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 015-create-trigger
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_trigger
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: schema_id
+                  type: BIGINT
+              - column:
+                  name: trigger_name
+                  type: VARCHAR(255)
+              - column:
+                  name: trigger_type
+                  type: VARCHAR(100)
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+
+  - changeSet:
+      id: 015-create-trigger-history
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_trigger_history
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: trigger_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: fired_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: result
+                  type: TEXT
+
+  - changeSet:
+      id: 015-create-role-assignment
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_role_assignment
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: role_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 015-create-role-group
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_role_group
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: role_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: group_name
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 015-create-role-permission
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_role_permission
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: role_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: permission_key
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 015-create-role-user
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_role_user
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: role_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 015-create-import-history
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_import_history
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: import_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: import_date
+                  type: TIMESTAMP
+              - column:
+                  name: records_processed
+                  type: INTEGER
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 015-create-export-history
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_8542f1_ifj_export_history
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: export_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: export_date
+                  type: TIMESTAMP
+              - column:
+                  name: records_exported
+                  type: INTEGER
+              - column:
+                  name: file_location
+                  type: TEXT

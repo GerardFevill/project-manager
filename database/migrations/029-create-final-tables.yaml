@@ -1,0 +1,524 @@
+databaseChangeLog:
+  - changeSet:
+      id: 029-create-final-tables
+      author: system
+      changes:
+        # Final 17 tables to reach exactly 700 tables
+
+        # Machine Learning Predictions
+        - createTable:
+            tableName: ml_prediction_model
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: model_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: model_type
+                  type: VARCHAR(100)
+              - column:
+                  name: model_version
+                  type: VARCHAR(50)
+              - column:
+                  name: training_data
+                  type: TEXT
+              - column:
+                  name: accuracy_score
+                  type: DECIMAL(5,4)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+
+        # AI/ML Issue Predictions
+        - createTable:
+            tableName: ml_issue_prediction
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: model_id
+                  type: BIGINT
+              - column:
+                  name: predicted_field
+                  type: VARCHAR(255)
+              - column:
+                  name: predicted_value
+                  type: TEXT
+              - column:
+                  name: confidence_score
+                  type: DECIMAL(5,4)
+              - column:
+                  name: prediction_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        # Smart Suggestions
+        - createTable:
+            tableName: smart_suggestion
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+              - column:
+                  name: suggestion_type
+                  type: VARCHAR(100)
+              - column:
+                  name: suggestion_text
+                  type: TEXT
+              - column:
+                  name: relevance_score
+                  type: DECIMAL(5,4)
+              - column:
+                  name: accepted
+                  type: BOOLEAN
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        # GDPR Extended Compliance
+        - createTable:
+            tableName: gdpr_data_subject
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: consent_marketing
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: consent_analytics
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: consent_date
+                  type: TIMESTAMP
+              - column:
+                  name: data_retention_days
+                  type: INTEGER
+
+        # GDPR Access Requests
+        - createTable:
+            tableName: gdpr_access_request
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: request_type
+                  type: VARCHAR(100)
+              - column:
+                  name: request_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+              - column:
+                  name: completed_date
+                  type: TIMESTAMP
+              - column:
+                  name: export_file_path
+                  type: VARCHAR(1000)
+
+        # Advanced Analytics
+        - createTable:
+            tableName: analytics_dashboard
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: dashboard_name
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dashboard_type
+                  type: VARCHAR(100)
+              - column:
+                  name: owner
+                  type: VARCHAR(255)
+              - column:
+                  name: configuration
+                  type: TEXT
+              - column:
+                  name: is_public
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        # Analytics Widgets
+        - createTable:
+            tableName: analytics_widget
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: dashboard_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: widget_type
+                  type: VARCHAR(100)
+              - column:
+                  name: widget_config
+                  type: TEXT
+              - column:
+                  name: position_x
+                  type: INTEGER
+              - column:
+                  name: position_y
+                  type: INTEGER
+              - column:
+                  name: width
+                  type: INTEGER
+              - column:
+                  name: height
+                  type: INTEGER
+
+        # Predictive Analytics
+        - createTable:
+            tableName: predictive_analytics
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: project_id
+                  type: BIGINT
+              - column:
+                  name: metric_name
+                  type: VARCHAR(255)
+              - column:
+                  name: predicted_date
+                  type: DATE
+              - column:
+                  name: predicted_value
+                  type: DECIMAL(20,4)
+              - column:
+                  name: confidence_interval
+                  type: DECIMAL(5,4)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        # Sentiment Analysis
+        - createTable:
+            tableName: sentiment_analysis
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: content_type
+                  type: VARCHAR(100)
+              - column:
+                  name: content_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sentiment_score
+                  type: DECIMAL(5,4)
+              - column:
+                  name: sentiment_label
+                  type: VARCHAR(50)
+              - column:
+                  name: analyzed_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        # Team Collaboration Metrics
+        - createTable:
+            tableName: team_collaboration_metric
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: team_id
+                  type: BIGINT
+              - column:
+                  name: metric_date
+                  type: DATE
+              - column:
+                  name: collaboration_score
+                  type: DECIMAL(5,2)
+              - column:
+                  name: communication_count
+                  type: INTEGER
+              - column:
+                  name: cross_team_interactions
+                  type: INTEGER
+
+        # Knowledge Base Articles
+        - createTable:
+            tableName: knowledge_article
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: article_title
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: article_content
+                  type: TEXT
+              - column:
+                  name: category
+                  type: VARCHAR(255)
+              - column:
+                  name: author
+                  type: VARCHAR(255)
+              - column:
+                  name: view_count
+                  type: INTEGER
+                  defaultValue: '0'
+              - column:
+                  name: helpful_count
+                  type: INTEGER
+                  defaultValue: '0'
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_date
+                  type: TIMESTAMP
+
+        # Article Feedback
+        - createTable:
+            tableName: article_feedback
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: article_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: is_helpful
+                  type: BOOLEAN
+              - column:
+                  name: feedback_text
+                  type: TEXT
+              - column:
+                  name: feedback_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        # Chatbot Conversations
+        - createTable:
+            tableName: chatbot_conversation
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: session_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: start_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: end_date
+                  type: TIMESTAMP
+              - column:
+                  name: resolved
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+
+        # Chatbot Messages
+        - createTable:
+            tableName: chatbot_message
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: conversation_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: message_text
+                  type: TEXT
+              - column:
+                  name: sender_type
+                  type: VARCHAR(50)
+              - column:
+                  name: message_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: intent
+                  type: VARCHAR(255)
+              - column:
+                  name: confidence
+                  type: DECIMAL(5,4)
+
+        # Resource Capacity Planning
+        - createTable:
+            tableName: capacity_planning
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: team_id
+                  type: BIGINT
+              - column:
+                  name: planning_period
+                  type: VARCHAR(100)
+              - column:
+                  name: total_capacity_hours
+                  type: DECIMAL(10,2)
+              - column:
+                  name: allocated_hours
+                  type: DECIMAL(10,2)
+              - column:
+                  name: available_hours
+                  type: DECIMAL(10,2)
+              - column:
+                  name: utilization_percent
+                  type: DECIMAL(5,2)
+
+        # Code Quality Metrics
+        - createTable:
+            tableName: code_quality_metric
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+              - column:
+                  name: commit_hash
+                  type: VARCHAR(255)
+              - column:
+                  name: metric_type
+                  type: VARCHAR(100)
+              - column:
+                  name: metric_value
+                  type: DECIMAL(10,4)
+              - column:
+                  name: threshold_status
+                  type: VARCHAR(50)
+              - column:
+                  name: measured_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        # Blockchain Audit Trail (Advanced Security)
+        - createTable:
+            tableName: blockchain_audit
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: block_hash
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: previous_hash
+                  type: VARCHAR(255)
+              - column:
+                  name: transaction_data
+                  type: TEXT
+              - column:
+                  name: timestamp
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: nonce
+                  type: BIGINT
+              - column:
+                  name: merkle_root
+                  type: VARCHAR(255)

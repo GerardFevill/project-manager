@@ -1,0 +1,213 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-create-comment
+      author: system
+      changes:
+        - createTable:
+            tableName: comment
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_comment_issue
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: author_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_comment_author
+                    references: app_user(id)
+              - column:
+                  name: update_author_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_comment_update_author
+                    references: app_user(id)
+              - column:
+                  name: body
+                  type: TEXT
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: group_level
+                  type: VARCHAR(255)
+              - column:
+                  name: role_level_id
+                  type: BIGINT
+
+  - changeSet:
+      id: 006-create-worklog
+      author: system
+      changes:
+        - createTable:
+            tableName: worklog
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_worklog_issue
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: author_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_worklog_author
+                    references: app_user(id)
+              - column:
+                  name: update_author_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_worklog_update_author
+                    references: app_user(id)
+              - column:
+                  name: comment
+                  type: TEXT
+              - column:
+                  name: time_worked
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                  remarks: "time in seconds"
+              - column:
+                  name: started
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: group_level
+                  type: VARCHAR(255)
+              - column:
+                  name: role_level_id
+                  type: BIGINT
+
+  - changeSet:
+      id: 006-create-worklog-attribute
+      author: system
+      changes:
+        - createTable:
+            tableName: worklog_attribute
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: worklog_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_wa_worklog
+                    references: worklog(id)
+                    deleteCascade: true
+              - column:
+                  name: attribute_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: attribute_value
+                  type: TEXT
+
+  - changeSet:
+      id: 006-create-issue-watcher
+      author: system
+      changes:
+        - createTable:
+            tableName: issue_watcher
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_iw_issue
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_iw_user
+                    references: app_user(id)
+                    deleteCascade: true
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 006-create-issue-vote
+      author: system
+      changes:
+        - createTable:
+            tableName: issue_vote
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_iv_issue
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_iv_user
+                    references: app_user(id)
+                    deleteCascade: true
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP

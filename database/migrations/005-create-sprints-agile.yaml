@@ -1,0 +1,366 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-board
+      author: system
+      changes:
+        - createTable:
+            tableName: board
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: board_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                  remarks: "scrum, kanban"
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_board_project
+                    references: project(id)
+                    deleteCascade: true
+              - column:
+                  name: filter_id
+                  type: BIGINT
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 005-create-sprint
+      author: system
+      changes:
+        - createTable:
+            tableName: sprint
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: goal
+                  type: TEXT
+              - column:
+                  name: board_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_sprint_board
+                    references: board(id)
+                    deleteCascade: true
+              - column:
+                  name: state
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                  remarks: "future, active, closed"
+              - column:
+                  name: start_date
+                  type: TIMESTAMP
+              - column:
+                  name: end_date
+                  type: TIMESTAMP
+              - column:
+                  name: complete_date
+                  type: TIMESTAMP
+              - column:
+                  name: sequence
+                  type: INTEGER
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 005-create-sprint-issue
+      author: system
+      changes:
+        - createTable:
+            tableName: sprint_issue
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: sprint_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_si_sprint
+                    references: sprint(id)
+                    deleteCascade: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_si_issue
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: added_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 005-create-board-column
+      author: system
+      changes:
+        - createTable:
+            tableName: board_column
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: board_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_bc_board
+                    references: board(id)
+                    deleteCascade: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: min_limit
+                  type: INTEGER
+              - column:
+                  name: max_limit
+                  type: INTEGER
+              - column:
+                  name: sequence
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 005-create-board-column-status
+      author: system
+      changes:
+        - createTable:
+            tableName: board_column_status
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: column_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_bcs_column
+                    references: board_column(id)
+                    deleteCascade: true
+              - column:
+                  name: status_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_bcs_status
+                    references: issue_status(id)
+
+  - changeSet:
+      id: 005-create-swimlane
+      author: system
+      changes:
+        - createTable:
+            tableName: swimlane
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: board_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_swimlane_board
+                    references: board(id)
+                    deleteCascade: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: strategy
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                  remarks: "none, assignee, epic, stories, queries"
+
+  - changeSet:
+      id: 005-create-quick-filter
+      author: system
+      changes:
+        - createTable:
+            tableName: quick_filter
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: board_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_qf_board
+                    references: board(id)
+                    deleteCascade: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: query
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: position
+                  type: INTEGER
+
+  - changeSet:
+      id: 005-create-issue-rank
+      author: system
+      changes:
+        - createTable:
+            tableName: issue_rank
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+                    foreignKeyName: fk_ir_issue
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: rank
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                  remarks: "Lexorank value"
+              - column:
+                  name: board_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_ir_board
+                    references: board(id)
+
+  - changeSet:
+      id: 005-create-epic
+      author: system
+      changes:
+        - createTable:
+            tableName: epic
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+                    foreignKeyName: fk_epic_issue
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: epic_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: epic_color
+                  type: VARCHAR(50)
+              - column:
+                  name: epic_status
+                  type: VARCHAR(50)
+                  remarks: "to_do, in_progress, done"
+
+  - changeSet:
+      id: 005-create-issue-epic-link
+      author: system
+      changes:
+        - createTable:
+            tableName: issue_epic_link
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_iel_issue
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: epic_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_iel_epic
+                    references: epic(id)
+                    deleteCascade: true

@@ -1,0 +1,720 @@
+databaseChangeLog:
+  - changeSet:
+      id: 025-create-xray-test-tables
+      author: system
+      changes:
+        # Xray - Advanced Test Management for Jira
+
+        # Test Repository
+        - createTable:
+            tableName: ao_7deabf_test
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: test_type
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: definition
+                  type: TEXT
+              - column:
+                  name: gherkin_def
+                  type: TEXT
+              - column:
+                  name: unstructured_def
+                  type: TEXT
+
+        # Manual Test Steps
+        - createTable:
+            tableName: ao_7deabf_manual_test_step
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: test_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: step_index
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: action
+                  type: TEXT
+              - column:
+                  name: data
+                  type: TEXT
+              - column:
+                  name: expected_result
+                  type: TEXT
+              - column:
+                  name: call_test_id
+                  type: BIGINT
+
+        # Test Sets
+        - createTable:
+            tableName: ao_7deabf_test_set
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+
+        # Test Set Tests
+        - createTable:
+            tableName: ao_7deabf_test_set_test
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: test_set_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: test_issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rank
+                  type: VARCHAR(255)
+
+        # Test Execution
+        - createTable:
+            tableName: ao_7deabf_test_execution
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+
+        # Test Run
+        - createTable:
+            tableName: ao_7deabf_test_run
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: test_execution_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: test_issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+              - column:
+                  name: start_date
+                  type: TIMESTAMP
+              - column:
+                  name: finish_date
+                  type: TIMESTAMP
+              - column:
+                  name: executed_by
+                  type: VARCHAR(255)
+              - column:
+                  name: assigned_to
+                  type: VARCHAR(255)
+              - column:
+                  name: defects
+                  type: TEXT
+              - column:
+                  name: comment
+                  type: TEXT
+              - column:
+                  name: rank
+                  type: VARCHAR(255)
+
+        # Test Run Steps
+        - createTable:
+            tableName: ao_7deabf_test_run_step
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: test_run_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: step_id
+                  type: BIGINT
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+              - column:
+                  name: actual_result
+                  type: TEXT
+              - column:
+                  name: comment
+                  type: TEXT
+              - column:
+                  name: defects
+                  type: TEXT
+
+        # Test Plan
+        - createTable:
+            tableName: ao_7deabf_test_plan
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+
+        # Test Plan Tests
+        - createTable:
+            tableName: ao_7deabf_test_plan_test
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: test_plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: test_issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rank
+                  type: VARCHAR(255)
+
+        # Test Environments
+        - createTable:
+            tableName: ao_7deabf_test_environment
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: environment_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: TEXT
+
+        # Test Run Environments
+        - createTable:
+            tableName: ao_7deabf_test_run_env
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: test_run_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: environment_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+        # Test Precondition
+        - createTable:
+            tableName: ao_7deabf_precondition
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: definition
+                  type: TEXT
+              - column:
+                  name: precondition_type
+                  type: VARCHAR(100)
+
+        # Test Precondition Tests
+        - createTable:
+            tableName: ao_7deabf_precondition_test
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: precondition_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: test_issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+        # Requirements
+        - createTable:
+            tableName: ao_7deabf_requirement
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+
+        # Test Coverage (Requirements-Tests)
+        - createTable:
+            tableName: ao_7deabf_coverage
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: requirement_issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: test_issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+        # Cucumber Scenarios
+        - createTable:
+            tableName: ao_7deabf_cucumber_scenario
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: test_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: scenario_type
+                  type: VARCHAR(100)
+              - column:
+                  name: scenario
+                  type: TEXT
+
+        # Gherkin Definition
+        - createTable:
+            tableName: ao_7deabf_gherkin_def
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: test_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: gherkin_type
+                  type: VARCHAR(100)
+              - column:
+                  name: definition
+                  type: TEXT
+
+        # Test Data
+        - createTable:
+            tableName: ao_7deabf_test_data
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: test_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: parameter_name
+                  type: VARCHAR(255)
+              - column:
+                  name: parameter_value
+                  type: TEXT
+
+        # Generic Test Data
+        - createTable:
+            tableName: ao_7deabf_generic_test_data
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: data_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: project_id
+                  type: BIGINT
+              - column:
+                  name: data_content
+                  type: TEXT
+
+        # Test Repository Folder
+        - createTable:
+            tableName: ao_7deabf_repository_folder
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: folder_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: project_id
+                  type: BIGINT
+              - column:
+                  name: parent_id
+                  type: BIGINT
+              - column:
+                  name: path
+                  type: VARCHAR(2000)
+
+        # Test Repository Items
+        - createTable:
+            tableName: ao_7deabf_repository_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: folder_id
+                  type: BIGINT
+              - column:
+                  name: test_issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+        # Test Execution Items
+        - createTable:
+            tableName: ao_7deabf_execution_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: test_execution_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: test_run_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+        # Cucumber Features
+        - createTable:
+            tableName: ao_7deabf_cucumber_feature
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: feature_file
+                  type: VARCHAR(1000)
+              - column:
+                  name: feature_content
+                  type: TEXT
+              - column:
+                  name: project_id
+                  type: BIGINT
+
+        # Import Configuration
+        - createTable:
+            tableName: ao_7deabf_import_config
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: config_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: project_id
+                  type: BIGINT
+              - column:
+                  name: import_type
+                  type: VARCHAR(100)
+              - column:
+                  name: config_data
+                  type: TEXT
+
+        # Export Configuration
+        - createTable:
+            tableName: ao_7deabf_export_config
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: config_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: project_id
+                  type: BIGINT
+              - column:
+                  name: export_type
+                  type: VARCHAR(100)
+              - column:
+                  name: config_data
+                  type: TEXT
+
+        # Settings
+        - createTable:
+            tableName: ao_7deabf_setting
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: project_id
+                  type: BIGINT
+              - column:
+                  name: setting_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: setting_value
+                  type: TEXT
+
+        # Test Execution Templates
+        - createTable:
+            tableName: ao_7deabf_exec_template
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: template_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: project_id
+                  type: BIGINT
+              - column:
+                  name: template_config
+                  type: TEXT
+
+        # Custom Fields
+        - createTable:
+            tableName: ao_7deabf_custom_field
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: field_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: field_type
+                  type: VARCHAR(100)
+              - column:
+                  name: project_id
+                  type: BIGINT
+              - column:
+                  name: entity_type
+                  type: VARCHAR(100)
+
+        # Custom Field Values
+        - createTable:
+            tableName: ao_7deabf_custom_field_val
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: custom_field_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: entity_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: field_value
+                  type: TEXT
+
+        # Test Versions
+        - createTable:
+            tableName: ao_7deabf_test_version
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: test_issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version_number
+                  type: INTEGER
+              - column:
+                  name: version_date
+                  type: TIMESTAMP
+              - column:
+                  name: version_data
+                  type: TEXT
+
+        # Test Labels
+        - createTable:
+            tableName: ao_7deabf_test_label
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: test_issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: label_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+        # Test Priorities
+        - createTable:
+            tableName: ao_7deabf_test_priority
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: priority_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: priority_rank
+                  type: INTEGER
+              - column:
+                  name: project_id
+                  type: BIGINT

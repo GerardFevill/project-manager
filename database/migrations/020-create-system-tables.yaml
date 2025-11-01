@@ -1,0 +1,2087 @@
+databaseChangeLog:
+  # Jira System Tables - Plugins, Cache, Jobs, Events, Clustering
+
+  # Plugin Management
+  - changeSet:
+      id: 020-create-plugin-version
+      author: system
+      changes:
+        - createTable:
+            tableName: pluginversion
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plugin_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: plugin_name
+                  type: VARCHAR(255)
+              - column:
+                  name: version
+                  type: VARCHAR(100)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 020-create-plugin-state
+      author: system
+      changes:
+        - createTable:
+            tableName: plugin_state
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plugin_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+
+  - changeSet:
+      id: 020-create-property-entry
+      author: system
+      changes:
+        - createTable:
+            tableName: propertyentry
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: entity_name
+                  type: VARCHAR(255)
+              - column:
+                  name: entity_id
+                  type: BIGINT
+              - column:
+                  name: property_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: propertytype
+                  type: INTEGER
+
+  - changeSet:
+      id: 020-create-property-string
+      author: system
+      changes:
+        - createTable:
+            tableName: propertystring
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: property_value
+                  type: TEXT
+
+  - changeSet:
+      id: 020-create-property-text
+      author: system
+      changes:
+        - createTable:
+            tableName: propertytext
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: property_value
+                  type: TEXT
+
+  - changeSet:
+      id: 020-create-property-number
+      author: system
+      changes:
+        - createTable:
+            tableName: propertynumber
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: property_value
+                  type: DECIMAL(18,6)
+
+  - changeSet:
+      id: 020-create-property-decimal
+      author: system
+      changes:
+        - createTable:
+            tableName: propertydecimal
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: property_value
+                  type: DECIMAL(18,6)
+
+  - changeSet:
+      id: 020-create-property-date
+      author: system
+      changes:
+        - createTable:
+            tableName: propertydate
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: property_value
+                  type: TIMESTAMP
+
+  # Cluster Management
+  - changeSet:
+      id: 020-create-cluster-job
+      author: system
+      changes:
+        - createTable:
+            tableName: clusterjob
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: job_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: job_runner_key
+                  type: VARCHAR(255)
+              - column:
+                  name: job_parameters
+                  type: TEXT
+              - column:
+                  name: version
+                  type: BIGINT
+
+  - changeSet:
+      id: 020-create-clustered-job
+      author: system
+      changes:
+        - createTable:
+            tableName: clusteredjob
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: job_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: job_runner_key
+                  type: VARCHAR(255)
+              - column:
+                  name: parameters
+                  type: TEXT
+              - column:
+                  name: created_time
+                  type: TIMESTAMP
+
+  - changeSet:
+      id: 020-create-cluster-lock-status
+      author: system
+      changes:
+        - createTable:
+            tableName: clusterlockstatus
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: lock_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: locked_by_node
+                  type: VARCHAR(255)
+              - column:
+                  name: update_time
+                  type: TIMESTAMP
+
+  - changeSet:
+      id: 020-create-cluster-lock
+      author: system
+      changes:
+        - createTable:
+            tableName: clusterlock
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: lock_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: database_name
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 020-create-cluster-node
+      author: system
+      changes:
+        - createTable:
+            tableName: cluster_node
+            columns:
+              - column:
+                  name: node_id
+                  type: VARCHAR(60)
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: node_state
+                  type: VARCHAR(60)
+              - column:
+                  name: ip
+                  type: VARCHAR(60)
+              - column:
+                  name: cache_listener_port
+                  type: BIGINT
+
+  # App Properties
+  - changeSet:
+      id: 020-create-app-property
+      author: system
+      changes:
+        - createTable:
+            tableName: app_property
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: property_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: property_value
+                  type: TEXT
+
+  # Events
+  - changeSet:
+      id: 020-create-event
+      author: system
+      changes:
+        - createTable:
+            tableName: event
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: event_type
+                  type: VARCHAR(60)
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: template_id
+                  type: BIGINT
+
+  - changeSet:
+      id: 020-create-event-type
+      author: system
+      changes:
+        - createTable:
+            tableName: event_type
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: TEXT
+
+  # Replication & Queue
+  - changeSet:
+      id: 020-create-replication-queue
+      author: system
+      changes:
+        - createTable:
+            tableName: replicationqueue
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+              - column:
+                  name: queued_time
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 020-create-index-queue
+      author: system
+      changes:
+        - createTable:
+            tableName: indexqueue
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+              - column:
+                  name: queued_time
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  # Upgrade & Version
+  - changeSet:
+      id: 020-create-upgrade-version-history
+      author: system
+      changes:
+        - createTable:
+            tableName: upgradeversionhistory
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: upgrade_class
+                  type: VARCHAR(255)
+              - column:
+                  name: target_build
+                  type: VARCHAR(255)
+              - column:
+                  name: time_performed
+                  type: TIMESTAMP
+
+  # License
+  - changeSet:
+      id: 020-create-license
+      author: system
+      changes:
+        - createTable:
+            tableName: license
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: license_key
+                  type: TEXT
+
+  # Node Association
+  - changeSet:
+      id: 020-create-node-association
+      author: system
+      changes:
+        - createTable:
+            tableName: nodeassociation
+            columns:
+              - column:
+                  name: source_node_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: source_node_entity
+                  type: VARCHAR(60)
+              - column:
+                  name: sink_node_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sink_node_entity
+                  type: VARCHAR(60)
+              - column:
+                  name: association_type
+                  type: VARCHAR(60)
+              - column:
+                  name: sequence
+                  type: INTEGER
+
+  # Entity Engine
+  - changeSet:
+      id: 020-create-entity-engine
+      author: system
+      changes:
+        - createTable:
+            tableName: entity_engine
+            columns:
+              - column:
+                  name: entity_name
+                  type: VARCHAR(60)
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: entity_id
+                  type: BIGSERIAL
+
+  # Jira Actions
+  - changeSet:
+      id: 020-create-jira-action
+      author: system
+      changes:
+        - createTable:
+            tableName: jiraaction
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_jaction_issue
+                    references: jira_issue(id)
+              - column:
+                  name: author
+                  type: VARCHAR(255)
+              - column:
+                  name: action_type
+                  type: VARCHAR(255)
+              - column:
+                  name: action_level
+                  type: VARCHAR(255)
+              - column:
+                  name: action_body
+                  type: TEXT
+              - column:
+                  name: created
+                  type: TIMESTAMP
+              - column:
+                  name: updateauthor
+                  type: VARCHAR(255)
+              - column:
+                  name: updated
+                  type: TIMESTAMP
+              - column:
+                  name: actionnum
+                  type: BIGINT
+
+  # Mail Server
+  - changeSet:
+      id: 020-create-mail-server
+      author: system
+      changes:
+        - createTable:
+            tableName: mailserver
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: mailfrom
+                  type: VARCHAR(255)
+              - column:
+                  name: prefix
+                  type: VARCHAR(60)
+              - column:
+                  name: smtp_port
+                  type: VARCHAR(60)
+              - column:
+                  name: protocol
+                  type: VARCHAR(60)
+              - column:
+                  name: server_type
+                  type: VARCHAR(60)
+              - column:
+                  name: servername
+                  type: VARCHAR(255)
+              - column:
+                  name: jndilocation
+                  type: VARCHAR(255)
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+              - column:
+                  name: istlsrequired
+                  type: BOOLEAN
+              - column:
+                  name: timeout
+                  type: BIGINT
+
+  - changeSet:
+      id: 020-create-mail-item
+      author: system
+      changes:
+        - createTable:
+            tableName: mailitem
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_mailitem_issue
+                    references: jira_issue(id)
+              - column:
+                  name: mail_to
+                  type: VARCHAR(255)
+              - column:
+                  name: mail_from
+                  type: VARCHAR(255)
+              - column:
+                  name: mail_subject
+                  type: VARCHAR(500)
+              - column:
+                  name: mail_body
+                  type: TEXT
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+
+  # Service Configuration
+  - changeSet:
+      id: 020-create-service-config
+      author: system
+      changes:
+        - createTable:
+            tableName: service_config
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: config_key
+                  type: VARCHAR(255)
+              - column:
+                  name: config_value
+                  type: TEXT
+
+  # Service
+  - changeSet:
+      id: 020-create-service
+      author: system
+      changes:
+        - createTable:
+            tableName: service
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: clazz
+                  type: VARCHAR(255)
+              - column:
+                  name: delay
+                  type: BIGINT
+
+  # Trackback
+  - changeSet:
+      id: 020-create-trackback
+      author: system
+      changes:
+        - createTable:
+            tableName: trackback
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_trackback_issue
+                    references: jira_issue(id)
+              - column:
+                  name: url
+                  type: VARCHAR(255)
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+              - column:
+                  name: blog_name
+                  type: VARCHAR(255)
+              - column:
+                  name: excerpt
+                  type: TEXT
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+
+  # Version Control
+  - changeSet:
+      id: 020-create-version-control
+      author: system
+      changes:
+        - createTable:
+            tableName: versioncontrol
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: vcsname
+                  type: VARCHAR(255)
+              - column:
+                  name: vcsdescription
+                  type: TEXT
+              - column:
+                  name: vcstype
+                  type: VARCHAR(255)
+
+  # Subscription
+  - changeSet:
+      id: 020-create-subscription
+      author: system
+      changes:
+        - createTable:
+            tableName: subscription
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: filter_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_sub_filter
+                    references: search_request(id)
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: group_name
+                  type: VARCHAR(255)
+              - column:
+                  name: last_run
+                  type: TIMESTAMP
+              - column:
+                  name: email_on_empty
+                  type: BOOLEAN
+
+  - changeSet:
+      id: 020-create-subscription-filter
+      author: system
+      changes:
+        - createTable:
+            tableName: subscriptionfilter
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: subscription_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: filter_type
+                  type: VARCHAR(100)
+              - column:
+                  name: filter_value
+                  type: TEXT
+
+  # Scheme Issue Security Levels
+  - changeSet:
+      id: 020-create-scheme-issue-security-levels
+      author: system
+      changes:
+        - createTable:
+            tableName: scheme_issue_security_levels
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: defaultlevel
+                  type: BIGINT
+
+  # Issue Security Scheme
+  - changeSet:
+      id: 020-create-issue-security-scheme
+      author: system
+      changes:
+        - createTable:
+            tableName: issue_security_scheme
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: defaultlevel
+                  type: BIGINT
+
+  # Scheme Issue Security
+  - changeSet:
+      id: 020-create-scheme-issue-security
+      author: system
+      changes:
+        - createTable:
+            tableName: scheme_issue_security
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: scheme_id
+                  type: BIGINT
+              - column:
+                  name: security_level_id
+                  type: BIGINT
+              - column:
+                  name: sec
+                  type: VARCHAR(255)
+              - column:
+                  name: parameter
+                  type: VARCHAR(255)
+
+  # Project Key
+  - changeSet:
+      id: 020-create-project-key
+      author: system
+      changes:
+        - createTable:
+            tableName: projectkey
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_projkey_project
+                    references: project(id)
+              - column:
+                  name: project_key
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+
+  # Field Layout
+  - changeSet:
+      id: 020-create-field-layout
+      author: system
+      changes:
+        - createTable:
+            tableName: fieldlayout
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: layout_type
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 020-create-field-layout-item
+      author: system
+      changes:
+        - createTable:
+            tableName: fieldlayoutitem
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: fieldlayout
+                  type: BIGINT
+              - column:
+                  name: fieldidentifier
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: verticalposition
+                  type: INTEGER
+              - column:
+                  name: ishidden
+                  type: BOOLEAN
+              - column:
+                  name: isrequired
+                  type: BOOLEAN
+              - column:
+                  name: renderertype
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 020-create-field-layout-scheme
+      author: system
+      changes:
+        - createTable:
+            tableName: fieldlayoutscheme
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+
+  - changeSet:
+      id: 020-create-field-layout-scheme-association
+      author: system
+      changes:
+        - createTable:
+            tableName: fieldlayoutschemeassociation
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issuetype
+                  type: VARCHAR(255)
+              - column:
+                  name: project
+                  type: BIGINT
+              - column:
+                  name: fieldlayoutscheme
+                  type: BIGINT
+
+  - changeSet:
+      id: 020-create-field-configuration
+      author: system
+      changes:
+        - createTable:
+            tableName: fieldconfiguration
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: fieldid
+                  type: VARCHAR(60)
+              - column:
+                  name: customfield
+                  type: BIGINT
+
+  - changeSet:
+      id: 020-create-field-configuration-item
+      author: system
+      changes:
+        - createTable:
+            tableName: fieldconfigurationitem
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: fieldconfiguration
+                  type: BIGINT
+              - column:
+                  name: fieldid
+                  type: VARCHAR(60)
+              - column:
+                  name: ishidden
+                  type: BOOLEAN
+              - column:
+                  name: isrequired
+                  type: BOOLEAN
+              - column:
+                  name: description
+                  type: TEXT
+
+  # Feature
+  - changeSet:
+      id: 020-create-feature
+      author: system
+      changes:
+        - createTable:
+            tableName: feature
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: feature_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: feature_type
+                  type: VARCHAR(10)
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+
+  # OS User
+  - changeSet:
+      id: 020-create-os-user
+      author: system
+      changes:
+        - createTable:
+            tableName: os_user
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+
+  # OS Group
+  - changeSet:
+      id: 020-create-os-group
+      author: system
+      changes:
+        - createTable:
+            tableName: os_group
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: groupname
+                  type: VARCHAR(255)
+
+  # OS Membership
+  - changeSet:
+      id: 020-create-os-membership
+      author: system
+      changes:
+        - createTable:
+            tableName: os_membership
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: group_id
+                  type: BIGINT
+
+  # OS Property Entry
+  - changeSet:
+      id: 020-create-os-property-entry
+      author: system
+      changes:
+        - createTable:
+            tableName: os_propertyentry
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: entity_name
+                  type: VARCHAR(125)
+              - column:
+                  name: entity_id
+                  type: BIGINT
+              - column:
+                  name: property_key
+                  type: VARCHAR(255)
+              - column:
+                  name: key_type
+                  type: INTEGER
+
+  # Avatar
+  - changeSet:
+      id: 020-create-avatar
+      author: system
+      changes:
+        - createTable:
+            tableName: avatar
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: filename
+                  type: VARCHAR(255)
+              - column:
+                  name: contenttype
+                  type: VARCHAR(255)
+              - column:
+                  name: avatartype
+                  type: VARCHAR(60)
+              - column:
+                  name: owner
+                  type: VARCHAR(255)
+              - column:
+                  name: systemavatar
+                  type: INTEGER
+
+  # Column Layout
+  - changeSet:
+      id: 020-create-column-layout
+      author: system
+      changes:
+        - createTable:
+            tableName: columnlayout
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+              - column:
+                  name: searchrequest
+                  type: BIGINT
+
+  # Column Layout Item
+  - changeSet:
+      id: 020-create-column-layout-item
+      author: system
+      changes:
+        - createTable:
+            tableName: columnlayoutitem
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: columnlayout
+                  type: BIGINT
+              - column:
+                  name: fieldidentifier
+                  type: VARCHAR(255)
+              - column:
+                  name: horizontalposition
+                  type: INTEGER
+
+  # Favourite Associations
+  - changeSet:
+      id: 020-create-favourite-associations
+      author: system
+      changes:
+        - createTable:
+            tableName: favourite_associations
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+              - column:
+                  name: entity_type
+                  type: VARCHAR(60)
+              - column:
+                  name: entity_id
+                  type: BIGINT
+              - column:
+                  name: sequence
+                  type: BIGINT
+
+  # Issue Type Screen Scheme
+  - changeSet:
+      id: 020-create-issue-type-screen-scheme
+      author: system
+      changes:
+        - createTable:
+            tableName: issuetypescreenscheme
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+
+  # Issue Type Screen Scheme Entity
+  - changeSet:
+      id: 020-create-issue-type-screen-scheme-entity
+      author: system
+      changes:
+        - createTable:
+            tableName: issuetypescreenschemeentity
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_type_id
+                  type: VARCHAR(255)
+              - column:
+                  name: scheme_id
+                  type: BIGINT
+              - column:
+                  name: fieldscreenscheme
+                  type: BIGINT
+
+  # Field Screen Scheme
+  - changeSet:
+      id: 020-create-field-screen-scheme
+      author: system
+      changes:
+        - createTable:
+            tableName: fieldscreenscheme
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+
+  # Field Screen Scheme Item
+  - changeSet:
+      id: 020-create-field-screen-scheme-item
+      author: system
+      changes:
+        - createTable:
+            tableName: fieldscreenschemeitem
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: operation
+                  type: BIGINT
+              - column:
+                  name: fieldscreen
+                  type: BIGINT
+              - column:
+                  name: fieldscreenscheme
+                  type: BIGINT
+
+  # Notification Instance
+  - changeSet:
+      id: 020-create-notification-instance
+      author: system
+      changes:
+        - createTable:
+            tableName: notification_instance
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: notificationtype
+                  type: VARCHAR(60)
+              - column:
+                  name: source
+                  type: BIGINT
+              - column:
+                  name: emailaddress
+                  type: VARCHAR(255)
+              - column:
+                  name: messageid
+                  type: VARCHAR(255)
+
+  # Generic Value
+  - changeSet:
+      id: 020-create-generic-configuration
+      author: system
+      changes:
+        - createTable:
+            tableName: genericconfiguration
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: datatype
+                  type: VARCHAR(60)
+              - column:
+                  name: datakey
+                  type: VARCHAR(60)
+              - column:
+                  name: xmlvalue
+                  type: TEXT
+
+  # Moved Issue Key
+  - changeSet:
+      id: 020-create-moved-issue-key
+      author: system
+      changes:
+        - createTable:
+            tableName: moved_issue_key
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: old_issue_key
+                  type: VARCHAR(255)
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_mik_issue
+                    references: jira_issue(id)
+
+  # Audit Log
+  - changeSet:
+      id: 020-create-audit-log
+      author: system
+      changes:
+        - createTable:
+            tableName: audit_log
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: remote_address
+                  type: VARCHAR(60)
+              - column:
+                  name: created
+                  type: TIMESTAMP
+              - column:
+                  name: author_key
+                  type: VARCHAR(255)
+              - column:
+                  name: summary
+                  type: VARCHAR(500)
+              - column:
+                  name: category
+                  type: VARCHAR(255)
+              - column:
+                  name: object_type
+                  type: VARCHAR(60)
+              - column:
+                  name: object_id
+                  type: VARCHAR(255)
+              - column:
+                  name: object_parent_id
+                  type: VARCHAR(255)
+              - column:
+                  name: object_parent_name
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 020-create-audit-item
+      author: system
+      changes:
+        - createTable:
+            tableName: audit_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: log_id
+                  type: BIGINT
+              - column:
+                  name: object_item
+                  type: VARCHAR(255)
+              - column:
+                  name: object_parent_item
+                  type: VARCHAR(255)
+              - column:
+                  name: from_value
+                  type: TEXT
+              - column:
+                  name: to_value
+                  type: TEXT
+
+  - changeSet:
+      id: 020-create-audit-changed-value
+      author: system
+      changes:
+        - createTable:
+            tableName: audit_changed_value
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: log_id
+                  type: BIGINT
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: delta_from
+                  type: TEXT
+              - column:
+                  name: delta_to
+                  type: TEXT
+
+  # Managed Configuration Item
+  - changeSet:
+      id: 020-create-managed-configuration-item
+      author: system
+      changes:
+        - createTable:
+            tableName: managed_configuration_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: item_id
+                  type: VARCHAR(255)
+              - column:
+                  name: item_type
+                  type: VARCHAR(255)
+              - column:
+                  name: managed
+                  type: BOOLEAN
+              - column:
+                  name: access_level
+                  type: VARCHAR(60)
+              - column:
+                  name: source
+                  type: VARCHAR(255)
+              - column:
+                  name: description_key
+                  type: VARCHAR(255)
+
+  # Schema Config
+  - changeSet:
+      id: 020-create-schema-config
+      author: system
+      changes:
+        - createTable:
+            tableName: schema_config
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: config_type
+                  type: VARCHAR(100)
+              - column:
+                  name: config_key
+                  type: VARCHAR(255)
+              - column:
+                  name: config_value
+                  type: TEXT
+
+  # Drafts
+  - changeSet:
+      id: 020-create-draft-workflow
+      author: system
+      changes:
+        - createTable:
+            tableName: draft_workflow
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: parent_name
+                  type: VARCHAR(255)
+              - column:
+                  name: descriptor
+                  type: TEXT
+
+  # Portal Page
+  - changeSet:
+      id: 020-create-portal-page
+      author: system
+      changes:
+        - createTable:
+            tableName: portalpage
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+              - column:
+                  name: pagename
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: sequence
+                  type: BIGINT
+              - column:
+                  name: fav_count
+                  type: BIGINT
+              - column:
+                  name: layout
+                  type: VARCHAR(60)
+              - column:
+                  name: ppversion
+                  type: BIGINT
+
+  # Portlet Configuration
+  - changeSet:
+      id: 020-create-portlet-configuration
+      author: system
+      changes:
+        - createTable:
+            tableName: portletconfiguration
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: portalpage
+                  type: BIGINT
+              - column:
+                  name: portlet_id
+                  type: VARCHAR(255)
+              - column:
+                  name: column_number
+                  type: INTEGER
+              - column:
+                  name: positionseq
+                  type: INTEGER
+              - column:
+                  name: gadget_xml
+                  type: TEXT
+              - column:
+                  name: color
+                  type: VARCHAR(255)
+
+  # Job Run Details
+  - changeSet:
+      id: 020-create-job-run-details
+      author: system
+      changes:
+        - createTable:
+            tableName: job_run_details
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: job_id
+                  type: VARCHAR(255)
+              - column:
+                  name: start_time
+                  type: TIMESTAMP
+              - column:
+                  name: run_duration
+                  type: BIGINT
+              - column:
+                  name: run_outcome
+                  type: VARCHAR(1)
+              - column:
+                  name: info_message
+                  type: TEXT
+
+  # Clustermessage
+  - changeSet:
+      id: 020-create-cluster-message
+      author: system
+      changes:
+        - createTable:
+            tableName: clustermessage
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: source_node
+                  type: VARCHAR(60)
+              - column:
+                  name: destination_node
+                  type: VARCHAR(60)
+              - column:
+                  name: claimed_by_node
+                  type: VARCHAR(60)
+              - column:
+                  name: message
+                  type: VARCHAR(255)
+              - column:
+                  name: message_time
+                  type: TIMESTAMP
+
+  # Trustedapp
+  - changeSet:
+      id: 020-create-trustedapp
+      author: system
+      changes:
+        - createTable:
+            tableName: trustedapp
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: application_id
+                  type: VARCHAR(255)
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: public_key
+                  type: TEXT
+              - column:
+                  name: ip_match
+                  type: VARCHAR(255)
+              - column:
+                  name: url_match
+                  type: VARCHAR(255)
+              - column:
+                  name: timeout
+                  type: BIGINT
+              - column:
+                  name: created
+                  type: TIMESTAMP
+              - column:
+                  name: created_by
+                  type: VARCHAR(255)
+              - column:
+                  name: updated
+                  type: TIMESTAMP
+              - column:
+                  name: updated_by
+                  type: VARCHAR(255)
+
+  # Project Cache
+  - changeSet:
+      id: 020-create-project-cache
+      author: system
+      changes:
+        - createTable:
+            tableName: project_cache
+            columns:
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: cache_data
+                  type: TEXT
+              - column:
+                  name: last_updated
+                  type: TIMESTAMP
+
+  # Issue Cache
+  - changeSet:
+      id: 020-create-issue-cache
+      author: system
+      changes:
+        - createTable:
+            tableName: issue_cache
+            columns:
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: cache_data
+                  type: TEXT
+              - column:
+                  name: last_updated
+                  type: TIMESTAMP
+
+  # User Cache
+  - changeSet:
+      id: 020-create-user-cache
+      author: system
+      changes:
+        - createTable:
+            tableName: user_cache
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: cache_data
+                  type: TEXT
+              - column:
+                  name: last_updated
+                  type: TIMESTAMP
+
+  # Resolution Cache
+  - changeSet:
+      id: 020-create-resolution-cache
+      author: system
+      changes:
+        - createTable:
+            tableName: resolution_cache
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: cache_key
+                  type: VARCHAR(255)
+              - column:
+                  name: cache_value
+                  type: TEXT
+
+  # Plugin Module
+  - changeSet:
+      id: 020-create-plugin-module
+      author: system
+      changes:
+        - createTable:
+            tableName: plugin_module
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plugin_key
+                  type: VARCHAR(255)
+              - column:
+                  name: module_key
+                  type: VARCHAR(255)
+              - column:
+                  name: module_class
+                  type: VARCHAR(255)
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+
+  # OAuth SP Consumer
+  - changeSet:
+      id: 020-create-oauth-sp-consumer
+      author: system
+      changes:
+        - createTable:
+            tableName: oauth_sp_consumer
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: consumer_key
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+              - column:
+                  name: consumer_name
+                  type: VARCHAR(255)
+              - column:
+                  name: public_key
+                  type: TEXT
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: callback
+                  type: VARCHAR(255)
+              - column:
+                  name: signature_method
+                  type: VARCHAR(60)
+              - column:
+                  name: created
+                  type: TIMESTAMP
+
+  # OAuth SP Token
+  - changeSet:
+      id: 020-create-oauth-sp-token
+      author: system
+      changes:
+        - createTable:
+            tableName: oauth_sp_token
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: token
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+              - column:
+                  name: token_secret
+                  type: VARCHAR(255)
+              - column:
+                  name: token_type
+                  type: VARCHAR(60)
+              - column:
+                  name: consumer_key
+                  type: VARCHAR(255)
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+              - column:
+                  name: ttl
+                  type: BIGINT
+              - column:
+                  name: spauth
+                  type: VARCHAR(60)
+              - column:
+                  name: callback
+                  type: TEXT
+              - column:
+                  name: spverifier
+                  type: VARCHAR(255)
+              - column:
+                  name: spauthexpirationtime
+                  type: TIMESTAMP
+              - column:
+                  name: created
+                  type: TIMESTAMP
+
+  # Listener Config
+  - changeSet:
+      id: 020-create-listener-config
+      author: system
+      changes:
+        - createTable:
+            tableName: listenerconfig
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: clazz
+                  type: TEXT
+              - column:
+                  name: listenername
+                  type: VARCHAR(255)
+
+  # Locked Forms
+  - changeSet:
+      id: 020-create-locked-forms
+      author: system
+      changes:
+        - createTable:
+            tableName: locked_forms
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: entity_type
+                  type: VARCHAR(100)
+              - column:
+                  name: entity_id
+                  type: BIGINT
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+              - column:
+                  name: locked_at
+                  type: TIMESTAMP
+
+  # Sequence Value Item
+  - changeSet:
+      id: 020-create-sequence-value-item
+      author: system
+      changes:
+        - createTable:
+            tableName: sequence_value_item
+            columns:
+              - column:
+                  name: seq_name
+                  type: VARCHAR(60)
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: seq_id
+                  type: BIGINT
+
+  # Global Permission Entry
+  - changeSet:
+      id: 020-create-global-permission-entry
+      author: system
+      changes:
+        - createTable:
+            tableName: globalpermissionentry
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: permission
+                  type: VARCHAR(255)
+              - column:
+                  name: group_id
+                  type: VARCHAR(255)
+
+  # User Picker Filter
+  - changeSet:
+      id: 020-create-user-picker-filter
+      author: system
+      changes:
+        - createTable:
+            tableName: userpickerfilter
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: customfield
+                  type: BIGINT
+              - column:
+                  name: customfieldconfig
+                  type: BIGINT
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+
+  # User Picker Filter Role
+  - changeSet:
+      id: 020-create-user-picker-filter-role
+      author: system
+      changes:
+        - createTable:
+            tableName: userpickerfilterrole
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: userpickerfilter
+                  type: BIGINT
+              - column:
+                  name: projectroleid
+                  type: BIGINT
+
+  # User Picker Filter Group
+  - changeSet:
+      id: 020-create-user-picker-filter-group
+      author: system
+      changes:
+        - createTable:
+            tableName: userpickerfiltergroup
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: userpickerfilter
+                  type: BIGINT
+              - column:
+                  name: groupname
+                  type: VARCHAR(255)
+
+  # Workflow Scheme Draft
+  - changeSet:
+      id: 020-create-workflow-scheme-draft
+      author: system
+      changes:
+        - createTable:
+            tableName: workflowschemeassociation
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: project_id
+                  type: BIGINT
+              - column:
+                  name: workflow_scheme_id
+                  type: BIGINT

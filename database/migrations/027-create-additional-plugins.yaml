@@ -1,0 +1,526 @@
+databaseChangeLog:
+  - changeSet:
+      id: 027-create-additional-plugins-tables
+      author: system
+      changes:
+        # Additional Popular Jira Plugins
+
+        # Confluence Integration
+        - createTable:
+            tableName: ao_9412a1_confluence_page
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: page_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: space_key
+                  type: VARCHAR(255)
+              - column:
+                  name: page_title
+                  type: VARCHAR(500)
+              - column:
+                  name: page_url
+                  type: VARCHAR(2000)
+              - column:
+                  name: issue_id
+                  type: BIGINT
+
+        # Confluence Links
+        - createTable:
+            tableName: ao_9412a1_confluence_link
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: page_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: link_type
+                  type: VARCHAR(100)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        # Confluence Spaces
+        - createTable:
+            tableName: ao_9412a1_confluence_space
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: space_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: space_name
+                  type: VARCHAR(500)
+              - column:
+                  name: space_url
+                  type: VARCHAR(2000)
+
+        # Bitbucket Integration
+        - createTable:
+            tableName: ao_e8b6cc_bitbucket_repo
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: repo_slug
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: repo_name
+                  type: VARCHAR(500)
+              - column:
+                  name: repo_url
+                  type: VARCHAR(2000)
+              - column:
+                  name: project_key
+                  type: VARCHAR(255)
+
+        # Bitbucket Commits
+        - createTable:
+            tableName: ao_e8b6cc_bitbucket_commit
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: commit_hash
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: repo_id
+                  type: BIGINT
+              - column:
+                  name: issue_id
+                  type: BIGINT
+              - column:
+                  name: author
+                  type: VARCHAR(255)
+              - column:
+                  name: commit_message
+                  type: TEXT
+              - column:
+                  name: commit_date
+                  type: TIMESTAMP
+
+        # Bitbucket Pull Requests
+        - createTable:
+            tableName: ao_e8b6cc_bitbucket_pr
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: pr_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: repo_id
+                  type: BIGINT
+              - column:
+                  name: title
+                  type: VARCHAR(500)
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+              - column:
+                  name: source_branch
+                  type: VARCHAR(255)
+              - column:
+                  name: target_branch
+                  type: VARCHAR(255)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+
+        # GitHub Integration
+        - createTable:
+            tableName: ao_4aeacd_github_repo
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: repo_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: repo_name
+                  type: VARCHAR(500)
+              - column:
+                  name: repo_url
+                  type: VARCHAR(2000)
+              - column:
+                  name: owner
+                  type: VARCHAR(255)
+
+        # GitHub Commits
+        - createTable:
+            tableName: ao_4aeacd_github_commit
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: commit_sha
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: repo_id
+                  type: BIGINT
+              - column:
+                  name: issue_id
+                  type: BIGINT
+              - column:
+                  name: author
+                  type: VARCHAR(255)
+              - column:
+                  name: message
+                  type: TEXT
+              - column:
+                  name: commit_date
+                  type: TIMESTAMP
+
+        # GitLab Integration
+        - createTable:
+            tableName: ao_6384ab_gitlab_project
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: project_name
+                  type: VARCHAR(500)
+              - column:
+                  name: project_url
+                  type: VARCHAR(2000)
+              - column:
+                  name: namespace
+                  type: VARCHAR(255)
+
+        # Slack Integration
+        - createTable:
+            tableName: ao_3d9561_slack_channel
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: channel_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: channel_name
+                  type: VARCHAR(255)
+              - column:
+                  name: workspace_id
+                  type: VARCHAR(255)
+              - column:
+                  name: project_id
+                  type: BIGINT
+
+        # Slack Notifications
+        - createTable:
+            tableName: ao_3d9561_slack_notification
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: channel_id
+                  type: BIGINT
+              - column:
+                  name: issue_id
+                  type: BIGINT
+              - column:
+                  name: message_ts
+                  type: VARCHAR(255)
+              - column:
+                  name: message_text
+                  type: TEXT
+              - column:
+                  name: sent_date
+                  type: TIMESTAMP
+
+        # Microsoft Teams Integration
+        - createTable:
+            tableName: ao_2e56a8_teams_channel
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: channel_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: channel_name
+                  type: VARCHAR(255)
+              - column:
+                  name: team_id
+                  type: VARCHAR(255)
+              - column:
+                  name: project_id
+                  type: BIGINT
+
+        # Zendesk Integration
+        - createTable:
+            tableName: ao_7c7893_zendesk_ticket
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: ticket_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+              - column:
+                  name: ticket_url
+                  type: VARCHAR(2000)
+              - column:
+                  name: status
+                  type: VARCHAR(100)
+              - column:
+                  name: sync_date
+                  type: TIMESTAMP
+
+        # Salesforce Integration
+        - createTable:
+            tableName: ao_8f6d3c_salesforce_case
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: case_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+              - column:
+                  name: case_number
+                  type: VARCHAR(255)
+              - column:
+                  name: status
+                  type: VARCHAR(100)
+              - column:
+                  name: sync_date
+                  type: TIMESTAMP
+
+        # Draw.io Diagrams
+        - createTable:
+            tableName: ao_6f5f42_drawio_diagram
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: diagram_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+              - column:
+                  name: diagram_name
+                  type: VARCHAR(500)
+              - column:
+                  name: diagram_data
+                  type: TEXT
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_date
+                  type: TIMESTAMP
+
+        # Lucidchart Integration
+        - createTable:
+            tableName: ao_4b7c8d_lucidchart_doc
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: document_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+              - column:
+                  name: document_name
+                  type: VARCHAR(500)
+              - column:
+                  name: document_url
+                  type: VARCHAR(2000)
+
+        # Time in Status
+        - createTable:
+            tableName: ao_5f8e7d_time_in_status
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: time_seconds
+                  type: BIGINT
+              - column:
+                  name: first_entry
+                  type: TIMESTAMP
+              - column:
+                  name: last_entry
+                  type: TIMESTAMP
+
+        # Advanced Roadmaps (Additional)
+        - createTable:
+            tableName: ao_c77861_roadmap_view
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: view_name
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: project_id
+                  type: BIGINT
+              - column:
+                  name: view_config
+                  type: TEXT
+              - column:
+                  name: owner
+                  type: VARCHAR(255)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        # Email This Issue
+        - createTable:
+            tableName: ao_6d4567_email_log
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sent_to
+                  type: TEXT
+              - column:
+                  name: sent_by
+                  type: VARCHAR(255)
+              - column:
+                  name: sent_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: subject
+                  type: VARCHAR(500)
+              - column:
+                  name: body
+                  type: TEXT

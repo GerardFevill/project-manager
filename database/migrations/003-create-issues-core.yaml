@@ -1,0 +1,485 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-priority
+      author: system
+      changes:
+        - createTable:
+            tableName: priority
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: icon_url
+                  type: VARCHAR(255)
+              - column:
+                  name: status_color
+                  type: VARCHAR(20)
+              - column:
+                  name: sequence
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 003-create-resolution
+      author: system
+      changes:
+        - createTable:
+            tableName: resolution
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: sequence
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 003-create-issue-type
+      author: system
+      changes:
+        - createTable:
+            tableName: issue_type
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: icon_url
+                  type: VARCHAR(255)
+              - column:
+                  name: avatar_id
+                  type: BIGINT
+              - column:
+                  name: sequence
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_subtask
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+
+  - changeSet:
+      id: 003-create-status-category
+      author: system
+      changes:
+        - createTable:
+            tableName: status_category
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: key
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: color_name
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 003-create-issue-status
+      author: system
+      changes:
+        - createTable:
+            tableName: issue_status
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: icon_url
+                  type: VARCHAR(255)
+              - column:
+                  name: status_category_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_status_category
+                    references: status_category(id)
+              - column:
+                  name: sequence
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 003-create-jira-issue
+      author: system
+      changes:
+        - createTable:
+            tableName: jira_issue
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: issue_num
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: issue_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_issue_project
+                    references: project(id)
+              - column:
+                  name: issue_type_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_issue_type
+                    references: issue_type(id)
+              - column:
+                  name: summary
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: environment
+                  type: TEXT
+              - column:
+                  name: priority_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_issue_priority
+                    references: priority(id)
+              - column:
+                  name: resolution_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_issue_resolution
+                    references: resolution(id)
+              - column:
+                  name: status_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_issue_status
+                    references: issue_status(id)
+              - column:
+                  name: assignee_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_issue_assignee
+                    references: app_user(id)
+              - column:
+                  name: reporter_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_issue_reporter
+                    references: app_user(id)
+              - column:
+                  name: creator_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_issue_creator
+                    references: app_user(id)
+              - column:
+                  name: parent_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_issue_parent
+                    references: jira_issue(id)
+              - column:
+                  name: security_level_id
+                  type: BIGINT
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: due_date
+                  type: DATE
+              - column:
+                  name: resolution_date
+                  type: TIMESTAMP
+              - column:
+                  name: votes
+                  type: INTEGER
+                  defaultValueNumeric: 0
+              - column:
+                  name: watches
+                  type: INTEGER
+                  defaultValueNumeric: 0
+              - column:
+                  name: time_original_estimate
+                  type: BIGINT
+                  remarks: "in seconds"
+              - column:
+                  name: time_estimate
+                  type: BIGINT
+                  remarks: "in seconds"
+              - column:
+                  name: time_spent
+                  type: BIGINT
+                  remarks: "in seconds"
+
+  - changeSet:
+      id: 003-create-issue-component
+      author: system
+      changes:
+        - createTable:
+            tableName: issue_component
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_ic_issue
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: component_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_ic_component
+                    references: component(id)
+                    deleteCascade: true
+
+  - changeSet:
+      id: 003-create-issue-version
+      author: system
+      changes:
+        - createTable:
+            tableName: issue_version
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_iv_issue
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: version_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_iv_version
+                    references: project_version(id)
+                    deleteCascade: true
+              - column:
+                  name: version_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                  remarks: "affects, fix"
+
+  - changeSet:
+      id: 003-create-issue-label
+      author: system
+      changes:
+        - createTable:
+            tableName: label
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: label
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+  - changeSet:
+      id: 003-create-issue-label-association
+      author: system
+      changes:
+        - createTable:
+            tableName: issue_label
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_il_issue
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: label_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_il_label
+                    references: label(id)
+                    deleteCascade: true
+
+  - changeSet:
+      id: 003-create-change-group
+      author: system
+      changes:
+        - createTable:
+            tableName: change_group
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cg_issue
+                    references: jira_issue(id)
+                    deleteCascade: true
+              - column:
+                  name: author_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_cg_author
+                    references: app_user(id)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 003-create-change-item
+      author: system
+      changes:
+        - createTable:
+            tableName: change_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: change_group_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_ci_changegroup
+                    references: change_group(id)
+                    deleteCascade: true
+              - column:
+                  name: field_type
+                  type: VARCHAR(50)
+              - column:
+                  name: field
+                  type: VARCHAR(255)
+              - column:
+                  name: old_value
+                  type: TEXT
+              - column:
+                  name: old_string
+                  type: TEXT
+              - column:
+                  name: new_value
+                  type: TEXT
+              - column:
+                  name: new_string
+                  type: TEXT

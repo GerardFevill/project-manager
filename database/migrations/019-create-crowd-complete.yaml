@@ -1,0 +1,822 @@
+databaseChangeLog:
+  # Crowd - Complete Authentication & User Management System
+
+  - changeSet:
+      id: 019-create-cwd-directory
+      author: system
+      changes:
+        - createTable:
+            tableName: cwd_directory
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: directory_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: directory_type
+                  type: VARCHAR(60)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: implementation_class
+                  type: VARCHAR(255)
+              - column:
+                  name: lower_directory_name
+                  type: VARCHAR(255)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+              - column:
+                  name: updated_date
+                  type: TIMESTAMP
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+
+  - changeSet:
+      id: 019-create-cwd-directory-attribute
+      author: system
+      changes:
+        - createTable:
+            tableName: cwd_directory_attribute
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: directory_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cwd_da_directory
+                    references: cwd_directory(id)
+                    deleteCascade: true
+              - column:
+                  name: attribute_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: attribute_value
+                  type: TEXT
+
+  - changeSet:
+      id: 019-create-cwd-directory-operation
+      author: system
+      changes:
+        - createTable:
+            tableName: cwd_directory_operation
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: directory_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cwd_do_directory
+                    references: cwd_directory(id)
+                    deleteCascade: true
+              - column:
+                  name: operation_type
+                  type: VARCHAR(60)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 019-create-cwd-user
+      author: system
+      changes:
+        - createTable:
+            tableName: cwd_user
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: directory_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cwd_u_directory
+                    references: cwd_directory(id)
+              - column:
+                  name: user_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: lower_user_name
+                  type: VARCHAR(255)
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+              - column:
+                  name: updated_date
+                  type: TIMESTAMP
+              - column:
+                  name: first_name
+                  type: VARCHAR(255)
+              - column:
+                  name: lower_first_name
+                  type: VARCHAR(255)
+              - column:
+                  name: last_name
+                  type: VARCHAR(255)
+              - column:
+                  name: lower_last_name
+                  type: VARCHAR(255)
+              - column:
+                  name: display_name
+                  type: VARCHAR(255)
+              - column:
+                  name: lower_display_name
+                  type: VARCHAR(255)
+              - column:
+                  name: email_address
+                  type: VARCHAR(255)
+              - column:
+                  name: lower_email_address
+                  type: VARCHAR(255)
+              - column:
+                  name: credential
+                  type: VARCHAR(500)
+              - column:
+                  name: external_id
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 019-create-cwd-user-attribute
+      author: system
+      changes:
+        - createTable:
+            tableName: cwd_user_attribute
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cwd_ua_user
+                    references: cwd_user(id)
+                    deleteCascade: true
+              - column:
+                  name: directory_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: attribute_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: attribute_value
+                  type: TEXT
+
+  - changeSet:
+      id: 019-create-cwd-group
+      author: system
+      changes:
+        - createTable:
+            tableName: cwd_group
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: directory_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cwd_g_directory
+                    references: cwd_directory(id)
+              - column:
+                  name: group_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: lower_group_name
+                  type: VARCHAR(255)
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+              - column:
+                  name: local
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+              - column:
+                  name: updated_date
+                  type: TIMESTAMP
+              - column:
+                  name: description
+                  type: VARCHAR(500)
+              - column:
+                  name: lower_description
+                  type: VARCHAR(500)
+              - column:
+                  name: group_type
+                  type: VARCHAR(60)
+
+  - changeSet:
+      id: 019-create-cwd-membership
+      author: system
+      changes:
+        - createTable:
+            tableName: cwd_membership
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: parent_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: child_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: membership_type
+                  type: VARCHAR(60)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: directory_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 019-create-cwd-app-dir-mapping
+      author: system
+      changes:
+        - createTable:
+            tableName: cwd_app_dir_mapping
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: application_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: directory_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cwd_adm_directory
+                    references: cwd_directory(id)
+              - column:
+                  name: list_index
+                  type: INTEGER
+              - column:
+                  name: allow_all
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+
+  - changeSet:
+      id: 019-create-cwd-user-address
+      author: system
+      changes:
+        - createTable:
+            tableName: cwd_user_address
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cwd_uaddr_user
+                    references: cwd_user(id)
+                    deleteCascade: true
+              - column:
+                  name: address_type
+                  type: VARCHAR(60)
+              - column:
+                  name: street
+                  type: VARCHAR(255)
+              - column:
+                  name: city
+                  type: VARCHAR(255)
+              - column:
+                  name: state
+                  type: VARCHAR(60)
+              - column:
+                  name: postal_code
+                  type: VARCHAR(60)
+              - column:
+                  name: country
+                  type: VARCHAR(60)
+
+  - changeSet:
+      id: 019-create-cwd-user-group-membership
+      author: system
+      changes:
+        - createTable:
+            tableName: cwd_user_group_membership
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cwd_ugm_user
+                    references: cwd_user(id)
+                    deleteCascade: true
+              - column:
+                  name: group_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cwd_ugm_group
+                    references: cwd_group(id)
+                    deleteCascade: true
+
+  - changeSet:
+      id: 019-create-application
+      author: system
+      changes:
+        - createTable:
+            tableName: application
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: application_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: lower_application_name
+                  type: VARCHAR(255)
+              - column:
+                  name: application_type
+                  type: VARCHAR(60)
+              - column:
+                  name: credential
+                  type: VARCHAR(500)
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+              - column:
+                  name: description
+                  type: TEXT
+
+  - changeSet:
+      id: 019-create-application-role
+      author: system
+      changes:
+        - createTable:
+            tableName: applicationrole
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: default_groups
+                  type: TEXT
+              - column:
+                  name: application_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_approle_app
+                    references: application(id)
+
+  - changeSet:
+      id: 019-create-remember-me-token
+      author: system
+      changes:
+        - createTable:
+            tableName: remembermetoken
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_rmt_user
+                    references: app_user(id)
+                    deleteCascade: true
+              - column:
+                  name: token
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: ip_address
+                  type: VARCHAR(60)
+
+  - changeSet:
+      id: 019-create-session-information
+      author: system
+      changes:
+        - createTable:
+            tableName: sessioninformation
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: session_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_session_user
+                    references: app_user(id)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: last_accessed
+                  type: TIMESTAMP
+              - column:
+                  name: ip_address
+                  type: VARCHAR(60)
+              - column:
+                  name: user_agent
+                  type: TEXT
+
+  - changeSet:
+      id: 019-create-token-audit
+      author: system
+      changes:
+        - createTable:
+            tableName: remembermetoken_aud
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: token_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: action
+                  type: VARCHAR(100)
+              - column:
+                  name: action_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 019-create-user-base
+      author: system
+      changes:
+        - createTable:
+            tableName: userbase
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password_hash
+                  type: VARCHAR(500)
+
+  - changeSet:
+      id: 019-create-oauth-consumer
+      author: system
+      changes:
+        - createTable:
+            tableName: oauth_consumer
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: consumer_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: consumer_secret
+                  type: VARCHAR(500)
+              - column:
+                  name: consumer_name
+                  type: VARCHAR(255)
+              - column:
+                  name: public_key
+                  type: TEXT
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 019-create-oauth-consumer-token
+      author: system
+      changes:
+        - createTable:
+            tableName: oauth_consumer_token
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: token
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: token_secret
+                  type: VARCHAR(500)
+              - column:
+                  name: token_type
+                  type: VARCHAR(60)
+              - column:
+                  name: consumer_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_oct_consumer
+                    references: oauth_consumer(id)
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_oct_user
+                    references: app_user(id)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: ttl
+                  type: BIGINT
+              - column:
+                  name: callback_url
+                  type: TEXT
+
+  - changeSet:
+      id: 019-create-api-token
+      author: system
+      changes:
+        - createTable:
+            tableName: api_token
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_api_token_user
+                    references: app_user(id)
+                    deleteCascade: true
+              - column:
+                  name: token
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: token_name
+                  type: VARCHAR(255)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: last_used
+                  type: TIMESTAMP
+              - column:
+                  name: expiry_date
+                  type: TIMESTAMP
+
+  - changeSet:
+      id: 019-create-sso-session
+      author: system
+      changes:
+        - createTable:
+            tableName: sso_session
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: session_id
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_sso_user
+                    references: app_user(id)
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: last_accessed
+                  type: TIMESTAMP
+              - column:
+                  name: provider
+                  type: VARCHAR(100)
+
+  - changeSet:
+      id: 019-create-external-entity
+      author: system
+      changes:
+        - createTable:
+            tableName: external_entity
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: entity_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: entity_type
+                  type: VARCHAR(100)
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 019-create-external-entity-link
+      author: system
+      changes:
+        - createTable:
+            tableName: external_entity_link
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: external_entity_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_eel_user
+                    references: app_user(id)
+
+  - changeSet:
+      id: 019-create-trusted-app
+      author: system
+      changes:
+        - createTable:
+            tableName: trusted_app
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: application_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: public_key
+                  type: TEXT
+              - column:
+                  name: ip_match
+                  type: VARCHAR(500)
+              - column:
+                  name: url_match
+                  type: VARCHAR(500)
+              - column:
+                  name: timeout
+                  type: BIGINT
+
+  - changeSet:
+      id: 019-create-whitelist
+      author: system
+      changes:
+        - createTable:
+            tableName: whitelist
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: whitelist_type
+                  type: VARCHAR(100)
+              - column:
+                  name: whitelist_value
+                  type: VARCHAR(500)
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true

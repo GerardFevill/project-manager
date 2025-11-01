@@ -1,0 +1,415 @@
+databaseChangeLog:
+  # User indexes
+  - changeSet:
+      id: 012-index-users
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_user_email_lower
+            tableName: app_user
+            columns:
+              - column:
+                  name: email_lower
+        - createIndex:
+            indexName: idx_user_active
+            tableName: app_user
+            columns:
+              - column:
+                  name: active
+
+  # Project indexes
+  - changeSet:
+      id: 012-index-projects
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_project_key
+            tableName: project
+            columns:
+              - column:
+                  name: project_key
+        - createIndex:
+            indexName: idx_project_lead
+            tableName: project
+            columns:
+              - column:
+                  name: lead_id
+        - createIndex:
+            indexName: idx_project_archived
+            tableName: project
+            columns:
+              - column:
+                  name: archived
+
+  # Issue indexes
+  - changeSet:
+      id: 012-index-issues
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_issue_key
+            tableName: jira_issue
+            columns:
+              - column:
+                  name: issue_key
+        - createIndex:
+            indexName: idx_issue_project
+            tableName: jira_issue
+            columns:
+              - column:
+                  name: project_id
+        - createIndex:
+            indexName: idx_issue_assignee
+            tableName: jira_issue
+            columns:
+              - column:
+                  name: assignee_id
+        - createIndex:
+            indexName: idx_issue_reporter
+            tableName: jira_issue
+            columns:
+              - column:
+                  name: reporter_id
+        - createIndex:
+            indexName: idx_issue_status
+            tableName: jira_issue
+            columns:
+              - column:
+                  name: status_id
+        - createIndex:
+            indexName: idx_issue_type
+            tableName: jira_issue
+            columns:
+              - column:
+                  name: issue_type_id
+        - createIndex:
+            indexName: idx_issue_priority
+            tableName: jira_issue
+            columns:
+              - column:
+                  name: priority_id
+        - createIndex:
+            indexName: idx_issue_created
+            tableName: jira_issue
+            columns:
+              - column:
+                  name: created_date
+        - createIndex:
+            indexName: idx_issue_updated
+            tableName: jira_issue
+            columns:
+              - column:
+                  name: updated_date
+        - createIndex:
+            indexName: idx_issue_parent
+            tableName: jira_issue
+            columns:
+              - column:
+                  name: parent_id
+
+  # Sprint indexes
+  - changeSet:
+      id: 012-index-sprints
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_sprint_board
+            tableName: sprint
+            columns:
+              - column:
+                  name: board_id
+        - createIndex:
+            indexName: idx_sprint_state
+            tableName: sprint
+            columns:
+              - column:
+                  name: state
+        - createIndex:
+            indexName: idx_sprint_dates
+            tableName: sprint
+            columns:
+              - column:
+                  name: start_date
+              - column:
+                  name: end_date
+
+  # Sprint issue indexes
+  - changeSet:
+      id: 012-index-sprint-issues
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_sprint_issue_sprint
+            tableName: sprint_issue
+            columns:
+              - column:
+                  name: sprint_id
+        - createIndex:
+            indexName: idx_sprint_issue_issue
+            tableName: sprint_issue
+            columns:
+              - column:
+                  name: issue_id
+        - createIndex:
+            indexName: idx_sprint_issue_unique
+            tableName: sprint_issue
+            unique: true
+            columns:
+              - column:
+                  name: sprint_id
+              - column:
+                  name: issue_id
+
+  # Comment indexes
+  - changeSet:
+      id: 012-index-comments
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_comment_issue
+            tableName: comment
+            columns:
+              - column:
+                  name: issue_id
+        - createIndex:
+            indexName: idx_comment_author
+            tableName: comment
+            columns:
+              - column:
+                  name: author_id
+        - createIndex:
+            indexName: idx_comment_created
+            tableName: comment
+            columns:
+              - column:
+                  name: created_date
+
+  # Worklog indexes
+  - changeSet:
+      id: 012-index-worklogs
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_worklog_issue
+            tableName: worklog
+            columns:
+              - column:
+                  name: issue_id
+        - createIndex:
+            indexName: idx_worklog_author
+            tableName: worklog
+            columns:
+              - column:
+                  name: author_id
+        - createIndex:
+            indexName: idx_worklog_started
+            tableName: worklog
+            columns:
+              - column:
+                  name: started
+
+  # Change history indexes
+  - changeSet:
+      id: 012-index-changes
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_changegroup_issue
+            tableName: change_group
+            columns:
+              - column:
+                  name: issue_id
+        - createIndex:
+            indexName: idx_changegroup_created
+            tableName: change_group
+            columns:
+              - column:
+                  name: created_date
+        - createIndex:
+            indexName: idx_changeitem_group
+            tableName: change_item
+            columns:
+              - column:
+                  name: change_group_id
+
+  # Custom field indexes
+  - changeSet:
+      id: 012-index-custom-fields
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_cfv_issue
+            tableName: custom_field_value
+            columns:
+              - column:
+                  name: issue_id
+        - createIndex:
+            indexName: idx_cfv_field
+            tableName: custom_field_value
+            columns:
+              - column:
+                  name: custom_field_id
+        - createIndex:
+            indexName: idx_cfv_string
+            tableName: custom_field_value
+            columns:
+              - column:
+                  name: string_value
+        - createIndex:
+            indexName: idx_cfv_number
+            tableName: custom_field_value
+            columns:
+              - column:
+                  name: number_value
+        - createIndex:
+            indexName: idx_cfv_date
+            tableName: custom_field_value
+            columns:
+              - column:
+                  name: date_value
+
+  # Attachment indexes
+  - changeSet:
+      id: 012-index-attachments
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_attachment_issue
+            tableName: file_attachment
+            columns:
+              - column:
+                  name: issue_id
+        - createIndex:
+            indexName: idx_attachment_author
+            tableName: file_attachment
+            columns:
+              - column:
+                  name: author_id
+
+  # Issue link indexes
+  - changeSet:
+      id: 012-index-links
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_link_source
+            tableName: issue_link
+            columns:
+              - column:
+                  name: source_issue_id
+        - createIndex:
+            indexName: idx_link_destination
+            tableName: issue_link
+            columns:
+              - column:
+                  name: destination_issue_id
+        - createIndex:
+            indexName: idx_link_type
+            tableName: issue_link
+            columns:
+              - column:
+                  name: link_type_id
+
+  # Board indexes
+  - changeSet:
+      id: 012-index-boards
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_board_project
+            tableName: board
+            columns:
+              - column:
+                  name: project_id
+        - createIndex:
+            indexName: idx_board_type
+            tableName: board
+            columns:
+              - column:
+                  name: board_type
+
+  # Epic indexes
+  - changeSet:
+      id: 012-index-epics
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_epic_issue
+            tableName: epic
+            columns:
+              - column:
+                  name: issue_id
+        - createIndex:
+            indexName: idx_epic_link_issue
+            tableName: issue_epic_link
+            columns:
+              - column:
+                  name: issue_id
+        - createIndex:
+            indexName: idx_epic_link_epic
+            tableName: issue_epic_link
+            columns:
+              - column:
+                  name: epic_id
+
+  # Workflow indexes
+  - changeSet:
+      id: 012-index-workflows
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_workflow_step_workflow
+            tableName: workflow_step
+            columns:
+              - column:
+                  name: workflow_id
+        - createIndex:
+            indexName: idx_workflow_transition_workflow
+            tableName: workflow_transition
+            columns:
+              - column:
+                  name: workflow_id
+
+  # Filter indexes
+  - changeSet:
+      id: 012-index-filters
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_filter_author
+            tableName: search_request
+            columns:
+              - column:
+                  name: author_id
+        - createIndex:
+            indexName: idx_filter_favourite
+            tableName: search_request
+            columns:
+              - column:
+                  name: is_favourite
+
+  # User history indexes
+  - changeSet:
+      id: 012-index-user-history
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_history_user
+            tableName: user_history_item
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            indexName: idx_history_entity
+            tableName: user_history_item
+            columns:
+              - column:
+                  name: entity_type
+              - column:
+                  name: entity_id
+        - createIndex:
+            indexName: idx_history_viewed
+            tableName: user_history_item
+            columns:
+              - column:
+                  name: last_viewed

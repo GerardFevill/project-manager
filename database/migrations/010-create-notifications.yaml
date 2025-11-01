@@ -1,0 +1,272 @@
+databaseChangeLog:
+  - changeSet:
+      id: 010-create-user-notification-preference
+      author: system
+      changes:
+        - createTable:
+            tableName: user_notification_preference
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_unp_user
+                    references: app_user(id)
+                    deleteCascade: true
+              - column:
+                  name: notification_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+
+  - changeSet:
+      id: 010-create-filter
+      author: system
+      changes:
+        - createTable:
+            tableName: search_request
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: filter_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: author_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_filter_author
+                    references: app_user(id)
+              - column:
+                  name: jql_query
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_favourite
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 010-create-filter-subscription
+      author: system
+      changes:
+        - createTable:
+            tableName: filter_subscription
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: filter_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_fs_filter
+                    references: search_request(id)
+                    deleteCascade: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_fs_user
+                    references: app_user(id)
+                    deleteCascade: true
+              - column:
+                  name: group_name
+                  type: VARCHAR(255)
+              - column:
+                  name: last_run
+                  type: TIMESTAMP
+              - column:
+                  name: email_on_empty
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+
+  - changeSet:
+      id: 010-create-share-permission
+      author: system
+      changes:
+        - createTable:
+            tableName: share_permission
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: entity_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                  remarks: "filter, dashboard"
+              - column:
+                  name: entity_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: share_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                  remarks: "global, group, project, user"
+              - column:
+                  name: param1
+                  type: VARCHAR(255)
+              - column:
+                  name: param2
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 010-create-user-history
+      author: system
+      changes:
+        - createTable:
+            tableName: user_history_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_uhi_user
+                    references: app_user(id)
+                    deleteCascade: true
+              - column:
+                  name: entity_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                  remarks: "issue, project, filter, dashboard"
+              - column:
+                  name: entity_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_viewed
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: data
+                  type: TEXT
+
+  - changeSet:
+      id: 010-create-dashboard
+      author: system
+      changes:
+        - createTable:
+            tableName: dashboard
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: dashboard_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: owner_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_dashboard_owner
+                    references: app_user(id)
+              - column:
+                  name: is_favourite
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: layout
+                  type: VARCHAR(50)
+                  defaultValue: "AAA"
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 010-create-gadget
+      author: system
+      changes:
+        - createTable:
+            tableName: gadget
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: dashboard_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_gadget_dashboard
+                    references: dashboard(id)
+                    deleteCascade: true
+              - column:
+                  name: gadget_uri
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: color
+                  type: VARCHAR(50)
+              - column:
+                  name: column_number
+                  type: INTEGER
+              - column:
+                  name: row_number
+                  type: INTEGER
+              - column:
+                  name: user_prefs
+                  type: TEXT

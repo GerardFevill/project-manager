@@ -1,0 +1,1313 @@
+databaseChangeLog:
+  # Jira Service Management - Customer Portal & Service Desk
+
+  - changeSet:
+      id: 013-create-servicedesk-project
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_serviceproject
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_sdp_project
+                    references: project(id)
+              - column:
+                  name: project_type
+                  type: VARCHAR(50)
+              - column:
+                  name: key
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 013-create-customer-request
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_customerrequest
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cr_issue
+                    references: jira_issue(id)
+              - column:
+                  name: request_type_id
+                  type: BIGINT
+              - column:
+                  name: participant_count
+                  type: INTEGER
+                  defaultValueNumeric: 0
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 013-create-request-type
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_requesttype
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: issue_type_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_rt_issuetype
+                    references: issue_type(id)
+              - column:
+                  name: help_text
+                  type: TEXT
+              - column:
+                  name: portal_key
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 013-create-request-type-field
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_requesttypefield
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: request_type_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: field_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: required
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: visible
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+              - column:
+                  name: position
+                  type: INTEGER
+
+  - changeSet:
+      id: 013-create-queue
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_queue
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: jql
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: position
+                  type: INTEGER
+
+  - changeSet:
+      id: 013-create-queue-column
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_queuecolumn
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: queue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: field_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: position
+                  type: INTEGER
+
+  - changeSet:
+      id: 013-create-sla
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_sla
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+
+  - changeSet:
+      id: 013-create-sla-goal
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_slagoal
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: sla_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: time_goal
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                  remarks: "in milliseconds"
+              - column:
+                  name: calendar_id
+                  type: BIGINT
+
+  - changeSet:
+      id: 013-create-sla-metric
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_slametric
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_sm_issue
+                    references: jira_issue(id)
+              - column:
+                  name: sla_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_time
+                  type: TIMESTAMP
+              - column:
+                  name: completed_time
+                  type: TIMESTAMP
+              - column:
+                  name: breached
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: paused
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+
+  - changeSet:
+      id: 013-create-sla-calendar
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_slacalendar
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: time_zone
+                  type: VARCHAR(100)
+
+  - changeSet:
+      id: 013-create-organization
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_organization
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 013-create-organization-member
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_organization_member
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: organization_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 013-create-portal-page
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_portalpage
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content
+                  type: TEXT
+              - column:
+                  name: position
+                  type: INTEGER
+
+  - changeSet:
+      id: 013-create-customer-participation
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_customerparticipation
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: customer_request_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 013-create-approval
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_approval
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_approval_issue
+                    references: jira_issue(id)
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  remarks: "pending, approved, declined"
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 013-create-approver
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_approver
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: approval_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: approver_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: decision
+                  type: VARCHAR(50)
+              - column:
+                  name: decision_date
+                  type: TIMESTAMP
+
+  - changeSet:
+      id: 013-create-knowledge-base
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_knowledgebase
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: space_key
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 013-create-email-channel
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_emailchannel
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email_address
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+
+  - changeSet:
+      id: 013-create-satisfaction-rating
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_customersat
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: request_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rating
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: comment
+                  type: TEXT
+              - column:
+                  name: rated_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 013-create-automation-rule
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_automation_rule
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+              - column:
+                  name: rule_config
+                  type: TEXT
+
+  - changeSet:
+      id: 013-create-request-form
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_requestform
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: request_type_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: form_config
+                  type: TEXT
+
+  - changeSet:
+      id: 013-create-service-level
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_servicelevel
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: target_time
+                  type: BIGINT
+                  remarks: "in milliseconds"
+
+  - changeSet:
+      id: 013-create-agent
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_agent
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 013-create-portal-group
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_portalgroup
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: position
+                  type: INTEGER
+
+  - changeSet:
+      id: 013-create-request-type-icon
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_requesttypeicon
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: request_type_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: icon_url
+                  type: VARCHAR(500)
+
+  - changeSet:
+      id: 013-create-request-type-group
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_requesttypegroup
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: portal_group_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: request_type_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 013-create-sd-config
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_servicedeskconfig
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: config_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: config_value
+                  type: TEXT
+
+  - changeSet:
+      id: 013-create-sd-log
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_servicedesklog
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+              - column:
+                  name: log_type
+                  type: VARCHAR(100)
+              - column:
+                  name: message
+                  type: TEXT
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 013-create-email-processor
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_emailprocessor
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: email_channel_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: processor_type
+                  type: VARCHAR(100)
+              - column:
+                  name: config
+                  type: TEXT
+
+  - changeSet:
+      id: 013-create-email-audit
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_emailaudit
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: email_channel_id
+                  type: BIGINT
+              - column:
+                  name: from_address
+                  type: VARCHAR(255)
+              - column:
+                  name: subject
+                  type: TEXT
+              - column:
+                  name: processed
+                  type: BOOLEAN
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 013-create-queue-filter
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_queuefilter
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: queue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: filter_type
+                  type: VARCHAR(100)
+              - column:
+                  name: filter_value
+                  type: TEXT
+
+  - changeSet:
+      id: 013-create-queue-order
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_queueorder
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: queue_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: field_id
+                  type: VARCHAR(255)
+              - column:
+                  name: sort_order
+                  type: VARCHAR(10)
+                  remarks: "ASC, DESC"
+
+  - changeSet:
+      id: 013-create-sla-report
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_sla_report
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: report_date
+                  type: DATE
+              - column:
+                  name: total_requests
+                  type: INTEGER
+              - column:
+                  name: met_sla
+                  type: INTEGER
+              - column:
+                  name: breached_sla
+                  type: INTEGER
+
+  - changeSet:
+      id: 013-create-sla-condition
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_sla_condition
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: sla_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: condition_type
+                  type: VARCHAR(100)
+              - column:
+                  name: condition_value
+                  type: TEXT
+
+  - changeSet:
+      id: 013-create-sla-log
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_sla_log
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: sla_metric_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: event_type
+                  type: VARCHAR(100)
+              - column:
+                  name: event_time
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: details
+                  type: TEXT
+
+  - changeSet:
+      id: 013-create-sla-event
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_sla_event
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: sla_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: event_name
+                  type: VARCHAR(255)
+              - column:
+                  name: event_config
+                  type: TEXT
+
+  - changeSet:
+      id: 013-create-sla-history
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_sla_history
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: sla_metric_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: snapshot_time
+                  type: TIMESTAMP
+              - column:
+                  name: remaining_time
+                  type: BIGINT
+              - column:
+                  name: elapsed_time
+                  type: BIGINT
+
+  - changeSet:
+      id: 013-create-sla-exception
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_sla_exception
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: sla_calendar_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: exception_date
+                  type: DATE
+              - column:
+                  name: description
+                  type: TEXT
+
+  - changeSet:
+      id: 013-create-service-level-goal
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_servicelevelgoal
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_level_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: goal_type
+                  type: VARCHAR(100)
+              - column:
+                  name: target_percentage
+                  type: DECIMAL(5,2)
+
+  - changeSet:
+      id: 013-create-service-level-history
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_servicelevelhistory
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_level_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: snapshot_date
+                  type: DATE
+              - column:
+                  name: achieved_percentage
+                  type: DECIMAL(5,2)
+
+  - changeSet:
+      id: 013-create-service-level-breach
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_servicelevelbreach
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_level_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_slb_issue
+                    references: jira_issue(id)
+              - column:
+                  name: breach_time
+                  type: TIMESTAMP
+
+  - changeSet:
+      id: 013-create-service-level-audit
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_servicelevelaudit
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_level_id
+                  type: BIGINT
+              - column:
+                  name: change_type
+                  type: VARCHAR(100)
+              - column:
+                  name: changed_by
+                  type: VARCHAR(255)
+              - column:
+                  name: change_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 013-create-faq
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_faq
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: knowledge_base_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: question
+                  type: TEXT
+              - column:
+                  name: answer
+                  type: TEXT
+              - column:
+                  name: position
+                  type: INTEGER
+
+  - changeSet:
+      id: 013-create-automation-audit
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_automation_audit
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: rule_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: execution_time
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: success
+                  type: BOOLEAN
+              - column:
+                  name: error_message
+                  type: TEXT
+
+  - changeSet:
+      id: 013-create-project-config
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_projectconfig
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: config_type
+                  type: VARCHAR(100)
+              - column:
+                  name: config_data
+                  type: TEXT
+
+  - changeSet:
+      id: 013-create-custom-field-sd
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_customfield
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: field_name
+                  type: VARCHAR(255)
+              - column:
+                  name: field_type
+                  type: VARCHAR(100)
+
+  - changeSet:
+      id: 013-create-custom-field-option-sd
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_customfield_option
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: custom_field_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: option_value
+                  type: VARCHAR(255)
+              - column:
+                  name: position
+                  type: INTEGER
+
+  - changeSet:
+      id: 013-create-metric
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_metric
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: service_desk_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: metric_name
+                  type: VARCHAR(255)
+              - column:
+                  name: metric_value
+                  type: DECIMAL(18,2)
+              - column:
+                  name: snapshot_date
+                  type: TIMESTAMP
+
+  - changeSet:
+      id: 013-create-satisfaction-answer
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_54307e_customersat_answer
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: satisfaction_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: question
+                  type: TEXT
+              - column:
+                  name: answer
+                  type: TEXT

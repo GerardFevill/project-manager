@@ -1,0 +1,293 @@
+databaseChangeLog:
+  - changeSet:
+      id: 011-create-report-template
+      author: system
+      changes:
+        - createTable:
+            tableName: report_template
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: report_type
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                  remarks: "velocity, burndown, cumulative_flow, sprint_report, etc."
+              - column:
+                  name: configuration
+                  type: TEXT
+                  remarks: "JSON configuration"
+
+  - changeSet:
+      id: 011-create-saved-report
+      author: system
+      changes:
+        - createTable:
+            tableName: saved_report
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: template_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_sr_template
+                    references: report_template(id)
+              - column:
+                  name: owner_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_sr_owner
+                    references: app_user(id)
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_sr_project
+                    references: project(id)
+              - column:
+                  name: filter_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_sr_filter
+                    references: search_request(id)
+              - column:
+                  name: parameters
+                  type: TEXT
+                  remarks: "JSON parameters"
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 011-create-time-tracking-config
+      author: system
+      changes:
+        - createTable:
+            tableName: time_tracking_config
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: working_hours_per_day
+                  type: DECIMAL(5,2)
+                  defaultValueNumeric: 8
+              - column:
+                  name: working_days_per_week
+                  type: DECIMAL(5,2)
+                  defaultValueNumeric: 5
+              - column:
+                  name: time_format
+                  type: VARCHAR(50)
+                  defaultValue: "pretty"
+                  remarks: "pretty, days, hours"
+              - column:
+                  name: default_unit
+                  type: VARCHAR(10)
+                  defaultValue: "h"
+                  remarks: "m, h, d, w"
+
+  - changeSet:
+      id: 011-create-project-stats
+      author: system
+      changes:
+        - createTable:
+            tableName: project_stats
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+                    foreignKeyName: fk_ps_project
+                    references: project(id)
+                    deleteCascade: true
+              - column:
+                  name: total_issues
+                  type: INTEGER
+                  defaultValueNumeric: 0
+              - column:
+                  name: open_issues
+                  type: INTEGER
+                  defaultValueNumeric: 0
+              - column:
+                  name: in_progress_issues
+                  type: INTEGER
+                  defaultValueNumeric: 0
+              - column:
+                  name: resolved_issues
+                  type: INTEGER
+                  defaultValueNumeric: 0
+              - column:
+                  name: closed_issues
+                  type: INTEGER
+                  defaultValueNumeric: 0
+              - column:
+                  name: last_updated
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 011-create-sprint-metrics
+      author: system
+      changes:
+        - createTable:
+            tableName: sprint_metrics
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: sprint_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+                    foreignKeyName: fk_sm_sprint
+                    references: sprint(id)
+                    deleteCascade: true
+              - column:
+                  name: committed_story_points
+                  type: DECIMAL(10,2)
+              - column:
+                  name: completed_story_points
+                  type: DECIMAL(10,2)
+              - column:
+                  name: total_issues_committed
+                  type: INTEGER
+              - column:
+                  name: total_issues_completed
+                  type: INTEGER
+              - column:
+                  name: issues_added_after_start
+                  type: INTEGER
+              - column:
+                  name: issues_removed
+                  type: INTEGER
+              - column:
+                  name: velocity
+                  type: DECIMAL(10,2)
+              - column:
+                  name: last_calculated
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 011-create-burndown-data
+      author: system
+      changes:
+        - createTable:
+            tableName: burndown_data
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: sprint_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_bd_sprint
+                    references: sprint(id)
+                    deleteCascade: true
+              - column:
+                  name: snapshot_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: remaining_work
+                  type: DECIMAL(10,2)
+              - column:
+                  name: ideal_remaining_work
+                  type: DECIMAL(10,2)
+              - column:
+                  name: completed_work
+                  type: DECIMAL(10,2)
+              - column:
+                  name: scope_change
+                  type: DECIMAL(10,2)
+
+  - changeSet:
+      id: 011-create-cumulative-flow-data
+      author: system
+      changes:
+        - createTable:
+            tableName: cumulative_flow_data
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: board_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cfd_board
+                    references: board(id)
+                    deleteCascade: true
+              - column:
+                  name: snapshot_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cfd_status
+                    references: issue_status(id)
+              - column:
+                  name: issue_count
+                  type: INTEGER
+                  constraints:
+                    nullable: false

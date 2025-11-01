@@ -1,0 +1,1800 @@
+databaseChangeLog:
+  # Tempo Timesheets - Time tracking, Planning, Budgets, Resources
+
+  - changeSet:
+      id: 014-create-tempo-account
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_account
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+              - column:
+                  name: lead_account_id
+                  type: VARCHAR(255)
+              - column:
+                  name: category_id
+                  type: BIGINT
+              - column:
+                  name: customer_key
+                  type: VARCHAR(255)
+              - column:
+                  name: contact_key
+                  type: VARCHAR(255)
+              - column:
+                  name: global
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+
+  - changeSet:
+      id: 014-create-account-category
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_account_category
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 014-create-account-link
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_account_link
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_tempo_al_project
+                    references: project(id)
+              - column:
+                  name: scope_type
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 014-create-team
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_team
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: lead_account_id
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+
+  - changeSet:
+      id: 014-create-team-member
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_team_member
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: team_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: account_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: VARCHAR(100)
+              - column:
+                  name: commitment_percent
+                  type: DECIMAL(5,2)
+
+  - changeSet:
+      id: 014-create-team-permission
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_team_permission
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: team_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: permission_type
+                  type: VARCHAR(100)
+              - column:
+                  name: subject_id
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 014-create-worklog-attribute
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_worklog_attribute
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: VARCHAR(50)
+              - column:
+                  name: required
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+
+  - changeSet:
+      id: 014-create-worklog-attribute-value
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_worklog_attribute_value
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: worklog_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: attribute_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: TEXT
+
+  - changeSet:
+      id: 014-create-plan
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_plan
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: owner_account_id
+                  type: VARCHAR(255)
+              - column:
+                  name: start_date
+                  type: DATE
+              - column:
+                  name: end_date
+                  type: DATE
+              - column:
+                  name: description
+                  type: TEXT
+
+  - changeSet:
+      id: 014-create-plan-item
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_plan_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: issue_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_tempo_pi_issue
+                    references: jira_issue(id)
+              - column:
+                  name: start_date
+                  type: DATE
+              - column:
+                  name: end_date
+                  type: DATE
+              - column:
+                  name: assigned_seconds
+                  type: BIGINT
+
+  - changeSet:
+      id: 014-create-allocation
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_allocation
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: plan_item_id
+                  type: BIGINT
+              - column:
+                  name: start_date
+                  type: DATE
+              - column:
+                  name: end_date
+                  type: DATE
+              - column:
+                  name: seconds_per_day
+                  type: INTEGER
+
+  - changeSet:
+      id: 014-create-timesheet
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_timesheet
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: period_start
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: period_end
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  remarks: "open, submitted, approved, rejected"
+
+  - changeSet:
+      id: 014-create-timesheet-entry
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_timesheet_entry
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: timesheet_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: worklog_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_tempo_te_worklog
+                    references: worklog(id)
+
+  - changeSet:
+      id: 014-create-timesheet-approval
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_timesheet_approval
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: timesheet_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: approver_account_id
+                  type: VARCHAR(255)
+              - column:
+                  name: approval_date
+                  type: TIMESTAMP
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+              - column:
+                  name: comment
+                  type: TEXT
+
+  - changeSet:
+      id: 014-create-approval-rule
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_approval_rule
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rule_type
+                  type: VARCHAR(100)
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+
+  - changeSet:
+      id: 014-create-approval-rule-config
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_approval_rule_config
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: rule_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: config_key
+                  type: VARCHAR(255)
+              - column:
+                  name: config_value
+                  type: TEXT
+
+  - changeSet:
+      id: 014-create-budget
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_budget
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: period_start
+                  type: DATE
+              - column:
+                  name: period_end
+                  type: DATE
+              - column:
+                  name: budget_type
+                  type: VARCHAR(50)
+                  remarks: "time, money"
+              - column:
+                  name: budget_value
+                  type: DECIMAL(18,2)
+
+  - changeSet:
+      id: 014-create-cost-rate
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_costrate
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: VARCHAR(255)
+              - column:
+                  name: role_id
+                  type: BIGINT
+              - column:
+                  name: rate
+                  type: DECIMAL(18,2)
+              - column:
+                  name: effective_from
+                  type: DATE
+              - column:
+                  name: effective_to
+                  type: DATE
+
+  - changeSet:
+      id: 014-create-role
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_role
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+
+  - changeSet:
+      id: 014-create-calendar
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_calendar
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: default_calendar
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+
+  - changeSet:
+      id: 014-create-work-calendar
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_work_calendar
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: calendar_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: account_id
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 014-create-work-day
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_work_day
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: calendar_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: day_of_week
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: working_seconds
+                  type: INTEGER
+
+  - changeSet:
+      id: 014-create-work-week
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_work_week
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: calendar_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: week_start_day
+                  type: INTEGER
+
+  - changeSet:
+      id: 014-create-period
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_period
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: start_date
+                  type: DATE
+              - column:
+                  name: end_date
+                  type: DATE
+              - column:
+                  name: type
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 014-create-capacity
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_capacity
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: period_date
+                  type: DATE
+              - column:
+                  name: capacity_seconds
+                  type: INTEGER
+
+  - changeSet:
+      id: 014-create-workload
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_workload
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: period_date
+                  type: DATE
+              - column:
+                  name: planned_seconds
+                  type: INTEGER
+              - column:
+                  name: logged_seconds
+                  type: INTEGER
+
+  - changeSet:
+      id: 014-create-report
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_report
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: report_type
+                  type: VARCHAR(100)
+              - column:
+                  name: owner_account_id
+                  type: VARCHAR(255)
+              - column:
+                  name: configuration
+                  type: TEXT
+
+  - changeSet:
+      id: 014-create-report-config
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_report_config
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: report_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: config_key
+                  type: VARCHAR(255)
+              - column:
+                  name: config_value
+                  type: TEXT
+
+  - changeSet:
+      id: 014-create-resource
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_resource
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: resource_type
+                  type: VARCHAR(50)
+              - column:
+                  name: availability_percent
+                  type: DECIMAL(5,2)
+
+  - changeSet:
+      id: 014-create-resource-allocation
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_resource_allocation
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: resource_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: plan_item_id
+                  type: BIGINT
+              - column:
+                  name: allocation_percent
+                  type: DECIMAL(5,2)
+              - column:
+                  name: start_date
+                  type: DATE
+              - column:
+                  name: end_date
+                  type: DATE
+
+  - changeSet:
+      id: 014-create-resource-plan
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_resource_plan
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: resource_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 014-create-resource-schedule
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_resource_schedule
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: resource_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: schedule_date
+                  type: DATE
+              - column:
+                  name: available_seconds
+                  type: INTEGER
+
+  - changeSet:
+      id: 014-create-resource-team
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_resource_team
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: resource_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: team_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 014-create-resource-workload
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_resource_workload
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: resource_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: workload_date
+                  type: DATE
+              - column:
+                  name: assigned_seconds
+                  type: INTEGER
+              - column:
+                  name: logged_seconds
+                  type: INTEGER
+
+  - changeSet:
+      id: 014-create-salary
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_salary
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: DECIMAL(18,2)
+              - column:
+                  name: currency
+                  type: VARCHAR(10)
+              - column:
+                  name: effective_from
+                  type: DATE
+              - column:
+                  name: effective_to
+                  type: DATE
+
+  - changeSet:
+      id: 014-create-project-tempo
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_project
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_tempo_proj
+                    references: project(id)
+              - column:
+                  name: tempo_account_id
+                  type: BIGINT
+
+  - changeSet:
+      id: 014-create-project-cost
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_project_cost
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cost_type
+                  type: VARCHAR(50)
+              - column:
+                  name: amount
+                  type: DECIMAL(18,2)
+              - column:
+                  name: period_date
+                  type: DATE
+
+  - changeSet:
+      id: 014-create-project-role-tempo
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_project_role
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_tempo_pr_project
+                    references: project(id)
+              - column:
+                  name: role_id
+                  type: BIGINT
+
+  - changeSet:
+      id: 014-create-user-schedule
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_user_schedule
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: schedule_date
+                  type: DATE
+              - column:
+                  name: available_seconds
+                  type: INTEGER
+              - column:
+                  name: schedule_type
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 014-create-user-preference
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_user_preference
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: preference_key
+                  type: VARCHAR(255)
+              - column:
+                  name: preference_value
+                  type: TEXT
+
+  - changeSet:
+      id: 014-create-user-team
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_user_team
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: team_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 014-create-timesheet-rule
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_timesheet_rule
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: rule_type
+                  type: VARCHAR(100)
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+
+  - changeSet:
+      id: 014-create-timesheet-rule-config
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_timesheet_rule_config
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: rule_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: config_key
+                  type: VARCHAR(255)
+              - column:
+                  name: config_value
+                  type: TEXT
+
+  - changeSet:
+      id: 014-create-timesheet-audit
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_timesheet_audit
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: timesheet_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: action
+                  type: VARCHAR(100)
+              - column:
+                  name: actor_account_id
+                  type: VARCHAR(255)
+              - column:
+                  name: action_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 014-create-timesheet-period
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_timesheet_period
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: start_date
+                  type: DATE
+              - column:
+                  name: end_date
+                  type: DATE
+
+  - changeSet:
+      id: 014-create-timesheet-setting
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_timesheet_setting
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: setting_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: setting_value
+                  type: TEXT
+
+  - changeSet:
+      id: 014-create-work-period
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_work_period
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: calendar_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: period_date
+                  type: DATE
+              - column:
+                  name: working_seconds
+                  type: INTEGER
+
+  - changeSet:
+      id: 014-create-plan-template
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_plan_template
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+
+  - changeSet:
+      id: 014-create-plan-template-item
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_plan_template_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: template_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: item_name
+                  type: VARCHAR(255)
+              - column:
+                  name: item_config
+                  type: TEXT
+
+  - changeSet:
+      id: 014-create-cost
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_cost
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: worklog_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_tempo_cost_worklog
+                    references: worklog(id)
+              - column:
+                  name: cost_amount
+                  type: DECIMAL(18,2)
+              - column:
+                  name: currency
+                  type: VARCHAR(10)
+
+  - changeSet:
+      id: 014-create-revenue
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_revenue
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: BIGINT
+              - column:
+                  name: revenue_amount
+                  type: DECIMAL(18,2)
+              - column:
+                  name: revenue_date
+                  type: DATE
+              - column:
+                  name: currency
+                  type: VARCHAR(10)
+
+  - changeSet:
+      id: 014-create-report-template
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_report_template
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: template_type
+                  type: VARCHAR(100)
+              - column:
+                  name: template_config
+                  type: TEXT
+
+  - changeSet:
+      id: 014-create-account-transaction
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_account_transaction
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: transaction_date
+                  type: DATE
+              - column:
+                  name: amount
+                  type: DECIMAL(18,2)
+              - column:
+                  name: transaction_type
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 014-create-account-transaction-item
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_account_transaction_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: transaction_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: amount
+                  type: DECIMAL(18,2)
+
+  - changeSet:
+      id: 014-create-account-journal
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_account_journal
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: entry_date
+                  type: DATE
+              - column:
+                  name: entry_type
+                  type: VARCHAR(50)
+              - column:
+                  name: amount
+                  type: DECIMAL(18,2)
+
+  - changeSet:
+      id: 014-create-account-period
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_account_period
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: period_id
+                  type: BIGINT
+              - column:
+                  name: budget_amount
+                  type: DECIMAL(18,2)
+
+  - changeSet:
+      id: 014-create-invoice
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_invoice
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: invoice_number
+                  type: VARCHAR(100)
+              - column:
+                  name: invoice_date
+                  type: DATE
+              - column:
+                  name: total_amount
+                  type: DECIMAL(18,2)
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 014-create-invoice-item
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_invoice_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: invoice_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: quantity
+                  type: DECIMAL(10,2)
+              - column:
+                  name: unit_price
+                  type: DECIMAL(18,2)
+              - column:
+                  name: total_price
+                  type: DECIMAL(18,2)
+
+  - changeSet:
+      id: 014-create-payment
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_payment
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: invoice_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_date
+                  type: DATE
+              - column:
+                  name: amount
+                  type: DECIMAL(18,2)
+              - column:
+                  name: payment_method
+                  type: VARCHAR(100)
+
+  - changeSet:
+      id: 014-create-currency
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_currency
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: code
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+              - column:
+                  name: symbol
+                  type: VARCHAR(10)
+
+  - changeSet:
+      id: 014-create-exchange-rate
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_exchange_rate
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: from_currency_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: to_currency_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rate
+                  type: DECIMAL(18,6)
+              - column:
+                  name: effective_date
+                  type: DATE
+
+  - changeSet:
+      id: 014-create-project-budget
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_project_budget
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: project_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_tempo_pb_project
+                    references: project(id)
+              - column:
+                  name: budget_type
+                  type: VARCHAR(50)
+              - column:
+                  name: budget_amount
+                  type: DECIMAL(18,2)
+              - column:
+                  name: start_date
+                  type: DATE
+              - column:
+                  name: end_date
+                  type: DATE
+
+  - changeSet:
+      id: 014-create-plan-view
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_plan_view
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: plan_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: view_name
+                  type: VARCHAR(255)
+              - column:
+                  name: view_config
+                  type: TEXT
+
+  - changeSet:
+      id: 014-create-approval
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_approval
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: timesheet_id
+                  type: BIGINT
+              - column:
+                  name: approver_id
+                  type: VARCHAR(255)
+              - column:
+                  name: approval_status
+                  type: VARCHAR(50)
+              - column:
+                  name: approval_date
+                  type: TIMESTAMP
+
+  - changeSet:
+      id: 014-create-approver
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_approver
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: approver_type
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 014-create-approval-history
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_approval_history
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: approval_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: action
+                  type: VARCHAR(100)
+              - column:
+                  name: action_date
+                  type: TIMESTAMP
+              - column:
+                  name: comment
+                  type: TEXT
+
+  - changeSet:
+      id: 014-create-billing
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_billing
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: billing_date
+                  type: DATE
+              - column:
+                  name: amount
+                  type: DECIMAL(18,2)
+              - column:
+                  name: billable
+                  type: BOOLEAN
+
+  - changeSet:
+      id: 014-create-category
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_category
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_type
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 014-create-configuration
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_configuration
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: config_key
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: config_value
+                  type: TEXT
+
+  - changeSet:
+      id: 014-create-custom-field-tempo
+      author: system
+      changes:
+        - createTable:
+            tableName: ao_013613_customfield
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: field_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: field_type
+                  type: VARCHAR(100)
+              - column:
+                  name: field_config
+                  type: TEXT
