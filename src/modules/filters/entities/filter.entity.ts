@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { User } from '../../users/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 export enum FilterScope {
   PRIVATE = 'private',

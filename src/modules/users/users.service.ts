@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
+import { UserProperty } from './entities/user-property.entity';
+import { UserAvatar } from './entities/user-avatar.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -24,6 +26,10 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(UserProperty)
+    private readonly userPropertyRepository: Repository<UserProperty>,
+    @InjectRepository(UserAvatar)
+    private readonly userAvatarRepository: Repository<UserAvatar>,
   ) {}
 
   // ==================== CRUD DE BASE ====================
@@ -296,17 +302,20 @@ export class UsersService {
   async getUserProperties(id: string): Promise<any> {
     const user = await this.findOne(id);
 
-    // TODO: Implémenter la table user_properties
+    const properties = await this.userPropertyRepository.find({
+      where: { userId: id },
+      order: { propertyKey: 'ASC' },
+    });
+
+    const propertiesObj: Record<string, string> = {};
+    properties.forEach(prop => {
+      propertiesObj[prop.propertyKey] = prop.propertyValue;
+    });
+
     return {
       userId: id,
       username: user.username,
-      properties: {},
-      // Structure attendue:
-      // properties: {
-      //   'theme': 'dark',
-      //   'language': 'fr',
-      //   'notificationPreference': 'email'
-      // }
+      properties: propertiesObj,
     };
   }
 
@@ -317,14 +326,33 @@ export class UsersService {
   async setUserProperty(id: string, key: string, value: any): Promise<any> {
     const user = await this.findOne(id);
 
-    // TODO: Stocker dans user_properties table
+    // Chercher si la propriété existe déjà
+    let property = await this.userPropertyRepository.findOne({
+      where: { userId: id, propertyKey: key },
+    });
+
+    if (property) {
+      // Mettre à jour
+      property.propertyValue = String(value);
+      property.updatedAt = new Date();
+    } else {
+      // Créer
+      property = this.userPropertyRepository.create({
+        userId: id,
+        propertyKey: key,
+        propertyValue: String(value),
+      });
+    }
+
+    await this.userPropertyRepository.save(property);
+
     return {
       userId: id,
       username: user.username,
       property: {
-        key,
-        value,
-        updatedAt: new Date(),
+        key: property.propertyKey,
+        value: property.propertyValue,
+        updatedAt: property.updatedAt,
       },
     };
   }
@@ -335,8 +363,13 @@ export class UsersService {
   async deleteUserProperty(id: string, key: string): Promise<void> {
     const user = await this.findOne(id);
 
-    // TODO: Supprimer de user_properties table
-    // Pour l'instant, juste vérifier que l'utilisateur existe
+    const property = await this.userPropertyRepository.findOne({
+      where: { userId: id, propertyKey: key },
+    });
+
+    if (property) {
+      await this.userPropertyRepository.remove(property);
+    }
   }
 
   // ==================== AVATAR ====================
@@ -347,27 +380,60 @@ export class UsersService {
   async getUserAvatar(id: string): Promise<any> {
     const user = await this.findOne(id);
 
+    const avatar = await this.userAvatarRepository.findOne({
+      where: { userId: id },
+    });
+
     return {
       userId: id,
       username: user.username,
-      avatarUrl: null, // TODO: Implémenter le stockage d'avatars
-      avatarType: 'default',
+      avatarUrl: avatar?.avatarUrl || null,
+      avatarType: avatar?.avatarType || 'default',
+      fileSize: avatar?.fileSize,
+      mimeType: avatar?.mimeType,
+      uploadedAt: avatar?.uploadedAt,
     };
   }
 
   /**
    * Upload un avatar pour l'utilisateur
    */
-  async uploadUserAvatar(id: string, avatarData: { url: string }): Promise<any> {
+  async uploadUserAvatar(
+    id: string,
+    avatarData: { url: string; fileSize?: number; mimeType?: string },
+  ): Promise<any> {
     const user = await this.findOne(id);
 
-    // TODO: Stocker l'URL de l'avatar dans la table users
-    // ou dans une table dédiée user_avatars
+    // Chercher si un avatar existe déjà
+    let avatar = await this.userAvatarRepository.findOne({
+      where: { userId: id },
+    });
+
+    if (avatar) {
+      // Mettre à jour
+      avatar.avatarUrl = avatarData.url;
+      avatar.avatarType = 'uploaded';
+      avatar.fileSize = avatarData.fileSize || null;
+      avatar.mimeType = avatarData.mimeType || null;
+      avatar.uploadedAt = new Date();
+    } else {
+      // Créer
+      avatar = this.userAvatarRepository.create({
+        userId: id,
+        avatarUrl: avatarData.url,
+        avatarType: 'uploaded',
+        fileSize: avatarData.fileSize,
+        mimeType: avatarData.mimeType,
+      });
+    }
+
+    await this.userAvatarRepository.save(avatar);
+
     return {
       userId: id,
       username: user.username,
-      avatarUrl: avatarData.url,
-      uploadedAt: new Date(),
+      avatarUrl: avatar.avatarUrl,
+      uploadedAt: avatar.uploadedAt,
     };
   }
 

@@ -56,9 +56,8 @@ export class WorkflowsService {
   async create(createWorkflowDto: CreateWorkflowDto): Promise<Workflow> {
     const workflow = this.workflowRepository.create({
       ...createWorkflowDto,
-      isActive: true,
-      isDefault: false,
       isActive: false, // Nouveaux workflows commencent en draft
+      isDefault: false,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -158,7 +157,6 @@ export class WorkflowsService {
     const workflow = await this.findOne(id);
 
     // Marquer comme publié et actif
-    !workflow.isActive = false;
     workflow.isActive = true;
     workflow.updatedAt = new Date();
 
@@ -169,7 +167,6 @@ export class WorkflowsService {
       workflowName: workflow.workflowName,
       published: true,
       publishedAt: new Date(),
-      isActive: true,
       isActive: true,
     };
   }

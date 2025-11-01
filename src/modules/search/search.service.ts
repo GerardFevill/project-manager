@@ -4,7 +4,7 @@ import { Repository, Like } from 'typeorm';
 import { Issue } from '../issues/entities/issue.entity';
 import { Project } from '../projects/entities/project.entity';
 import { User } from '../users/entities/user.entity';
-import { Comment } from '../comments/comment.entity';
+import { Comment } from '../comments/entities/comment.entity';
 
 export interface SearchQuery {
   query: string;

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Roadmap } from './entities/Roadmap.entity';
+import { Roadmap } from './entities/roadmap.entity';
 import { CreateRoadmapDto } from './dto/create-roadmaps.dto';
 import { UpdateRoadmapDto } from './dto/update-roadmaps.dto';
 

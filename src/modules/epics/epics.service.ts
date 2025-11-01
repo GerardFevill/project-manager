@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Epic } from './entities/Epic.entity';
+import { Epic } from './entities/epic.entity';
 import { CreateEpicDto } from './dto/create-epics.dto';
 import { UpdateEpicDto } from './dto/update-epics.dto';
 

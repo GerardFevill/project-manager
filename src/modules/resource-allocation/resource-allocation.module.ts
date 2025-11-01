@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ResourceAllocation } from './entities/resource-allocation.entity';
+import { ResourceAllocationController } from './resource-allocation.controller';
+import { ResourceAllocationService } from './resource-allocation.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ResourceAllocation])],
-  exports: [TypeOrmModule],
+  controllers: [ResourceAllocationController],
+  providers: [ResourceAllocationService],
+  exports: [ResourceAllocationService, TypeOrmModule],
 })
 export class ResourceAllocationModule {}

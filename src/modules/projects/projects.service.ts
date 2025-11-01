@@ -2,6 +2,11 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
+import { ProjectUser } from './entities/project-user.entity';
+import { ProjectRoleActor } from './entities/project-role-actor.entity';
+import { ProjectFeature } from './entities/project-feature.entity';
+import { ProjectAvatar } from './entities/project-avatar.entity';
+import { IssueStatistics } from './entities/issue-statistics.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 
@@ -22,6 +27,16 @@ export class ProjectsService {
   constructor(
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
+    @InjectRepository(ProjectUser)
+    private readonly projectUserRepository: Repository<ProjectUser>,
+    @InjectRepository(ProjectRoleActor)
+    private readonly projectRoleActorRepository: Repository<ProjectRoleActor>,
+    @InjectRepository(ProjectFeature)
+    private readonly projectFeatureRepository: Repository<ProjectFeature>,
+    @InjectRepository(ProjectAvatar)
+    private readonly projectAvatarRepository: Repository<ProjectAvatar>,
+    @InjectRepository(IssueStatistics)
+    private readonly issueStatisticsRepository: Repository<IssueStatistics>,
   ) {}
 
   // ==================== CRUD DE BASE ====================
@@ -153,16 +168,22 @@ export class ProjectsService {
   async getProjectUsers(id: string): Promise<any> {
     const project = await this.findOne(id);
 
-    // TODO: Implémenter la table project_users pour stocker les membres
-    // Pour l'instant, retourner un objet avec structure attendue
+    const projectUsers = await this.projectUserRepository.find({
+      where: { projectId: id },
+      relations: ['user'],
+      order: { addedAt: 'ASC' },
+    });
+
     return {
       projectId: id,
       projectKey: project.projectKey,
-      users: [],
-      // Structure attendue:
-      // users: [
-      //   { userId: '1', role: 'Developer', addedAt: Date }
-      // ]
+      users: projectUsers.map(pu => ({
+        userId: pu.userId,
+        username: pu.user?.username,
+        role: pu.role,
+        addedAt: pu.addedAt,
+        addedBy: pu.addedBy,
+      })),
     };
   }
 
@@ -172,15 +193,20 @@ export class ProjectsService {
   async getRoleActors(projectId: string, roleId: string): Promise<any> {
     const project = await this.findOne(projectId);
 
-    // TODO: Implémenter la table project_role_actors
+    const actors = await this.projectRoleActorRepository.find({
+      where: { projectId, roleId },
+      order: { addedAt: 'DESC' },
+    });
+
     return {
       projectId,
       roleId,
-      actors: [],
-      // Structure attendue:
-      // actors: [
-      //   { actorId: '1', actorType: 'user', name: 'John Doe' }
-      // ]
+      actors: actors.map(actor => ({
+        actorId: actor.actorId,
+        actorType: actor.actorType,
+        name: actor.actorName,
+        addedAt: actor.addedAt,
+      })),
     };
   }
 
@@ -190,17 +216,28 @@ export class ProjectsService {
   async addRoleActor(
     projectId: string,
     roleId: string,
-    actorData: { actorId: string; actorType: 'user' | 'group' },
+    actorData: { actorId: string; actorType: 'user' | 'group'; actorName?: string },
   ): Promise<any> {
     const project = await this.findOne(projectId);
 
-    // TODO: Implémenter l'ajout dans project_role_actors
+    const actor = this.projectRoleActorRepository.create({
+      projectId,
+      roleId,
+      actorId: actorData.actorId,
+      actorType: actorData.actorType,
+      actorName: actorData.actorName,
+    });
+
+    await this.projectRoleActorRepository.save(actor);
+
     return {
       projectId,
       roleId,
       actor: {
-        ...actorData,
-        addedAt: new Date(),
+        actorId: actor.actorId,
+        actorType: actor.actorType,
+        name: actor.actorName,
+        addedAt: actor.addedAt,
       },
     };
   }
@@ -215,8 +252,13 @@ export class ProjectsService {
   ): Promise<void> {
     const project = await this.findOne(projectId);
 
-    // TODO: Implémenter la suppression dans project_role_actors
-    // Pour l'instant, juste vérifier que le projet existe
+    const actor = await this.projectRoleActorRepository.findOne({
+      where: { projectId, roleId, actorId },
+    });
+
+    if (actor) {
+      await this.projectRoleActorRepository.remove(actor);
+    }
   }
 
   // ==================== CONFIGURATION DU PROJET ====================
@@ -267,18 +309,39 @@ export class ProjectsService {
   async getProjectFeatures(id: string): Promise<any> {
     const project = await this.findOne(id);
 
-    // Fonctionnalités Jira standard
+    const features = await this.projectFeatureRepository.find({
+      where: { projectId: id },
+      order: { featureKey: 'ASC' },
+    });
+
+    const featuresObj: Record<string, { enabled: boolean; configuration?: any }> = {};
+
+    if (features.length === 0) {
+      // Fonctionnalités par défaut si aucune n'est définie
+      return {
+        projectId: id,
+        features: {
+          boards: { enabled: true },
+          sprints: { enabled: true },
+          backlog: { enabled: true },
+          reports: { enabled: true },
+          pages: { enabled: false },
+          roadmap: { enabled: true },
+          releases: { enabled: true },
+        },
+      };
+    }
+
+    features.forEach(feature => {
+      featuresObj[feature.featureKey] = {
+        enabled: feature.enabled,
+        configuration: feature.configuration,
+      };
+    });
+
     return {
       projectId: id,
-      features: {
-        boards: { enabled: true },
-        sprints: { enabled: true },
-        backlog: { enabled: true },
-        reports: { enabled: true },
-        pages: { enabled: false },
-        roadmap: { enabled: true },
-        releases: { enabled: true },
-      },
+      features: featuresObj,
     };
   }
 
@@ -287,11 +350,32 @@ export class ProjectsService {
    */
   async updateProjectFeatures(
     id: string,
-    features: Record<string, { enabled: boolean }>,
+    features: Record<string, { enabled: boolean; configuration?: any }>,
   ): Promise<any> {
     const project = await this.findOne(id);
 
-    // TODO: Stocker les features dans une table project_features
+    // Mettre à jour ou créer chaque fonctionnalité
+    for (const [featureKey, featureData] of Object.entries(features)) {
+      let feature = await this.projectFeatureRepository.findOne({
+        where: { projectId: id, featureKey },
+      });
+
+      if (feature) {
+        feature.enabled = featureData.enabled;
+        feature.configuration = featureData.configuration || null;
+        feature.updatedAt = new Date();
+      } else {
+        feature = this.projectFeatureRepository.create({
+          projectId: id,
+          featureKey,
+          enabled: featureData.enabled,
+          configuration: featureData.configuration,
+        });
+      }
+
+      await this.projectFeatureRepository.save(feature);
+    }
+
     return {
       projectId: id,
       features,
@@ -322,25 +406,55 @@ export class ProjectsService {
   async getProjectAvatar(id: string): Promise<any> {
     const project = await this.findOne(id);
 
+    const avatar = await this.projectAvatarRepository.findOne({
+      where: { projectId: id },
+    });
+
     return {
       projectId: id,
-      avatarUrl: null, // TODO: Implémenter le stockage d'avatars
-      avatarType: 'default',
+      avatarUrl: avatar?.avatarUrl || null,
+      avatarType: avatar?.avatarType || 'default',
+      fileSize: avatar?.fileSize,
+      mimeType: avatar?.mimeType,
+      uploadedAt: avatar?.uploadedAt,
     };
   }
 
   /**
    * Upload un avatar pour le projet
    */
-  async uploadProjectAvatar(id: string, avatarData: { url: string }): Promise<any> {
+  async uploadProjectAvatar(
+    id: string,
+    avatarData: { url: string; fileSize?: number; mimeType?: string },
+  ): Promise<any> {
     const project = await this.findOne(id);
 
-    // TODO: Stocker l'URL de l'avatar dans la table projects
-    // ou dans une table dédiée project_avatars
+    let avatar = await this.projectAvatarRepository.findOne({
+      where: { projectId: id },
+    });
+
+    if (avatar) {
+      avatar.avatarUrl = avatarData.url;
+      avatar.avatarType = 'uploaded';
+      avatar.fileSize = avatarData.fileSize || null;
+      avatar.mimeType = avatarData.mimeType || null;
+      avatar.uploadedAt = new Date();
+    } else {
+      avatar = this.projectAvatarRepository.create({
+        projectId: id,
+        avatarUrl: avatarData.url,
+        avatarType: 'uploaded',
+        fileSize: avatarData.fileSize,
+        mimeType: avatarData.mimeType,
+      });
+    }
+
+    await this.projectAvatarRepository.save(avatar);
+
     return {
       projectId: id,
-      avatarUrl: avatarData.url,
-      uploadedAt: new Date(),
+      avatarUrl: avatar.avatarUrl,
+      uploadedAt: avatar.uploadedAt,
     };
   }
 
@@ -369,21 +483,40 @@ export class ProjectsService {
   async getProjectInsights(id: string): Promise<any> {
     const project = await this.findOne(id);
 
-    // TODO: Calculer les vraies statistiques depuis les issues
-    return {
-      projectId: id,
-      projectKey: project.projectKey,
-      insights: {
+    let statistics = await this.issueStatisticsRepository.findOne({
+      where: { projectId: id },
+    });
+
+    if (!statistics) {
+      // Créer des statistiques vides si elles n'existent pas
+      statistics = this.issueStatisticsRepository.create({
+        projectId: id,
         totalIssues: 0,
         openIssues: 0,
         inProgressIssues: 0,
         resolvedIssues: 0,
         closedIssues: 0,
-        averageResolutionTime: 0, // en heures
+        averageResolutionTimeHours: 0,
         activeUsers: 0,
         lastActivity: null,
+      });
+      await this.issueStatisticsRepository.save(statistics);
+    }
+
+    return {
+      projectId: id,
+      projectKey: project.projectKey,
+      insights: {
+        totalIssues: statistics.totalIssues,
+        openIssues: statistics.openIssues,
+        inProgressIssues: statistics.inProgressIssues,
+        resolvedIssues: statistics.resolvedIssues,
+        closedIssues: statistics.closedIssues,
+        averageResolutionTime: statistics.averageResolutionTimeHours,
+        activeUsers: statistics.activeUsers,
+        lastActivity: statistics.lastActivity,
       },
-      calculatedAt: new Date(),
+      calculatedAt: statistics.calculatedAt,
     };
   }
 

@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Release } from './entities/release.entity';
+import { ReleaseManagementController } from './release-management.controller';
+import { ReleaseManagementService } from './release-management.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Release])],
-  exports: [TypeOrmModule],
+  controllers: [ReleaseManagementController],
+  providers: [ReleaseManagementService],
+  exports: [ReleaseManagementService, TypeOrmModule],
 })
 export class ReleaseManagementModule {}

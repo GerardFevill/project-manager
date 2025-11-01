@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CumulativeFlow } from './entities/cumulative-flow.entity';
+import { CumulativeFlowController } from './cumulative-flow.controller';
+import { CumulativeFlowService } from './cumulative-flow.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([CumulativeFlow])],
-  exports: [TypeOrmModule],
+  controllers: [CumulativeFlowController],
+  providers: [CumulativeFlowService],
+  exports: [CumulativeFlowService, TypeOrmModule],
 })
 export class CumulativeFlowModule {}

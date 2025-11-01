@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BurnData } from './entities/BurnData.entity';
+import { BurnData } from './entities/burn-data.entity';
 import { CreateBurnDataDto } from './dto/create-burn-charts.dto';
 import { UpdateBurnDataDto } from './dto/update-burn-charts.dto';
 

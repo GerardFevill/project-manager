@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { SprintReport } from './entities/SprintReport.entity';
+import { SprintReport } from './entities/sprint-report.entity';
 import { CreateSprintReportDto } from './dto/create-sprint-reports.dto';
 import { UpdateSprintReportDto } from './dto/update-sprint-reports.dto';
 

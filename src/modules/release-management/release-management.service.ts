@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Release } from './entities/Release.entity';
+import { Release } from './entities/release.entity';
 import { CreateReleaseDto } from './dto/create-release-management.dto';
 import { UpdateReleaseDto } from './dto/update-release-management.dto';
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
-import { WorkLog } from '../work-logs/work-log.entity';
+import { WorkLog } from '../work-logs/entities/work-log.entity';
 
 @Injectable()
 export class TimeReportsService {

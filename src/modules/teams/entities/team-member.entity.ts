@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn } from 'typeorm';
 import { Team } from './team.entity';
-import { User } from '../../users/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 export enum TeamRole {
   MEMBER = 'member',

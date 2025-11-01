@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Initiative } from './entities/Initiative.entity';
+import { Initiative } from './entities/initiative.entity';
 import { CreateInitiativeDto } from './dto/create-initiatives.dto';
 import { UpdateInitiativeDto } from './dto/update-initiatives.dto';
 

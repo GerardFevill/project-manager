@@ -36,28 +36,28 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
 
 // Phase 3 Modules
 import { TimeReportsModule } from './modules/time-reports/time-reports.module';
-import { SlaModule } from './modules/sla/sla.module';
+import { SLAModule } from './modules/sla/sla.module';
 import { AutomationModule } from './modules/automation/automation.module';
 import { AuditLogsModule } from './modules/audit-logs/audit-logs.module';
 
 // Phase 4 - Portfolio & Strategic
 import { PortfoliosModule } from './modules/portfolios/portfolios.module';
 import { ProgramsModule } from './modules/programs/programs.module';
-import { RoadmapsModule } from './modules/roadmaps/Roadmaps.module';
-import { InitiativesModule } from './modules/initiatives/Initiatives.module';
-import { EpicsModule } from './modules/epics/Epics.module';
-import { DependenciesModule } from './modules/dependencies/Dependencies.module';
-import { CapacityPlanningModule } from './modules/capacity-planning/CapacityPlanning.module';
-import { ResourceAllocationModule } from './modules/resource-allocation/ResourceAllocation.module';
+import { RoadmapsModule } from './modules/roadmaps/roadmaps.module';
+import { InitiativesModule } from './modules/initiatives/initiatives.module';
+import { EpicsModule } from './modules/epics/epics.module';
+import { DependenciesModule } from './modules/dependencies/dependencies.module';
+import { CapacityPlanningModule } from './modules/capacity-planning/capacity-planning.module';
+import { ResourceAllocationModule } from './modules/resource-allocation/resource-allocation.module';
 
 // Phase 5 - Advanced Agile
-import { VelocityTrackingModule } from './modules/velocity-tracking/VelocityTracking.module';
-import { BurnChartsModule } from './modules/burn-charts/BurnCharts.module';
-import { SprintReportsModule } from './modules/sprint-reports/SprintReports.module';
-import { RetrospectivesModule } from './modules/retrospectives/Retrospectives.module';
-import { ReleaseManagementModule } from './modules/release-management/ReleaseManagement.module';
-import { StoryMappingModule } from './modules/story-mapping/StoryMapping.module';
-import { CumulativeFlowModule } from './modules/cumulative-flow/CumulativeFlow.module';
+import { VelocityTrackingModule } from './modules/velocity-tracking/velocity-tracking.module';
+import { BurnChartsModule } from './modules/burn-charts/burn-charts.module';
+import { SprintReportsModule } from './modules/sprint-reports/sprint-reports.module';
+import { RetrospectivesModule } from './modules/retrospectives/retrospectives.module';
+import { ReleaseManagementModule } from './modules/release-management/release-management.module';
+import { StoryMappingModule } from './modules/story-mapping/story-mapping.module';
+import { CumulativeFlowModule } from './modules/cumulative-flow/cumulative-flow.module';
 
 // Phase 6 - Finance
 import { TimeSheetsModule } from './modules/timesheets/TimeSheets.module';
@@ -190,7 +190,7 @@ import { ScreensModule } from './modules/screens/Screens.module';
     IssueHistoryModule,
     WebhooksModule,
     TimeReportsModule,
-    SlaModule,
+    SLAModule,
     AutomationModule,
     AuditLogsModule,
 

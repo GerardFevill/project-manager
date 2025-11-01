@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CapacityPlan } from './entities/CapacityPlan.entity';
+import { CapacityPlan } from './entities/capacity-plan.entity';
 import { CreateCapacityPlanDto } from './dto/create-capacity-planning.dto';
 import { UpdateCapacityPlanDto } from './dto/update-capacity-planning.dto';
 

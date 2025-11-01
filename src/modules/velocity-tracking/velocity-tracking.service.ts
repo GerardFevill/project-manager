@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Velocity } from './entities/Velocity.entity';
+import { Velocity } from './entities/velocity.entity';
 import { CreateVelocityDto } from './dto/create-velocity-tracking.dto';
 import { UpdateVelocityDto } from './dto/update-velocity-tracking.dto';
 

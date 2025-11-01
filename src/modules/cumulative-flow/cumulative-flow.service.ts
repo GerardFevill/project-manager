@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CumulativeFlow } from './entities/CumulativeFlow.entity';
+import { CumulativeFlow } from './entities/cumulative-flow.entity';
 import { CreateCumulativeFlowDto } from './dto/create-cumulative-flow.dto';
 import { UpdateCumulativeFlowDto } from './dto/update-cumulative-flow.dto';
 

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ResourceAllocation } from './entities/ResourceAllocation.entity';
+import { ResourceAllocation } from './entities/resource-allocation.entity';
 import { CreateResourceAllocationDto } from './dto/create-resource-allocation.dto';
 import { UpdateResourceAllocationDto } from './dto/update-resource-allocation.dto';
 

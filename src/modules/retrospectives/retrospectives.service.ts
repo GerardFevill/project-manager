@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Retrospective } from './entities/Retrospective.entity';
+import { Retrospective } from './entities/retrospective.entity';
 import { CreateRetrospectiveDto } from './dto/create-retrospectives.dto';
 import { UpdateRetrospectiveDto } from './dto/update-retrospectives.dto';
 

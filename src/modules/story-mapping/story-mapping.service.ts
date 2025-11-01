@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { StoryMap } from './entities/StoryMap.entity';
+import { StoryMap } from './entities/story-map.entity';
 import { CreateStoryMapDto } from './dto/create-story-mapping.dto';
 import { UpdateStoryMapDto } from './dto/update-story-mapping.dto';
 
