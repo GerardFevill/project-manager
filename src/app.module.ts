@@ -19,6 +19,18 @@ import { VersionsModule } from './modules/versions/versions.module';
 import { IssueLinksModule } from './modules/issue-links/issue-links.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { CustomFieldsModule } from './modules/custom-fields/custom-fields.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { FiltersModule } from './modules/filters/filters.module';
+import { DashboardsModule } from './modules/dashboards/dashboards.module';
+import { SearchModule } from './modules/search/search.module';
+import { IssueHistoryModule } from './modules/issue-history/issue-history.module';
+import { WebhooksModule } from './modules/webhooks/webhooks.module';
+import { EmailModule } from './modules/email/email.module';
+import { TeamsModule } from './modules/teams/teams.module';
+import { TimeReportsModule } from './modules/time-reports/time-reports.module';
+import { SLAModule } from './modules/sla/sla.module';
+import { AutomationModule } from './modules/automation/automation.module';
+import { AuditLogsModule } from './modules/audit-logs/audit-logs.module';
 
 @Module({
   imports: [
@@ -37,6 +49,7 @@ import { CustomFieldsModule } from './modules/custom-fields/custom-fields.module
     // Core Modules
     AuthModule,
     UsersModule,
+    TeamsModule,
 
     // Project Management
     ProjectsModule,
@@ -54,10 +67,27 @@ import { CustomFieldsModule } from './modules/custom-fields/custom-fields.module
     WatchersModule,
     LabelsModule,
     ActivityModule,
+    IssueHistoryModule,
     CustomFieldsModule,
 
     // Security & Access Control
     RolesModule,
+
+    // Notifications & Communication
+    NotificationsModule,
+    EmailModule,
+    WebhooksModule,
+
+    // Search & Filters
+    SearchModule,
+    FiltersModule,
+    DashboardsModule,
+
+    // Advanced Features
+    SLAModule,
+    AutomationModule,
+    TimeReportsModule,
+    AuditLogsModule,
   ],
 })
 export class AppModule {}
