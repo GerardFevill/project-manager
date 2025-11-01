@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CostAnalysis } from './entities/CostAnalysis.entity';
+import { CostAnalysisController } from './cost-analysis.controller';
+import { CostAnalysisService } from './cost-analysis.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([CostAnalysis])],
-  exports: [TypeOrmModule],
+  controllers: [CostAnalysisController],
+  providers: [CostAnalysisService],
+  exports: [CostAnalysisService, TypeOrmModule],
 })
 export class CostAnalysisModule {}
