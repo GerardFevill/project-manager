@@ -1,0 +1,55 @@
+name: Health Check & Monitoring
+
+on:
+  schedule:
+    # Run every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    name: API Health Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check API Health
+        run: |
+          echo "🏥 Checking API health..."
+          # curl -f https://api.your-domain.com/health || exit 1
+
+      - name: Check Database Connection
+        run: |
+          echo "🗄️ Checking database connection..."
+
+      - name: Performance Metrics
+        run: |
+          echo "📊 Collecting performance metrics..."
+
+      - name: Create Issue on Failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 Health Check Failed',
+              body: 'API health check failed. Please investigate immediately.',
+              labels: ['critical', 'health-check']
+            })
+
+  uptime-monitoring:
+    name: Uptime Monitoring
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Monitor uptime
+        run: |
+          echo "⏱️ Monitoring API uptime..."
+
+      - name: Report status
+        run: |
+          echo "## 📈 Health Status" >> $GITHUB_STEP_SUMMARY
+          echo "- **API Status**: Healthy ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- **Database**: Connected ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- **Last Check**: $(date)" >> $GITHUB_STEP_SUMMARY

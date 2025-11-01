@@ -1,0 +1,106 @@
+name: Notifications
+
+on:
+  workflow_run:
+    workflows:
+      - "Docker Build and Push"
+      - "CI - Test and Lint"
+      - "Security Scan"
+      - "Deployment"
+    types:
+      - completed
+
+jobs:
+  notify-success:
+    name: Notify on Success
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Send Slack notification
+        if: secrets.SLACK_WEBHOOK_URL != ''
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          custom_payload: |
+            {
+              text: "✅ Workflow Success",
+              attachments: [{
+                color: 'good',
+                text: `Workflow *${{ github.event.workflow_run.name }}* completed successfully\nBranch: ${{ github.ref_name }}\nCommit: ${{ github.sha }}`
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Send Discord notification
+        if: secrets.DISCORD_WEBHOOK_URL != ''
+        run: |
+          curl -H "Content-Type: application/json" \
+            -X POST \
+            -d '{
+              "content": "✅ **Workflow Success**",
+              "embeds": [{
+                "title": "${{ github.event.workflow_run.name }}",
+                "description": "Workflow completed successfully",
+                "color": 3066993,
+                "fields": [
+                  {"name": "Branch", "value": "${{ github.ref_name }}", "inline": true},
+                  {"name": "Commit", "value": "`${{ github.sha }}`", "inline": true}
+                ]
+              }]
+            }' \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+  notify-failure:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+
+    steps:
+      - name: Send Slack notification
+        if: secrets.SLACK_WEBHOOK_URL != ''
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          custom_payload: |
+            {
+              text: "❌ Workflow Failed",
+              attachments: [{
+                color: 'danger',
+                text: `Workflow *${{ github.event.workflow_run.name }}* failed\nBranch: ${{ github.ref_name }}\nCommit: ${{ github.sha }}`
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Send Discord notification
+        if: secrets.DISCORD_WEBHOOK_URL != ''
+        run: |
+          curl -H "Content-Type: application/json" \
+            -X POST \
+            -d '{
+              "content": "❌ **Workflow Failed**",
+              "embeds": [{
+                "title": "${{ github.event.workflow_run.name }}",
+                "description": "Workflow failed - action required",
+                "color": 15158332,
+                "fields": [
+                  {"name": "Branch", "value": "${{ github.ref_name }}", "inline": true},
+                  {"name": "Commit", "value": "`${{ github.sha }}`", "inline": true}
+                ]
+              }]
+            }' \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      - name: Create GitHub Issue on failure
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `❌ Workflow Failed: ${{ github.event.workflow_run.name }}`,
+              body: `Workflow **${{ github.event.workflow_run.name }}** failed on branch \`${{ github.ref_name }}\`\n\nCommit: ${{ github.sha }}\n\nPlease investigate and fix.`,
+              labels: ['bug', 'ci-failure']
+            })
